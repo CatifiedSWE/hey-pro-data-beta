@@ -143,7 +143,7 @@ export default function ProfileEditor({ profile, trigger }: EditProfileInfoProps
                                 }}
                                 placeholder="Enter your country"
                                 type="country"
-                                className="h-12 rounded-2xl border-gray-400 text-base"
+                                className="h-12 rounded-2xl border-2 border-gray-400 text-base focus:outline-none focus:border-[#FA6E80] focus:ring-2 focus:ring-[#FA6E80]/20 transition-colors"
                             />
                         </div>
 
@@ -156,7 +156,7 @@ export default function ProfileEditor({ profile, trigger }: EditProfileInfoProps
                                 placeholder="Enter your city"
                                 type="city"
                                 selectedCountry={country}
-                                className="h-12 rounded-2xl border-gray-400 text-base"
+                                className="h-12 rounded-2xl border-2 border-gray-400 text-base focus:outline-none focus:border-[#FA6E80] focus:ring-2 focus:ring-[#FA6E80]/20 transition-colors"
                             />
                         </div>
 
