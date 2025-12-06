@@ -368,7 +368,7 @@ export default function SkillEditor({
                                         >
                                             {skills.map((skill) => (
                                                 <option key={skill.id} value={skill.id}>
-                                                    {skill.department} . {skill.role}
+                                                    {skill.role}
                                                 </option>
                                             ))}
                                         </select>
