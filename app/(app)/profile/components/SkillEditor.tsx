@@ -114,7 +114,7 @@ function SortableSkillItem({ skill }: { skill: Skill }) {
                 <GripVertical className="h-6 w-6 text-gray-400" />
             </div>
             <div className="flex-1">
-                <p className="font-medium text-gray-900">{skill.department} . {skill.role}</p>
+                <p className="font-medium text-gray-900">{skill.role}</p>
                 <p className="text-sm text-gray-500 line-clamp-1">
                     {skill.description || "No description"}
                 </p>
