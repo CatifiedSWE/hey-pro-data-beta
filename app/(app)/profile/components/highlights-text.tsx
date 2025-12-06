@@ -28,7 +28,7 @@ export default function HighlightsText({ className = "" }) {
           className="text-2xl font-bold bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] text-transparent bg-clip-text"
           style={{ WebkitBackgroundClip: 'text', backgroundClip: 'text' }}
         >
-          HIGHLIGHTS
+          HEYLIGHTS
         </div>
         <div 
           className="flex-1 h-[3px] rounded-full"
