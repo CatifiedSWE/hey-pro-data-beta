@@ -174,7 +174,6 @@ export default function LocationAutocomplete({
   return (
     <div ref={wrapperRef} className="relative w-full">
       <input
-        ref={inputRef}
         type="text"
         value={value}
         onChange={handleInputChange}
@@ -188,16 +187,9 @@ export default function LocationAutocomplete({
         autoComplete="off"
       />
 
-      {/* Dropdown - Using fixed positioning to escape overflow containers */}
+      {/* Dropdown */}
       {showDropdown && suggestions.length > 0 && !disabled && (
-        <div 
-          className="fixed z-[9999] bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto"
-          style={{
-            top: `${dropdownPosition.top + 8}px`,
-            left: `${dropdownPosition.left}px`,
-            width: `${dropdownPosition.width}px`
-          }}
-        >
+        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <div
               key={typeof suggestion === 'string' ? suggestion : `${suggestion.name}-${index}`}
@@ -216,14 +208,7 @@ export default function LocationAutocomplete({
 
       {/* No results */}
       {showDropdown && suggestions.length === 0 && value.length >= 2 && (
-        <div 
-          className="fixed z-[9999] bg-white border-2 border-gray-200 rounded-xl shadow-lg p-4"
-          style={{
-            top: `${dropdownPosition.top + 8}px`,
-            left: `${dropdownPosition.left}px`,
-            width: `${dropdownPosition.width}px`
-          }}
-        >
+        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg p-4">
           <p className="text-gray-500 text-sm text-center">
             No {type === 'country' ? 'countries' : 'cities'} found
           </p>
