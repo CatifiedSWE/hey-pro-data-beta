@@ -10,6 +10,7 @@ interface LocationAutocompleteProps {
   type: 'country' | 'city';
   className?: string;
   disabled?: boolean;
+  selectedCountry?: string; // For filtering cities by country
 }
 
 /**
