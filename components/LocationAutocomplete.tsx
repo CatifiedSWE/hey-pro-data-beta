@@ -230,7 +230,14 @@ export default function LocationAutocomplete({
 
       {/* No results */}
       {showDropdown && suggestions.length === 0 && value.length >= 2 && (
-        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg p-4">
+        <div 
+          className="fixed z-[9999] bg-white border-2 border-gray-200 rounded-xl shadow-lg p-4"
+          style={{
+            top: `${dropdownPosition.top + 8}px`,
+            left: `${dropdownPosition.left}px`,
+            width: `${dropdownPosition.width}px`
+          }}
+        >
           <p className="text-gray-500 text-sm text-center">
             No {type === 'country' ? 'countries' : 'cities'} found
           </p>
