@@ -64,7 +64,13 @@ export default function FormPage() {
   }, [router]);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      // If country changes, clear the city field
+      if (field === 'country' && prev.country !== value) {
+        return { ...prev, [field]: value, city: '' };
+      }
+      return { ...prev, [field]: value };
+    });
   };
 
   // Check if form is valid (all required fields filled)
