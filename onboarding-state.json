@@ -1,0 +1,220 @@
+{
+  "landing": {
+    "id": "landing",
+    "type": "hero",
+    "next": "persona_selection",
+    "options": [
+      { "label": "I'm crew", "value": "crew", "next": "persona_selection" },
+      { "label": "I'm a supplier", "value": "supplier", "next": "persona_selection" },
+      { "label": "I'm an existing member", "value": "existing", "next": "persona_selection" },
+      { "label": "I want to submit a project", "value": "client", "next": "persona_selection" },
+      { "label": "Just exploring", "value": "exploring", "next": "persona_selection" }
+    ]
+  },
+  "persona_selection": {
+    "id": "persona_selection",
+    "type": "question",
+    "options": [
+      { "label": "I'm an existing member", "value": "existing", "next": "existing_start" },
+      { "label": "I'm new - I want to reserve my spot as crew/creative", "value": "crew", "next": "crew_intro" },
+      { "label": "I'm new - I want to apply as a supplier/vendor", "value": "supplier", "next": "supplier_intro" },
+      { "label": "I'm a client/agency - I need crew for my project", "value": "client", "next": "client_start" },
+      { "label": "Just exploring", "value": "exploring", "next": "exploring_start" }
+    ]
+  },
+  "crew_intro": {
+    "id": "crew_intro",
+    "type": "info",
+    "next": "crew_firstname"
+  },
+  "crew_firstname": {
+    "id": "crew_firstname",
+    "type": "form",
+    "fields": ["first_name"],
+    "next": "crew_lastname"
+  },
+  "crew_lastname": {
+    "id": "crew_lastname",
+    "type": "form",
+    "fields": ["last_name"],
+    "next": "crew_role"
+  },
+  "crew_role": {
+    "id": "crew_role",
+    "type": "form",
+    "fields": ["role"],
+    "next": "crew_country"
+  },
+  "crew_country": {
+    "id": "crew_country",
+    "type": "form",
+    "fields": ["country"],
+    "next": "crew_link"
+  },
+  "crew_link": {
+    "id": "crew_link",
+    "type": "form",
+    "fields": ["website"],
+    "next": "crew_summary"
+  },
+  "crew_summary": {
+    "id": "crew_summary",
+    "type": "summary",
+    "action": "submit",
+    "next": "crew_success"
+  },
+  "crew_success": {
+    "id": "crew_success",
+    "type": "success",
+    "options": [
+      { "label": "Ask something else", "next": "landing" },
+      { "label": "Submit a project", "next": "client_start" },
+      { "label": "Done for now", "next": "landing" },
+      { "label": "Share HeyProData", "next": "share_universal" }
+    ]
+  },
+  "supplier_intro": {
+    "id": "supplier_intro",
+    "type": "info",
+    "next": "supplier_company_name"
+  },
+  "supplier_company_name": {
+    "id": "supplier_company_name",
+    "type": "form",
+    "fields": ["company_name"],
+    "next": "supplier_service"
+  },
+  "supplier_service": {
+    "id": "supplier_service",
+    "type": "form",
+    "fields": ["primary_service"],
+    "next": "supplier_link"
+  },
+  "supplier_link": {
+    "id": "supplier_link",
+    "type": "form",
+    "fields": ["company_link"],
+    "next": "supplier_trade_license"
+  },
+  "supplier_trade_license": {
+    "id": "supplier_trade_license",
+    "type": "upload",
+    "fields": ["trade_license"],
+    "next": "supplier_firstname"
+  },
+  "supplier_firstname": {
+    "id": "supplier_firstname",
+    "type": "form",
+    "fields": ["first_name"],
+    "next": "supplier_lastname"
+  },
+  "supplier_lastname": {
+    "id": "supplier_lastname",
+    "type": "form",
+    "fields": ["last_name"],
+    "next": "supplier_role"
+  },
+  "supplier_role": {
+    "id": "supplier_role",
+    "type": "form",
+    "fields": ["role"],
+    "next": "supplier_phone"
+  },
+  "supplier_phone": {
+    "id": "supplier_phone",
+    "type": "form",
+    "fields": ["phone"],
+    "next": "supplier_summary"
+  },
+  "supplier_summary": {
+    "id": "supplier_summary",
+    "type": "summary",
+    "action": "submit",
+    "next": "supplier_success"
+  },
+  "supplier_success": {
+    "id": "supplier_success",
+    "type": "success",
+    "options": [
+       { "label": "Share HeyProData", "next": "share_universal" },
+       { "label": "Done", "next": "landing" }
+    ]
+  },
+  "client_start": {
+    "id": "client_start",
+    "type": "info",
+    "next": "client_details"
+  },
+  "client_details": {
+    "id": "client_details",
+    "type": "form",
+    "fields": ["project_details"],
+    "next": "client_contact"
+  },
+  "client_contact": {
+    "id": "client_contact",
+    "type": "form",
+    "fields": ["contact_name", "company_name", "email", "phone"],
+    "next": "client_summary"
+  },
+  "client_summary": {
+    "id": "client_summary",
+    "type": "summary",
+    "action": "submit",
+    "next": "client_success"
+  },
+  "client_success": {
+    "id": "client_success",
+    "type": "success",
+    "next": "landing"
+  },
+  "existing_start": {
+    "id": "existing_start",
+    "type": "question",
+    "options": [
+      { "label": "Access activation link", "next": "existing_email_check" },
+      { "label": "Sign in to profile", "next": "existing_signin" },
+      { "label": "Check placement", "next": "existing_email_check" }
+    ]
+  },
+  "existing_email_check": {
+    "id": "existing_email_check",
+    "type": "form",
+    "fields": ["email"],
+    "action": "check_email",
+    "next": "existing_result"
+  },
+  "existing_signin": {
+    "id": "existing_signin",
+    "type": "info",
+    "next": "REDIRECT_LOGIN"
+  },
+  "exploring_start": {
+    "id": "exploring_start",
+    "type": "question",
+    "options": [
+      { "label": "How joining works", "next": "exploring_how" },
+      { "label": "Submit a project", "next": "client_start" },
+      { "label": "See what this is building toward", "next": "exploring_vision" },
+      { "label": "Share HeyProData", "next": "share_universal" }
+    ]
+  },
+  "exploring_how": {
+    "id": "exploring_how",
+    "type": "info",
+    "next": "exploring_start"
+  },
+  "exploring_vision": {
+    "id": "exploring_vision",
+    "type": "question",
+    "options": [
+      { "label": "Want to join now", "next": "persona_selection" },
+      { "label": "Just look around", "next": "landing" }
+    ]
+  },
+  "share_universal": {
+    "id": "share_universal",
+    "type": "share",
+    "next": "landing"
+  }
+}
