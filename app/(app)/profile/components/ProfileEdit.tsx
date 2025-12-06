@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner"
 import apiCalling from "@/lib/apiCalling"
 import type { ProfileData } from "@/contexts/ProfileContext"
+import LocationAutocomplete from "@/components/LocationAutocomplete"
 
 interface EditProfileInfoProps {
     profile: ProfileData | null;
