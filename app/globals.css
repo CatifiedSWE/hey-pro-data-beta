@@ -102,6 +102,20 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* HeyProData Tokens */
+  --hp-primary: #ff5168;
+  --hp-accent: #25c9d0;
+  --hp-base: #000000;
+  --hp-bg: #ffffff;
+  --hp-shadow: 0 16px 40px rgba(0,0,0,0.08);
+  
+  --card-radius: 24px;
+  --btn-radius: 16px;
+  
+  --duration-fast: 180ms;
+  --duration-medium: 360ms;
+  --duration-slow: 560ms;
 }
 
 .dark {
