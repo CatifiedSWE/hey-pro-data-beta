@@ -199,7 +199,7 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
     const visaDetails = [visa?.nationality, visa?.visa_type, visa?.visa_issued_by].filter(Boolean).join(" • ");
 
     return (
-        <section className="relative w-full border-b  border-[#DADADA] pb-6 ">
+        <section className="relative w-full pb-6 ">
             <div
                 className="relative h-[228px]"
                 onMouseEnter={() => setCoverImageHovered(true)}
