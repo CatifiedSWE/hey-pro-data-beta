@@ -39,19 +39,6 @@ export default function SkillFormCard({
     
     return (
         <div className="space-y-5 rounded-[15px] border  bg-[#4444]/10 p-6 shadow-sm">
-            {showRemoveButton && (
-                <div className="flex items-start justify-end gap-3">
-                    <Button
-                        onClick={onRemove}
-                        variant="ghost"
-                        size="icon"
-                        className="h-10 w-10 rounded-full text-[#FA6E80] hover:bg-[#FFE4E8]"
-                    >
-                        <X className="h-5 w-5" />
-                    </Button>
-                </div>
-            )}
-
             <div className="space-y-4">
                 <select
                     value={skill.department}
