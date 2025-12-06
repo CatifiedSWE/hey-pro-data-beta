@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
         // Trigger magic link logic here if needed
     }
 
-    return NextResponse.json({ found: exists });
+    return NextResponse.json({ exists });
 
   } catch (err) {
     return NextResponse.json({ error: 'Check failed' }, { status: 500 });
