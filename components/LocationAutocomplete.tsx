@@ -25,7 +25,8 @@ export default function LocationAutocomplete({
   placeholder,
   type,
   className = '',
-  disabled = false
+  disabled = false,
+  selectedCountry = ''
 }: LocationAutocompleteProps) {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
