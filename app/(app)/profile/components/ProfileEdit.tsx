@@ -33,29 +33,29 @@ export default function ProfileEditor({ trigger }: EditProfileInfoProps) {
                 </DialogHeader>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-                    <div className="px-6 pt-4 pb-2 shrink-0 w-full">
-                        <TabsList className="flex w-full justify-center space-x-3 bg-transparent p-0 h-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="px-6 pt-4 pb-2 shrink-0 w-full flex justify-center">
+                        <TabsList className="inline-flex flex-wrap justify-center gap-3 bg-transparent p-0 h-auto max-w-full">
                             <TabsTrigger 
                                 value="info" 
-                                className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+                                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all whitespace-nowrap"
                             >
                                 Profile Info
                             </TabsTrigger>
                             <TabsTrigger 
                                 value="role" 
-                                className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+                                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all whitespace-nowrap"
                             >
                                 Role
                             </TabsTrigger>
                             <TabsTrigger 
                                 value="work" 
-                                className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+                                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all whitespace-nowrap"
                             >
                                 Work Status
                             </TabsTrigger>
                             <TabsTrigger 
                                 value="visa" 
-                                className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+                                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:border-[#FA6E80] data-[state=active]:bg-[#FA6E80] data-[state=active]:text-white data-[state=active]:shadow-sm transition-all whitespace-nowrap"
                             >
                                 Visa
                             </TabsTrigger>
