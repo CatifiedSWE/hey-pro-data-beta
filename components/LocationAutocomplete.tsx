@@ -89,10 +89,21 @@ export default function LocationAutocomplete({
   // Search cities (instant, client-side from static data)
   const searchCities = (query: string) => {
     const lowerQuery = query.toLowerCase();
-    const filtered = cities.filter(city =>
+    let filtered = cities;
+    
+    // Filter by selected country first if provided
+    if (selectedCountry) {
+      filtered = filtered.filter(city =>
+        city.country.toLowerCase() === selectedCountry.toLowerCase()
+      );
+    }
+    
+    // Then filter by search query
+    filtered = filtered.filter(city =>
       city.name.toLowerCase().includes(lowerQuery) ||
       city.country.toLowerCase().includes(lowerQuery)
     ).slice(0, 10);
+    
     setSuggestions(filtered);
     setShowDropdown(filtered.length > 0);
   };
