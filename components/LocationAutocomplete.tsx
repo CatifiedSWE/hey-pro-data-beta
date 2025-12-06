@@ -188,6 +188,7 @@ export default function LocationAutocomplete({
   return (
     <div ref={wrapperRef} className="relative w-full">
       <input
+        ref={inputRef}
         type="text"
         value={value}
         onChange={handleInputChange}
@@ -201,9 +202,16 @@ export default function LocationAutocomplete({
         autoComplete="off"
       />
 
-      {/* Dropdown */}
+      {/* Dropdown - Using fixed positioning to escape overflow containers */}
       {showDropdown && suggestions.length > 0 && !disabled && (
-        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+        <div 
+          className="fixed z-[9999] bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto"
+          style={{
+            top: `${dropdownPosition.top + 8}px`,
+            left: `${dropdownPosition.left}px`,
+            width: `${dropdownPosition.width}px`
+          }}
+        >
           {suggestions.map((suggestion, index) => (
             <div
               key={typeof suggestion === 'string' ? suggestion : `${suggestion.name}-${index}`}
