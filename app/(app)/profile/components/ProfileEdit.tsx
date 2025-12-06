@@ -129,17 +129,6 @@ export default function ProfileEditor({ profile, trigger }: EditProfileInfoProps
                             />
                         </div>
 
-                        {/* Bio */}
-                        <div className="space-y-2">
-                            <label className="text-base font-normal">Bio</label>
-                            <Textarea
-                                value={bio}
-                                onChange={(e) => setBio(e.target.value)}
-                                className="min-h-[100px] rounded-2xl border-gray-400 text-base resize-none"
-                                placeholder="Tell us about yourself..."
-                            />
-                        </div>
-
                         {/* Country */}
                         <div className="space-y-2">
                             <label className="text-base font-normal">Country</label>
@@ -168,6 +157,17 @@ export default function ProfileEditor({ profile, trigger }: EditProfileInfoProps
                                 type="city"
                                 selectedCountry={country}
                                 className="h-12 rounded-2xl border-gray-400 text-base"
+                            />
+                        </div>
+
+                        {/* Bio */}
+                        <div className="space-y-2">
+                            <label className="text-base font-normal">Bio</label>
+                            <Textarea
+                                value={bio}
+                                onChange={(e) => setBio(e.target.value)}
+                                className="min-h-[100px] rounded-2xl border-gray-400 text-base resize-none"
+                                placeholder="Tell us about yourself..."
                             />
                         </div>
                     </div>
