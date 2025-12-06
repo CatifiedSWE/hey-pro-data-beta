@@ -132,6 +132,18 @@ export default function SkillFormCard({
                     </div>
                 </button>
             </div>
+
+            {showRemoveButton && (
+                <div className="flex justify-center pt-2">
+                    <Button
+                        onClick={onRemove}
+                        variant="outline"
+                        className="w-full sm:w-auto px-6 py-2 h-10 rounded-[10px] border-2 border-[#FA6E80] text-[#FA6E80] hover:bg-[#FFF3F5] text-sm font-medium"
+                    >
+                        Clear Skill
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }
