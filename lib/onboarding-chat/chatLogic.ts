@@ -1,4 +1,4 @@
-import { ChatState, Message, Option, Persona, FormData } from '../types';
+import { ChatState, Message, Option, Persona, FormData } from './types';
 import { submitData, checkEmail } from './mockBackend';
 
 // Helper to generate unique IDs
