@@ -308,7 +308,8 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
                 </div>
             </div>
 
-            <div className="absolute right-4 top-[98px]  sm:top-[200px] flex items-center gap-3">
+            {/* Mobile-only Edit Button (previously desktop too, now sm:hidden) */}
+            <div className="absolute right-4 top-[98px] sm:hidden flex items-center gap-3">
                 <ProfileEditor
                     profile={profile}
                     trigger={
@@ -321,7 +322,9 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
                     }
                 />
             </div>
-            <div className="absolute inset-x-0 top-[160px] max-w-[367.8px] left-[200px] hidden justify-center font-[400] text-[11px] sm:flex ">
+
+            {/* Desktop Info Container (Location, Availability, Edit Button) */}
+            <div className="absolute inset-x-0 top-[160px] max-w-[367.8px] left-[200px] hidden justify-center font-[400] text-[11px] sm:flex gap-3">
                 <div className="flex items-center gap-2  px-4 py-2 text-[#393939] ">
                     <MapPin className="h-3.5 w-3.5 text-[#393939]" />
                     <span className="whitespace-nowrap">{locationDescriptor}</span>
@@ -334,13 +337,30 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
                         onUpdate={handleAvailabilityUpdate}
                     />
                 </div>
-                <CalendarDialog
-                    triggerClassName="flex h-[40px] items-center gap-2 rounded-full border-none bg-[#31A7AC] px-4 py-0 text-[11px] font-[400] text-white  hover:bg-[#27939f]"
-                    triggerLabel={
-                        <>
-                            <CalendarIcon className="h-4 w-4" />
-                            View Calendar
-                        </>
+                
+                {/* Hidden Calendar Dialog */}
+                <div className="hidden">
+                    <CalendarDialog
+                        triggerClassName="flex h-[40px] items-center gap-2 rounded-full border-none bg-[#31A7AC] px-4 py-0 text-[11px] font-[400] text-white  hover:bg-[#27939f]"
+                        triggerLabel={
+                            <>
+                                <CalendarIcon className="h-4 w-4" />
+                                View Calendar
+                            </>
+                        }
+                    />
+                </div>
+
+                {/* Desktop Edit Button (Moved from top-right) */}
+                <ProfileEditor
+                    profile={profile}
+                    trigger={
+                        <Button
+                            className="h-[28px] w-[28px] rounded-full bg-[#31A7AC] text-white shadow-[0_4px_16px_rgba(49,167,172,0.35)] hover:bg-[#27939f] self-center"
+                            aria-label="Edit profile"
+                        >
+                            <Edit2 className="h-4 w-4" />
+                        </Button>
                     }
                 />
             </div>
