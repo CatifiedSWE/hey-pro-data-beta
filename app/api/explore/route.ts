@@ -153,8 +153,13 @@ export async function GET(request: NextRequest) {
     // Filter out null profiles (those that didn't match role filter)
     const filteredProfiles = enrichedProfiles.filter(p => p !== null);
 
-    const totalProfiles = filteredProfiles.length;
+    // Use the database count for accurate pagination
+    const totalProfiles = count || 0;
     const totalPages = Math.ceil(totalProfiles / limit);
+    
+    // Determine if there are more pages based on whether we got a full page of results
+    // If we got fewer results than the limit, we're on the last page
+    const hasNextPage = filteredProfiles.length >= limit;
 
     return NextResponse.json(
       successResponse(
@@ -165,7 +170,7 @@ export async function GET(request: NextRequest) {
             totalPages,
             totalProfiles,
             limit,
-            hasNextPage: page < totalPages,
+            hasNextPage,
             hasPrevPage: page > 1
           }
         },

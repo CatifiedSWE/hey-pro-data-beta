@@ -37,8 +37,6 @@ export default function ExplorePage({ searchParams }: ExplorePageProps) {
 
   // Fetch profiles from API
   const fetchProfiles = useCallback(async (pageNum: number, append: boolean = true) => {
-    if (loading) return;
-    
     try {
       setLoading(true);
       const queryString = buildQueryParams(pageNum);
@@ -73,15 +71,16 @@ export default function ExplorePage({ searchParams }: ExplorePageProps) {
       setLoading(false);
       setInitialLoading(false);
     }
-  }, [loading, buildQueryParams]);
+  }, [buildQueryParams]);
 
   // Load initial data
   useEffect(() => {
     setProfiles([]);
     setPage(1);
     setHasMore(true);
+    setInitialLoading(true);
     fetchProfiles(1, false);
-  }, [searchParams]);
+  }, [searchParams, fetchProfiles]);
 
   // Setup Intersection Observer for infinite scroll
   useEffect(() => {
