@@ -217,7 +217,7 @@ export function HighlightsSelector({
                                             </div>
                                             <h3 className="text-lg font-semibold text-gray-900">Ready to shine?</h3>
                                             <p className="text-sm text-gray-500 mt-2 max-w-xs">
-                                                Add credits to your profile first to feature them as highlights.
+                                                Add credits to your profile first to feature them as heylights.
                                             </p>
                                         </div>
                                     ) : (

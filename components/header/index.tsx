@@ -155,7 +155,7 @@ export default function Header() {
                         asChild
                         className={navigationMenuTriggerStyle()}
                     >
-                        <Link href="/crew">Crew Directory</Link>
+                        <Link href="/crew">Crew</Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
