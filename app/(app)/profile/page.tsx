@@ -28,8 +28,6 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import AboutSectionComponent from "./components/About";
-import VisaSection from "./components/visa";
-import WorkStatusSection from "./components/WorkStatus";
 import AddLanguageSection from "./components/Language";
 import WhatupNumbers from "./components/WhatAppNumber";
 import AvalableCountryForTravel from "./components/AvalableCountryForTravel";
@@ -41,7 +39,6 @@ import CreditsSection from "./components/CreditView";
 import ResumePortfolio from "./components/ResumePortfolio";
 import SlateView from "./components/slate";
 import AddNewSkill from "./components/add-new-skill";
-import { RoleDialog } from "./components/role";
 import { useProfile, ProfileData } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
 import ProfileSkeleton from "./components/ProfileSkeleton";
@@ -242,15 +239,9 @@ export default function Profile() {
                   <div className="flex-none ">
                     <AboutSectionComponent title="About" about={profile?.bio || ''} onUpdate={refetch} />
                   </div>
-                  <div className="flex-none ">
-                    <VisaSection onUpdate={refetch} />
-                  </div>
-                  <div className="flex-none ">
-                    <WorkStatusSection 
-                      statusProp={(profile as ExtendedProfileData)?.persionalDetails?.availability}
-                      initialIdentities={profile?.work_identities}
-                    />
-                  </div>
+                  
+                  {/* Removed VisaSection, WorkStatusSection, RoleDialog from here as they are moved to ProfileEdit */}
+
                   <div className="flex-none ">
                     <AddLanguageSection languages={(profile as ExtendedProfileData)?.language || []} />
                   </div>
@@ -261,10 +252,7 @@ export default function Profile() {
                       email={profile?.email}
                     />
                   </div>
-
-                  <div className="flex-none">
-                    <RoleDialog roles={roles} onAddRole={addRole} onDeleteRole={deleteRole} />
-                  </div>
+                  
                   <div className="flex-none ">
                     <AvalableCountryForTravel availableCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} />
                   </div>
