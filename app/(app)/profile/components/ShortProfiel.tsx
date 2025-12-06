@@ -196,7 +196,7 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
     const statusTextColor = isAvailable ? "text-[#34A353]" : "text-[#FA6E80]";
 
     // Construct Visa string
-    const visaDetails = [visa?.nationality, visa?.visa_type].filter(Boolean).join(" • ");
+    const visaDetails = [visa?.nationality, visa?.visa_type, visa?.visa_issued_by].filter(Boolean).join(" • ");
 
     return (
         <section className="relative w-full border-b  border-[#DADADA] pb-6 ">
