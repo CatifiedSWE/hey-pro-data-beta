@@ -143,22 +143,31 @@ export default function ProfileEditor({ profile, trigger }: EditProfileInfoProps
                         {/* Country */}
                         <div className="space-y-2">
                             <label className="text-base font-normal">Country</label>
-                            <Input
+                            <LocationAutocomplete
                                 value={country}
-                                onChange={(e) => setCountry(e.target.value)}
-                                className="h-12 rounded-2xl border-gray-400 text-base"
+                                onChange={(value) => {
+                                    setCountry(value);
+                                    // Clear city when country changes
+                                    if (country !== value) {
+                                        setCity('');
+                                    }
+                                }}
                                 placeholder="Enter your country"
+                                type="country"
+                                className="h-12 rounded-2xl border-gray-400 text-base"
                             />
                         </div>
 
                         {/* City */}
                         <div className="space-y-2">
                             <label className="text-base font-normal">City</label>
-                            <Input
+                            <LocationAutocomplete
                                 value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                                className="h-12 rounded-2xl border-gray-400 text-base"
+                                onChange={setCity}
                                 placeholder="Enter your city"
+                                type="city"
+                                selectedCountry={country}
+                                className="h-12 rounded-2xl border-gray-400 text-base"
                             />
                         </div>
                     </div>
