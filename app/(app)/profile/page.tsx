@@ -359,7 +359,7 @@ function SkillItem({
   return (
     <div className="space-y-2 group relative">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-base font-[400] text-[#000] sm:text-lg flex-1">{department} • {role}</h3>
+        <h3 className="text-base font-[400] text-[#000] sm:text-lg flex-1">{role}</h3>
         {onEdit && (
           <Button
             onClick={onEdit}
