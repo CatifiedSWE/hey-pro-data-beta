@@ -268,9 +268,9 @@ function ReadOnlyShortProfile({ profile }: { profile: UserProfileData }) {
 
       {/* Location & Status - Desktop */}
       <div className="absolute inset-x-0 top-[160px] max-w-[450px] left-[200px] hidden justify-start font-[400] text-[11px] sm:flex">
-        <div className="flex items-center gap-2 px-4 py-2 text-[#393939] min-w-0">
-          <MapPin className="h-3.5 w-3.5 text-[#393939] flex-shrink-0" />
-          <span className="truncate max-w-[200px]">{locationDescriptor}</span>
+        <div className="flex items-start gap-2 px-4 py-2 text-[#393939] max-w-[220px]">
+          <MapPin className="h-3.5 w-3.5 text-[#393939] flex-shrink-0 mt-0.5" />
+          <span className="break-words leading-relaxed">{locationDescriptor}</span>
         </div>
         <div className={`flex items-center gap-2 bg-white px-4 py-2 ${statusTextColor} flex-shrink-0`}>
           <span className={`h-2.5 w-2.5 rounded-full ${dotColor}`} />
