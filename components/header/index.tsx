@@ -120,12 +120,12 @@ export default function Header() {
                 <img 
                   src="/logo/web-app-manifest-461x161.png" 
                   alt="HeyProData" 
-                  className="h-[30px] w-auto object-contain"
+                  className="h-[50px] w-auto object-contain"
                 />
               </Link>
 
               {/* Search Bar - Collapsible */}
-              <div className="hidden md:flex items-center shrink-0 ml-2">
+              {/* <div className="hidden md:flex items-center shrink-0 ml-2">
                 <div className={`relative flex items-center transition-all duration-300 ease-in-out ${searchOpen ? 'w-[160px]' : 'w-[40px]'}`}>
                   <div
                     className={`absolute right-0 top-1/2 -translate-y-1/2 h-[34px] w-[34px] bg-[#FA6E80] hover:bg-[#f95569] text-white rounded-full flex items-center justify-center cursor-pointer z-20 ${searchOpen ? 'right-2' : 'right-1'}`}
@@ -143,7 +143,7 @@ export default function Header() {
                     `}
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Desktop Navigation */}
@@ -158,7 +158,7 @@ export default function Header() {
                         <Link href="/crew">Crew</Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
-                  <NavigationMenuItem>
+                  {/* <NavigationMenuItem>
                     <div className="flex">
                       {navigationMenuItems.map((item) => (
                         <NavigationMenuLink
@@ -171,13 +171,13 @@ export default function Header() {
                       ))}
                     </div>
 
-                  </NavigationMenuItem>
+                  </NavigationMenuItem> */}
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       asChild
                       className="bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] text-white hover:text-white px-4 py-2 rounded-full"
                     >
-                      <Link href="/slate">Slate</Link>
+                      {/* <Link href="/slate">Slate</Link> */}
                     </NavigationMenuLink>
                   </NavigationMenuItem>
 
@@ -391,7 +391,7 @@ export default function Header() {
             <Compass className="h-6 w-6" />
           </Link>
 
-          <Link
+          {/* <Link
             href="/gigs"
             className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
             onClick={() => {
@@ -434,7 +434,7 @@ export default function Header() {
             }}
           >
             <SatelliteDishIcon className="h-6 w-6" />
-          </Link>
+          </Link> */}
         </div>
       </div>
     </>

@@ -392,12 +392,42 @@ export default function SavedPage() {
             </div>
 
             <Tabs defaultValue="profiles" className="w-full">
-                <TabsList className="grid w-full grid-cols-1 mb-8 bg-white p-1 border rounded-xl shadow-sm h-12" data-testid="saved-tabs">
-                    {/* <TabsTrigger value="slates" className="data-[state=active]:bg-[#FA6E80]/10 data-[state=active]:text-[#FA6E80] rounded-lg transition-all" data-testid="slates-tab">Slates</TabsTrigger> */}
-                    {/* <TabsTrigger value="collabs" className="data-[state=active]:bg-[#6A89BE]/10 data-[state=active]:text-[#6A89BE] rounded-lg transition-all" data-testid="collabs-tab">Collabs</TabsTrigger> */}
-                    {/* <TabsTrigger value="whats-on" className="data-[state=active]:bg-[#31A7AC]/10 data-[state=active]:text-[#31A7AC] rounded-lg transition-all" data-testid="whats-on-tab">What's On</TabsTrigger> */}
-                    <TabsTrigger value="profiles" className="data-[state=active]:bg-purple-500/10 data-[state=active]:text-purple-600 rounded-lg transition-all" data-testid="profiles-tab">Profiles</TabsTrigger>
-                </TabsList>
+                  <TabsList
+    className="
+      grid 
+      w-full 
+      grid-cols-1
+      sm:grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-4
+      mb-8 
+      bg-white 
+      p-1 
+      border 
+      rounded-xl 
+      shadow-sm 
+      h-12
+    "
+    data-testid="saved-tabs"
+  >
+    {/* Example triggers – add back as needed */}
+    {/* 
+    <TabsTrigger 
+      value="slates"
+      className="data-[state=active]:bg-[#FA6E80]/10 data-[state=active]:text-[#FA6E80] rounded-lg transition-all"
+    >
+      Slates
+    </TabsTrigger>
+    */}
+
+    <TabsTrigger
+      value="profiles"
+      className="data-[state=active]:bg-purple-500/10 data-[state=active]:text-purple-600 rounded-lg transition-all"
+      data-testid="profiles-tab"
+    >
+      Profiles
+    </TabsTrigger>
+  </TabsList>
 
                 {/* Slates Tab */}
                 {/* <TabsContent value="slates" data-testid="slates-content" className="mt-0">
