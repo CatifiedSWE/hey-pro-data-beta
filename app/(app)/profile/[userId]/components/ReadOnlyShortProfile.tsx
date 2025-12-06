@@ -125,13 +125,13 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
         </div>
       </div>
 
-      <div className="absolute top-[160px] right-1 sm:right-4 hidden sm:flex items-center justify-end font-[400] text-[11px] gap-4 max-w-[calc(100%-200px)]">
-        <div className="flex items-center gap-0 flex-shrink-0">
-          <div className="flex items-center gap-2 px-4 py-2 text-[#393939]">
-            <MapPin className="h-3.5 w-3.5 text-[#393939]" />
-            <span className="whitespace-nowrap">{locationDescriptor}</span>
+      <div className="absolute top-[160px] right-1 sm:right-4 hidden sm:flex items-center justify-end font-[400] text-[11px] gap-4 max-w-[calc(100%-250px)]">
+        <div className="flex items-center gap-0 min-w-0 flex-1">
+          <div className="flex items-center gap-2 px-4 py-2 text-[#393939] min-w-0">
+            <MapPin className="h-3.5 w-3.5 text-[#393939] flex-shrink-0" />
+            <span className="truncate max-w-[200px]">{locationDescriptor}</span>
           </div>
-          <div className={`flex items-center gap-2 bg-white px-4 py-2 ${statusTextColor}`}>
+          <div className={`flex items-center gap-2 bg-white px-4 py-2 ${statusTextColor} flex-shrink-0`}>
             <span className={`h-2.5 w-2.5 rounded-full ${dotColor}`} />
             <span className="whitespace-nowrap">{statusText}</span>
           </div>
