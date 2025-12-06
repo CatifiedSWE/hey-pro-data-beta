@@ -119,6 +119,7 @@ export default function OnboardingPage() {
                     onSubmit={handleSubmit}
                     isLoading={state.isSubmitting}
                     historyLength={state.history.length}
+                    formData={state.formData}
                 />
             </motion.div>
          </AnimatePresence>

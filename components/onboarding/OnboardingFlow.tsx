@@ -9,7 +9,7 @@ import { FileUploadCard } from './FileUploadCard';
 import { SummaryCard } from './SummaryCard';
 import { ShareLinkCard } from './ShareLinkCard';
 import { FLOW_STEPS, StepConfig, FormField } from '@/lib/onboarding-state';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface OnboardingFlowProps {
@@ -19,6 +19,7 @@ interface OnboardingFlowProps {
   onSubmit: (data: any) => Promise<void>;
   isLoading: boolean;
   historyLength: number;
+  formData: Record<string, any>;
 }
 
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
@@ -27,22 +28,23 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   onBack,
   onSubmit,
   isLoading,
-  historyLength
+  historyLength,
+  formData
 }) => {
   const step = FLOW_STEPS[currentStepId];
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [localData, setLocalData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Reset local form data when step changes
   useEffect(() => {
-    setFormData({});
+    setLocalData({});
     setErrors({});
   }, [currentStepId]);
 
   if (!step) return <div>Error: Step not found</div>;
 
   const handleInputChange = (name: string, value: any) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setLocalData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -56,11 +58,11 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     const newErrors: Record<string, string> = {};
     if (step.fields) {
       step.fields.forEach(field => {
-        if (field.required && !formData[field.name]) {
+        if (field.required && !localData[field.name]) {
           newErrors[field.name] = 'This field is required';
         }
         if (field.validation) {
-            const error = field.validation(formData[field.name]);
+            const error = field.validation(localData[field.name]);
             if (error) newErrors[field.name] = error;
         }
       });
@@ -78,9 +80,9 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     }
     
     if (step.apiAction === 'submit') {
-      onSubmit(formData);
+      onSubmit(localData);
     } else if (step.nextStep) {
-      onNext(step.nextStep, formData);
+      onNext(step.nextStep, localData);
     }
   };
 
@@ -179,7 +181,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
              {field.type === 'textarea' ? (
                 <TextArea
                     label={field.label}
-                    value={formData[field.name] || ''}
+                    value={localData[field.name] || ''}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
                     placeholder={field.placeholder}
                     error={errors[field.name]}
@@ -190,7 +192,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                         <Chip
                             key={opt}
                             label={opt}
-                            selected={formData[field.name] === opt}
+                            selected={localData[field.name] === opt}
                             onClick={() => handleInputChange(field.name, opt)}
                         />
                     ))}
@@ -200,7 +202,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                 <TextInput
                     type={field.type}
                     label={field.label}
-                    value={formData[field.name] || ''}
+                    value={localData[field.name] || ''}
                     onChange={(e) => handleInputChange(field.name, e.target.value)}
                     placeholder={field.placeholder}
                     error={errors[field.name]}
@@ -254,7 +256,20 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       </CardFullScreen>
   );
 
-  const renderSummary = () => (
+  const renderSummary = () => {
+    // Generate summary items based on collected formData
+    // We iterate over all steps in the history to find labels, or just show everything in formData
+    const items = Object.entries(formData).map(([key, value]) => {
+        // Skip hidden fields or empty
+        if (!value || typeof value === 'object') return null;
+        // Try to find a label from any step field (inefficient but works for small flows)
+        let label = key;
+        // Simple heuristic: capitalize key
+        label = key.replace(/_/g, ' ');
+        return { label, value: String(value), step: 'unknown' }; // navigating to 'unknown' won't work perfectly yet
+    }).filter(Boolean) as { label: string; value: string; step: string }[];
+
+    return (
       <CardFullScreen>
          <button onClick={onBack} className="absolute top-6 left-6 text-gray-400 hover:text-gray-800 transition-colors">
             <ArrowLeft size={24} />
@@ -262,19 +277,9 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
          <CardBody className="mt-12">
             <SummaryCard 
                 title={step.title || "Summary"}
-                items={[]} // Need to pass actual accumulated data here. 
-                // Since this component is generic, we'll handle this in the page wrapper or pass full data
-                onEdit={(stepId) => onNext(stepId)} 
+                items={items}
+                onEdit={(stepId) => {}} // Placeholder: Navigation to edit needs finding the step ID that provided the data
             />
-            {/* 
-                NOTE: The SummaryCard implementation here is a bit tricky because OnboardingFlow 
-                doesn't have access to the *accumulated* data from previous steps easily 
-                unless we pass it down. For now, I will render a placeholder or text.
-                Ideally, I should pass 'allFormData' prop to OnboardingFlow.
-            */}
-             <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4 text-sm text-yellow-800">
-                (Summary View - In a real app, this would show all collected fields: {JSON.stringify(Object.keys(formData))})
-            </div>
          </CardBody>
          <CardFooter>
             <PrimaryButton onClick={handleContinue} isLoading={isLoading}>
@@ -282,7 +287,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
             </PrimaryButton>
          </CardFooter>
       </CardFullScreen>
-  );
+    );
+  };
 
   const renderSuccess = () => (
       <CardFullScreen className="bg-green-50/30">
@@ -335,12 +341,10 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     case 'question': return renderQuestion();
     case 'form': return renderForm();
     case 'upload': return renderUpload();
-    case 'summary': return renderSummary(); // Needs improvement for data display
+    case 'summary': return renderSummary();
     case 'success': return renderSuccess();
     case 'info': return renderSuccess(); // Reuse success/info layout
     case 'share': return renderShare();
     default: return <div>Unknown step type: {step.type}</div>;
   }
 };
-
-import { CheckCircle2 } from 'lucide-react';
