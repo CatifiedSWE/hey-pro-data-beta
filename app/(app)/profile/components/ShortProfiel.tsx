@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ProfileProgress } from "./profileProgress"
 import { countries } from "@/lib/countries"
 import { toast } from "sonner"
-import { useProfile, type ProfileData, type LinkData, type RoleData, type RecommendationData } from "@/contexts/ProfileContext"
+import { useProfile, type ProfileData, type LinkData, type RoleData, type RecommendationData, type VisaData } from "@/contexts/ProfileContext"
 import { useAuth } from "@/contexts/AuthContext"
 
 import AvalableDilog from "./Avalable"
@@ -20,12 +20,13 @@ interface ShortProfileProps {
   profile: ProfileData | null;
   links: LinkData[];
   roles?: RoleData[];
+  visa?: VisaData | null;
   recommendations?: RecommendationData[];
   onPhotoUpload: (file: File, type: 'profile' | 'banner') => Promise<{ success: boolean; message?: string; url?: string }>;
   onLinksUpdate?: () => void;
 }
 
-export default function ShortProfile({ profile, links, roles = [], recommendations = [], onPhotoUpload, onLinksUpdate }: ShortProfileProps) {
+export default function ShortProfile({ profile, links, roles = [], visa, recommendations = [], onPhotoUpload, onLinksUpdate }: ShortProfileProps) {
     const [coverImageHovered, setCoverImageHovered] = useState(false)
     const [uploadingBanner, setUploadingBanner] = useState(false)
     const [uploadingProfile, setUploadingProfile] = useState(false)
@@ -194,6 +195,9 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
     const dotColor = isAvailable ? "bg-[#34A353]" : "bg-[#FA6E80]";
     const statusTextColor = isAvailable ? "text-[#34A353]" : "text-[#FA6E80]";
 
+    // Construct Visa string
+    const visaDetails = [visa?.nationality, visa?.visa_type].filter(Boolean).join(" • ");
+
     return (
         <section className="relative w-full border-b  border-[#DADADA] pb-6 ">
             <div
@@ -340,7 +344,7 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
                     }
                 />
             </div>
-            <div className="flex sm:mt-10 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
+            <div className="flex sm:mt-4 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
                 <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-4">
                         <h1 className="text-[22px] font-semibold leading-[33px] text-black">{displayName}</h1>
@@ -370,6 +374,13 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
                         )}
                     </div>
                     
+                    {/* Visa details */}
+                    {visaDetails && (
+                        <div className="text-sm font-medium text-[#181818]">
+                            {visaDetails}
+                        </div>
+                    )}
+
                     {/* Work Identities Display - adapted to match design's text style if possible, or use pills */}
                     {profile?.work_identities && (
                          <div className="text-sm text-[#181818]">

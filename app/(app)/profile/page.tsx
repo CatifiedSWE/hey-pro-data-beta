@@ -82,7 +82,7 @@ export default function Profile() {
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false)
   
   // Use the profile hook for real data
-  const { profile, links, recommendations, roles, skills, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills } = useProfile();
+  const { profile, links, recommendations, roles, skills, visa, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills } = useProfile();
 
   // Drag and drop sensors - MUST be called before any conditional returns
   const sensors = useSensors(
@@ -199,6 +199,7 @@ export default function Profile() {
             profile={profile} 
             links={links} 
             roles={roles} 
+            visa={visa}
             recommendations={recommendations}
             onPhotoUpload={handlePhotoUpload} 
             onLinksUpdate={fetchLinks} 
@@ -240,7 +241,7 @@ export default function Profile() {
                     <AboutSectionComponent title="About" about={profile?.bio || ''} onUpdate={refetch} />
                   </div>
                   <div className="flex-none ">
-                    <VisaSection visaType={''} visaIssueBy={''} visaExpData={''} />
+                    <VisaSection onUpdate={refetch} />
                   </div>
                   <div className="flex-none ">
                     <WorkStatusSection 
