@@ -33,8 +33,8 @@ export default function ProfileEditor({ trigger }: EditProfileInfoProps) {
                 </DialogHeader>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-                    <div className="px-6 pt-4 shrink-0">
-                        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent space-x-6">
+                    <div className="px-6 pt-4 shrink-0 overflow-x-auto scrollbar-hide">
+                        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent space-x-6 min-w-max">
                             <TabsTrigger 
                                 value="info" 
                                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#FA6E80] data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-none px-2 py-2"
