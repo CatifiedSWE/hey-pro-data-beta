@@ -136,7 +136,7 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
                     .map(country => {
                         const apiCountry = apiTravelCountries?.find(tc => 
                             tc.country_name.toLowerCase() === country.name.toLowerCase() ||
-                            tc.country_name === country.code
+                            tc.country_code === country.code
                         );
                         return apiCountry?.id;
                     })
