@@ -22,6 +22,17 @@ export async function sendWaitlistAcknowledgement(
     const supabase = createServerClient();
     const { email, name, userType } = data;
 
+    // Check if user already exists in auth
+    const { data: existingUsers } = await supabase.auth.admin.listUsers();
+    const userExists = existingUsers?.users?.some(u => u.email === email);
+
+    if (userExists) {
+      console.log(`[Acknowledgement Email] User ${email} already exists, skipping invite email`);
+      // For existing users, we could use a different email method or skip
+      // For now, we'll log it as successful but not send duplicate invite
+      return { success: true };
+    }
+
     // Create a simple email subject and body
     const subject = 'Thank you for joining the waitlist!';
     const emailBody = `
@@ -53,8 +64,6 @@ export async function sendWaitlistAcknowledgement(
     // This leverages Supabase's built-in email infrastructure
     const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
       data: {
-        email_subject: subject,
-        email_body: emailBody,
         type: 'waitlist_acknowledgement',
         user_type: userType,
         name: name
@@ -64,6 +73,7 @@ export async function sendWaitlistAcknowledgement(
 
     if (error) {
       console.error('[Acknowledgement Email] Error:', error.message);
+      // Don't fail the submission, just log the error
       return { success: false, error: error.message };
     }
 
@@ -73,6 +83,7 @@ export async function sendWaitlistAcknowledgement(
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Acknowledgement Email] Exception:', errorMessage);
+    // Don't fail the submission, just log the error
     return { success: false, error: errorMessage };
   }
 }
