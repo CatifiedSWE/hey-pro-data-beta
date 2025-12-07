@@ -38,7 +38,7 @@ export interface Message {
   isIntro?: boolean;
 }
 
-export interface FormData {
+export interface OnboardingFormData {
   firstName?: string;
   surname?: string;
   role?: string;
@@ -49,9 +49,13 @@ export interface FormData {
   primaryService?: string;
   companyLink?: string;
   tradeLicense?: File | null;
+  tradeLicenseUrl?: string;
   phone?: string;
   projectDetails?: string;
   projectCompanyName?: string;
+  contact_name?: string;
+  action?: string;
+  website?: string;
 }
 
 export interface ChatState {
@@ -59,5 +63,5 @@ export interface ChatState {
   isTyping: boolean;
   currentFlow: Persona;
   step: number;
-  formData: FormData;
+  formData: OnboardingFormData;
 }

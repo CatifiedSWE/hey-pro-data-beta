@@ -1,8 +1,8 @@
-import { FormData, Persona } from './types';
+import { OnboardingFormData, Persona } from './types';
 import { OnboardingStorage } from '../onboarding-storage';
 import { submitToN8n } from '../n8n-webhooks';
 
-export const submitData = async (userType: Persona, formData: FormData): Promise<{
+export const submitData = async (userType: Persona, formData: OnboardingFormData): Promise<{
   success: boolean;
   isAuthenticated: boolean;
   onboardingComplete: boolean;
@@ -17,12 +17,13 @@ export const submitData = async (userType: Persona, formData: FormData): Promise
     console.log('[Submit] Submitting data for:', userType, completeData);
 
     // Map Persona to category for webhooks
-    const categoryMap: Record<Persona, 'crew' | 'vendor' | 'agency'> = {
+    const categoryMap: Partial<Record<Persona, 'crew' | 'vendor' | 'agency'>> = {
       'CREW': 'crew',
       'SUPPLIER': 'vendor',
       'CLIENT': 'agency',
       'EXISTING': 'crew', // fallback
-      'EXPLORING': 'crew' // fallback
+      'EXPLORING': 'crew', // fallback
+      'NONE': 'crew' // fallback
     };
     
     const category = categoryMap[userType] || 'crew';

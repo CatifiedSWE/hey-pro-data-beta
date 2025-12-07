@@ -1,4 +1,4 @@
-import { ChatState, Message, Option, Persona, FormData } from './types';
+import { ChatState, Message, Option, Persona, OnboardingFormData } from './types';
 import { submitData, checkEmail } from './mockBackend';
 import { OnboardingStorage } from '../onboarding-storage';
 
