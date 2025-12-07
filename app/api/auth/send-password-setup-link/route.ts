@@ -13,11 +13,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
+    // Normalize email to lowercase and trim whitespace
+    const normalizedEmail = email.toLowerCase().trim();
+
     const supabase = createServerClient();
 
     // Use Supabase's resetPasswordForEmail to send magic link
     // This will redirect to /set-password page
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
       redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/set-password`
     });
 
@@ -29,7 +32,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(`[Send Password Setup] Link sent to ${email}`);
+    console.log(`[Send Password Setup] Link sent to ${normalizedEmail}`);
 
     return NextResponse.json({
       success: true,

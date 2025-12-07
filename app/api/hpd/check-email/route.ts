@@ -9,6 +9,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
+    // Normalize email to lowercase and trim whitespace
+    const normalizedEmail = email.toLowerCase().trim();
+
     const supabase = createServerClient();
     
     // Check if email exists in auth.users (using service role key if available)
@@ -18,14 +21,14 @@ export async function POST(req: NextRequest) {
     const { data: submissionData } = await supabase
       .from('onboarding_submissions')
       .select('id')
-      .eq('submitted_fields->>email', email)
+      .eq('submitted_fields->>email', normalizedEmail)
       .maybeSingle();
     
     // Also check user_profiles for registered users
     const { data: profileData } = await supabase
       .from('user_profiles')
       .select('user_id, has_completed_onboarding')
-      .ilike('email', email)
+      .eq('email', normalizedEmail)
       .maybeSingle();
 
     const exists = !!(submissionData || profileData);
@@ -33,7 +36,7 @@ export async function POST(req: NextRequest) {
     const hasCompletedOnboarding = profileData?.has_completed_onboarding || false;
 
     // Log the check
-    console.log(`[Email Check] ${email}: exists=${exists}, registered=${isRegistered}, onboarding_complete=${hasCompletedOnboarding}`);
+    console.log(`[Email Check] ${normalizedEmail}: exists=${exists}, registered=${isRegistered}, onboarding_complete=${hasCompletedOnboarding}`);
 
     return NextResponse.json({ 
       exists,

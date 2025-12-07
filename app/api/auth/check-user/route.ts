@@ -13,13 +13,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
+    // Normalize email to lowercase and trim whitespace
+    const normalizedEmail = email.toLowerCase().trim();
+
     const supabase = createServerClient();
 
     // Check if user exists in user_profiles
     const { data: profileData } = await supabase
       .from('user_profiles')
       .select('user_id, email, has_completed_onboarding')
-      .ilike('email', email)
+      .eq('email', normalizedEmail)
       .maybeSingle();
 
     if (!profileData) {
@@ -55,7 +58,7 @@ export async function POST(req: NextRequest) {
     // Only need password setup if user exists but has NO authentication method at all
     const needsPasswordSetup = !hasAuthentication;
 
-    console.log(`[Check User] ${email}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuth=${hasAuthentication}, needsSetup=${needsPasswordSetup}`);
+    console.log(`[Check User] ${normalizedEmail}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuth=${hasAuthentication}, needsSetup=${needsPasswordSetup}`);
 
     return NextResponse.json({
       exists: true,
