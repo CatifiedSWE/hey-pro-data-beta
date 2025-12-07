@@ -761,6 +761,16 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                     </Button>
                 </div>
             </DialogContent>
+
+            {/* Image Cropper Dialog */}
+            <ImageCropper
+                open={cropperOpen}
+                onClose={() => setCropperOpen(false)}
+                imageSrc={imageToCrop}
+                onCropComplete={handleCropComplete}
+                aspectRatio={9 / 16}
+                allowSkip={true}
+            />
         </Dialog>
     );
 }
