@@ -16,6 +16,7 @@ export const config = {
 
 // Routes that don't require authentication
 const publicRoutes = [
+  '/',              // Landing page
   '/login',
   '/signup',
   '/otp',
@@ -24,6 +25,7 @@ const publicRoutes = [
   '/reset-password',
   '/form',
   '/help',
+  '/onboarding',    // Allow onboarding for both auth and non-auth users
 ];
 
 // Routes that authenticated users should be redirected away from
