@@ -89,7 +89,7 @@ export default function UserProfilePage() {
           className="self-start flex items-center gap-2 text-[#FA6E80] hover:text-[#fa5a6e] hover:bg-[#FA6E80]/10 mb-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to Crew Directory</span>
+          <span>Back to Crew</span>
         </Button>
         
         <ReadOnlyShortProfile profile={profile} initialSaved={isSaved} />
