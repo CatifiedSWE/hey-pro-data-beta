@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { createServerClient as createSSRClient } from '@supabase/ssr';
+import { sendWaitlistAcknowledgement } from '@/lib/email/acknowledgement';
 
 export async function POST(req: NextRequest) {
   try {
@@ -81,16 +82,39 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Trigger Emails (Simulated for now)
-    console.log(`[Email Mock] Sending confirmation to user`);
-    console.log(`[Email Mock] Sending notification to admin for ${user_type}`);
+    // 5. Send Acknowledgement Email to User
+    let emailSent = false;
+    const userEmail = submitted_fields.email;
+    
+    if (userEmail) {
+      const userName = submitted_fields.firstName || submitted_fields.companyName || 'there';
+      const userTypeDisplay = user_type.charAt(0).toUpperCase() + user_type.slice(1);
+      
+      const emailResult = await sendWaitlistAcknowledgement({
+        email: userEmail,
+        name: userName,
+        userType: userTypeDisplay
+      });
+      
+      emailSent = emailResult.success;
+      
+      if (emailResult.success) {
+        console.log(`[Email Sent] Acknowledgement email sent to: ${userEmail}`);
+      } else {
+        console.error('[Email Error] Failed to send acknowledgement:', emailResult.error);
+      }
+    }
+    
+    // Log admin notification
+    console.log(`[Notification] New ${user_type} submission from ${userEmail}`);
 
     return NextResponse.json({ 
       success: true,
       status: 'accepted', 
       id: data.id,
       isAuthenticated: !!user,
-      onboardingComplete: onboardingMarkedComplete
+      onboardingComplete: onboardingMarkedComplete,
+      emailSent: emailSent
     });
   } catch (err) {
     console.error('Server error:', err);
