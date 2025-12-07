@@ -24,10 +24,19 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { CalendarIcon, Upload, ChevronDownIcon } from "lucide-react";
+import { CalendarIcon, Upload, ChevronDownIcon, Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import React from "react";
 interface CreditsEditorProps {
     trigger: React.ReactNode;
