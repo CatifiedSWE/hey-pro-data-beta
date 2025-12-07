@@ -25,41 +25,22 @@ const makeValues = (arr: string[]): FilterValue[] =>
 
 const filterOptions: FilterOption[] = [
     {
-        label: "Direction",
+        label: "Animation",
         value: makeValues([
-            "Director",
-            "Director | Commercial",
-            "Assistant Director",
-            "Assistant Director | TV",
-            "1st Assistant Director (1st AD)",
-            "2nd Assistant Director (2nd AD)",
-            "3rd Assistant Director (3rd AD)",
-            "Action Director"
+            "Animator",
+            "2D Animation",
+            "3D Animation",
+            "AI Video AD Creator"
         ])
     },
     {
-        label: "Production",
+        label: "Art",
         value: makeValues([
-            "Line Producer",
-            "Producer",
-            "Producer | Creative",
-            "Producer | Executive",
-            "Producer | Senior",
-            "Associate Producer",
-            "Assistant Producer",
-            "Program Producer",
-            "Project Coordinator",
-            "Project Manager",
-            "Operation Manager",
-            "Production",
-            "Production Manager",
-            "Production Coordinator",
-            "Production Consultant",
-            "Production Assistant",
-            "Production Runner",
-            "Show Runner",
-            "Show Caller",
-            "Stage Manager"
+            "Art Director",
+            "Art PA",
+            "Production Designer",
+            "Set Design | Production Design Assistant",
+            "Set Dresser"
         ])
     },
     {
@@ -89,9 +70,43 @@ const filterOptions: FilterOption[] = [
         ])
     },
     {
-        label: "Lighting",
+        label: "Casting",
         value: makeValues([
-            "Gaffer"
+            "Casting",
+            "Casting Director",
+            "Artist Liaison",
+            "Model Agent",
+            "Talent Manager"
+        ])
+    },
+    {
+        label: "Design",
+        value: makeValues([
+            "Graphic Designer",
+            "Infographics",
+            "Storyboarding"
+        ])
+    },
+    {
+        label: "Direction",
+        value: makeValues([
+            "Director",
+            "Director | Commercial",
+            "Assistant Director",
+            "Assistant Director | TV",
+            "1st Assistant Director (1st AD)",
+            "2nd Assistant Director (2nd AD)",
+            "3rd Assistant Director (3rd AD)",
+            "Action Director"
+        ])
+    },
+    {
+        label: "Events",
+        value: makeValues([
+            "Event Manager",
+            "Event Organizer",
+            "Fashion Show Director",
+            "Fashion Backstage Director"
         ])
     },
     {
@@ -101,32 +116,23 @@ const filterOptions: FilterOption[] = [
         ])
     },
     {
-        label: "Art",
-        value: makeValues([
-            "Art Director",
-            "Art PA",
-            "Production Designer",
-            "Set Design | Production Design Assistant",
-            "Set Dresser"
-        ])
-    },
-    {
-        label: "Wardrobe",
-        value: makeValues([
-            "Costume Designer",
-            "Wardrobe Stylist",
-            "Wardrobe Stylist | Avant-Garde",
-            "Wardrobe Supervisor",
-            "Wardrobe PA",
-            "Fashion Stylist",
-            "Fashion Stylist | Assistant",
-            "Fashion Assistant | Celebrity"
-        ])
-    },
-    {
         label: "Hair",
         value: makeValues([
             "Hair Stylist"
+        ])
+    },
+    {
+        label: "Lighting",
+        value: makeValues([
+            "Gaffer"
+        ])
+    },
+    {
+        label: "Locations",
+        value: makeValues([
+            "Location Manager",
+            "Location Assistant",
+            "Location PA"
         ])
     },
     {
@@ -140,19 +146,20 @@ const filterOptions: FilterOption[] = [
         ])
     },
     {
-        label: "Casting",
+        label: "Media & Content",
         value: makeValues([
-            "Casting",
-            "Casting Director",
-            "Artist Liaison",
-            "Model Agent",
-            "Talent Manager"
+            "Content Creator",
+            "Media Consultant",
+            "Prompt Alchemist",
+            "Spreadsheet Whisperer"
         ])
     },
     {
-        label: "Stunts",
+        label: "Photography",
         value: makeValues([
-            "Fight Choreographer"
+            "Photographer",
+            "Photographer | Aerial",
+            "Photographer | BTS"
         ])
     },
     {
@@ -167,28 +174,34 @@ const filterOptions: FilterOption[] = [
         ])
     },
     {
-        label: "Animation",
+        label: "Production",
         value: makeValues([
-            "Animator",
-            "2D Animation",
-            "3D Animation",
-            "AI Video AD Creator"
+            "Line Producer",
+            "Producer",
+            "Producer | Creative",
+            "Producer | Executive",
+            "Producer | Senior",
+            "Associate Producer",
+            "Assistant Producer",
+            "Program Producer",
+            "Project Coordinator",
+            "Project Manager",
+            "Operation Manager",
+            "Production",
+            "Production Manager",
+            "Production Coordinator",
+            "Production Consultant",
+            "Production Assistant",
+            "Production Runner",
+            "Show Runner",
+            "Show Caller",
+            "Stage Manager"
         ])
     },
     {
-        label: "VFX",
+        label: "SFX",
         value: makeValues([
-            "VFX",
-            "VFX Artist",
-            "VFX Coordinator"
-        ])
-    },
-    {
-        label: "Design",
-        value: makeValues([
-            "Graphic Designer",
-            "Infographics",
-            "Storyboarding"
+            "SFX Selection"
         ])
     },
     {
@@ -202,53 +215,9 @@ const filterOptions: FilterOption[] = [
         ])
     },
     {
-        label: "Locations",
+        label: "Stunts",
         value: makeValues([
-            "Location Manager",
-            "Location Assistant",
-            "Location PA"
-        ])
-    },
-    {
-        label: "SFX",
-        value: makeValues([
-            "SFX Selection"
-        ])
-    },
-    {
-        label: "Photography",
-        value: makeValues([
-            "Photographer",
-            "Photographer | Aerial",
-            "Photographer | BTS"
-        ])
-    },
-    {
-        label: "Videography",
-        value: makeValues([
-            "Videographer",
-            "Videographer | BTS"
-        ])
-    },
-    {
-        label: "Writing",
-        value: makeValues([
-            "Novelist",
-            "Screenwriter",
-            "Scriptwriter",
-            "Script Supervisor",
-            "Writer | Horror",
-            "Writer | Non-Fiction",
-            "Writer | Young Adult Fiction"
-        ])
-    },
-    {
-        label: "Media & Content",
-        value: makeValues([
-            "Content Creator",
-            "Media Consultant",
-            "Prompt Alchemist",
-            "Spreadsheet Whisperer"
+            "Fight Choreographer"
         ])
     },
     {
@@ -266,12 +235,43 @@ const filterOptions: FilterOption[] = [
         ])
     },
     {
-        label: "Events",
+        label: "VFX",
         value: makeValues([
-            "Event Manager",
-            "Event Organizer",
-            "Fashion Show Director",
-            "Fashion Backstage Director"
+            "VFX",
+            "VFX Artist",
+            "VFX Coordinator"
+        ])
+    },
+    {
+        label: "Videography",
+        value: makeValues([
+            "Videographer",
+            "Videographer | BTS"
+        ])
+    },
+    {
+        label: "Wardrobe",
+        value: makeValues([
+            "Costume Designer",
+            "Wardrobe Stylist",
+            "Wardrobe Stylist | Avant-Garde",
+            "Wardrobe Supervisor",
+            "Wardrobe PA",
+            "Fashion Stylist",
+            "Fashion Stylist | Assistant",
+            "Fashion Assistant | Celebrity"
+        ])
+    },
+    {
+        label: "Writing",
+        value: makeValues([
+            "Novelist",
+            "Screenwriter",
+            "Scriptwriter",
+            "Script Supervisor",
+            "Writer | Horror",
+            "Writer | Non-Fiction",
+            "Writer | Young Adult Fiction"
         ])
     }
 ];
