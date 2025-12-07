@@ -11,6 +11,7 @@ import { Plus, X } from "lucide-react";
 import { countries, type Country } from "@/lib/countries";
 import { toast } from "sonner";
 import { useProfile, type TravelCountryData } from "@/contexts/ProfileContext";
+import { Flag } from "@/components/ui/flag";
 
 interface AvailableCountryProps {
     availableCountries: any[]; // Keeping prop compatibility
@@ -207,8 +208,8 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
 
     // Show up to 6 pills for preview, but if markAll is true, show 'All countries' pill
     const pills = markAll
-        ? [{ code: 'ALL', name: 'All countries', flag: '🌍' }]
-        : tempCountries.slice(0, 6);
+        ? [{ code: 'ALL', name: 'All countries', flag: '🌍', isSpecial: true }]
+        : tempCountries.slice(0, 6).map(c => ({ ...c, isSpecial: false }));
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -280,7 +281,7 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
                                                         onClick={() => handleSelectCountry(country)}
                                                         className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm hover:bg-[#F5FFFF]"
                                                     >
-                                                        <span className="text-lg">{country.flag}</span>
+                                                        <Flag countryCode={country.code} size="sm" />
                                                         <span className="flex-1">{country.name}</span>
                                                         <span className="text-xs text-muted-foreground">{country.code}</span>
                                                     </button>
@@ -301,7 +302,11 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
                                             key={country.code}
                                             className="flex items-center gap-2 rounded-[15px] border border-[#31A7AC] bg-[#F5FFFF] px-3 py-1 shadow-sm"
                                         >
-                                            <span className="text-lg">{country.flag}</span>
+                                            {country.code === 'ALL' ? (
+                                                <span className="text-lg">{country.flag}</span>
+                                            ) : (
+                                                <Flag countryCode={country.code} size="sm" />
+                                            )}
                                             <span className="text-sm text-black font-medium">{country.name}</span>
                                             {!markAll && country.code !== 'ALL' && (
                                                 <button

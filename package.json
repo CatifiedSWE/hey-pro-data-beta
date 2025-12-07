@@ -37,6 +37,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "flag-icons": "^7.5.0",
     "framer-motion": "^12.23.25",
     "init": "^0.1.2",
     "js-cookie": "^3.0.5",
