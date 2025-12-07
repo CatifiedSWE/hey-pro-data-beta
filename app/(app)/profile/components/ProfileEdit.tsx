@@ -73,7 +73,7 @@ export default function ProfileEditor({ trigger }: EditProfileInfoProps) {
                             <WorkStatusTab profile={profile} onUpdate={updateProfile} onSuccess={() => setIsDialogOpen(false)} />
                         </TabsContent>
                         <TabsContent value="visa" className="h-full m-0 p-0">
-                            <VisaTab visa={visa} onUpdate={updateVisa} onSuccess={() => setIsDialogOpen(false)} />
+                            <VisaTab visa={visa} onUpdate={updateVisa} refetch={refetch} onSuccess={() => setIsDialogOpen(false)} />
                         </TabsContent>
                     </div>
                 </Tabs>
@@ -516,7 +516,7 @@ function WorkStatusTab({ profile, onUpdate, onSuccess }: { profile: ProfileData 
 }
 
 // --- Visa Tab ---
-function VisaTab({ visa, onUpdate, onSuccess }: { visa: VisaData | null, onUpdate: (data: Partial<VisaData>) => Promise<any>, onSuccess: () => void }) {
+function VisaTab({ visa, onUpdate, refetch, onSuccess }: { visa: VisaData | null, onUpdate: (data: Partial<VisaData>) => Promise<any>, refetch: () => Promise<void>, onSuccess: () => void }) {
     const [saving, setSaving] = useState(false);
     
     const [nationality, setNationality] = useState("");
@@ -535,7 +535,6 @@ function VisaTab({ visa, onUpdate, onSuccess }: { visa: VisaData | null, onUpdat
         }
     }, [visa]);
 
-    const nationalityOptions = ["United States", "Canada", "United Kingdom", "Australia", "India", "Germany", "France", "United Arab Emirates", "Saudi Arabia", "Egypt"];
     const visaTypes = ["H1B", "L1", "O1", "TN", "E3", "F1", "J1", "B1/B2", "Work Visa", "Tourist Visa", "Resident Visa"];
 
     const handleSubmit = async () => {
@@ -551,6 +550,8 @@ function VisaTab({ visa, onUpdate, onSuccess }: { visa: VisaData | null, onUpdat
 
             if (result.success) {
                 toast.success(result.message);
+                // Refetch complete profile to ensure data is synced
+                await refetch();
                 onSuccess();
             } else {
                 toast.error(result.message);
@@ -582,20 +583,12 @@ function VisaTab({ visa, onUpdate, onSuccess }: { visa: VisaData | null, onUpdat
             <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-3">
                     <label className="text-base font-medium">Nationality & Passport</label>
-                    <Select value={nationality} onValueChange={setNationality}>
-                        <SelectTrigger className="h-[48px] w-full rounded-[16px] border border-transparent bg-[#31A7AC] px-[21px] text-sm font-semibold text-white shadow-none focus:ring-2 focus:ring-[#31A7AC]/40 focus:ring-offset-0">
-                            <SelectValue placeholder="Select Nationality" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {nationalityOptions.map((country) => (
-                                    <SelectItem key={country} value={country}>
-                                        {country}
-                                    </SelectItem>
-                                ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <Input
+                        placeholder="Enter your nationality"
+                        className="h-[48px] rounded-[15px] border border-[#31A7AC] px-5 text-sm focus-visible:border-[#31A7AC] focus-visible:ring-[#31A7AC]/20"
+                        value={nationality}
+                        onChange={(e) => setNationality(e.target.value)}
+                    />
                     
                     <div className="relative">
                         <Input

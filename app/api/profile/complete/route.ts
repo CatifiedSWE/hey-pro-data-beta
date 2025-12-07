@@ -266,6 +266,14 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Map visa data from database columns to frontend expected fields
+    const mappedVisa = visaResult.data ? {
+      ...visaResult.data,
+      visa_issued_by: visaResult.data.issued_by,
+      visa_expiry_date: visaResult.data.expiry_date,
+      nationality: visaResult.data.nationality,
+      passport_expiry_date: visaResult.data.passport_expiry_date
+    } : null;
 
     // Check for critical errors (profile not found is acceptable)
     if (profileResult.error && profileResult.error.code !== 'PGRST116') {
@@ -294,7 +302,7 @@ export async function GET(request: NextRequest) {
       links: linksResult.data || [],
       recommendations: recommendations,
       roles: rolesResult.data || [],
-      visa: visaResult.data || null,
+      visa: mappedVisa,
       languages: languagesResult.data || [],
       travelCountries: travelCountriesResult.data || [],
       highlights: enrichedHighlights, // Use the enriched version
