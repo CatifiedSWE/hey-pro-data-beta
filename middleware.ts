@@ -43,6 +43,14 @@ const protectedRoutes = [
   '/create',
 ];
 
+// Routes under development - redirect to profile page
+const underDevelopmentRoutes = [
+  '/gigs',
+  '/collab',
+  '/slate',
+  '/whats-on',
+];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -147,6 +155,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/profile', request.url));
     }
     // Otherwise, allow access to complete onboarding
+  }
+
+  // Block access to under-development routes - redirect to profile
+  const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
+  if (isUnderDevelopmentRoute) {
+    console.log(`[Middleware] Blocking under-development page: ${pathname}, redirecting to /profile`);
+    return NextResponse.redirect(new URL('/profile', request.url));
   }
 
   // Redirect authenticated users away from auth pages (login/signup)
