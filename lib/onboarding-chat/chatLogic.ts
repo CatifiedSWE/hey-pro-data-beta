@@ -182,7 +182,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Perfect. What's your email address?',
+                  text: "Perfect. What's your email address?",
                   inputType: 'email'
               });
           } else if (selectionValue === 'BATCH') {
@@ -214,7 +214,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'You're not in the system yet. No worries - let me get your details and we'll review your application.',
+                  text: "You're not in the system yet. No worries - let me get your details and we'll review your application.",
                   isIntro: true
               });
               nextMessages.push({
@@ -277,7 +277,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Great! We've sent a password setup link to your email.',
+                  text: "Great! We've sent a password setup link to your email.",
                   isIntro: true
               });
               nextMessages.push({
