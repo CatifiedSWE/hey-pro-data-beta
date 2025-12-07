@@ -17,6 +17,7 @@ interface UserProfileData {
   avatar: string;
   banner: string;
   bio: string;
+  about?: string;
   country: string;
   city: string;
   location: string;
