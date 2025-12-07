@@ -233,10 +233,23 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
         }
         const reader = new FileReader();
         reader.onloadend = () => {
-            handleCreditChange("image", reader.result as string);
-            toast.success("Image uploaded");
+            // Open cropper with the uploaded image
+            setImageToCrop(reader.result as string);
+            setCropperOpen(true);
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleCropComplete = (croppedImage: string) => {
+        handleCreditChange("image", croppedImage);
+        toast.success("Image uploaded");
+    };
+
+    const handleEditImage = () => {
+        if (creditForm.image) {
+            setImageToCrop(creditForm.image);
+            setCropperOpen(true);
+        }
     };
     
     const handleAddAward = () => {
