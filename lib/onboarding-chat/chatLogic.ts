@@ -310,8 +310,8 @@ export const processNextStep = async (
             });
         } else {
             // Default to SUBMIT behavior if 'Looks good' or undefined
-            const success = await submitData('CREW', nextFormData);
-            if (success) {
+            const result = await submitData('CREW', nextFormData);
+            if (result.success) {
                 nextMessages.push({
                     id: generateId(),
                     type: 'bot',
