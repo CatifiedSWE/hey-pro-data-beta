@@ -254,16 +254,35 @@ export const processNextStep = async (
         nextMessages.push({ id: generateId(), type: 'bot', text: 'And finally, your email?', inputType: 'email' });
     } else if (step === 5) {
         nextFormData.email = input as string;
-        nextMessages.push({
-            id: generateId(),
-            type: 'bot',
-            text: `Please confirm:\n${nextFormData.firstName} ${nextFormData.surname}\n${nextFormData.role}\n${nextFormData.country}\n${nextFormData.email}`,
-            options: [
-                { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
-                { label: 'Edit something', value: 'EDIT', icon: 'Edit2' } // Edit logic omitted for brevity
-            ],
-            inputType: 'options_only'
-        });
+        
+        // Check if email exists (registered user)
+        const emailCheckResult = await checkEmail(nextFormData.email);
+        
+        if (emailCheckResult.exists && emailCheckResult.isRegistered) {
+            // Email is registered - show login prompt
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: `This email is already registered! Please login to access your profile.`,
+                options: [
+                    { label: 'Go to Login', value: 'GO_TO_LOGIN', icon: 'LogIn' },
+                    { label: 'Try different email', value: 'RETRY_EMAIL', icon: 'Mail' }
+                ],
+                inputType: 'options_only'
+            });
+        } else {
+            // Email is available - proceed to confirmation
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: `Please confirm:\n${nextFormData.firstName} ${nextFormData.surname}\n${nextFormData.role}\n${nextFormData.country}\n${nextFormData.email}`,
+                options: [
+                    { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
+                    { label: 'Edit something', value: 'EDIT', icon: 'Edit2' }
+                ],
+                inputType: 'options_only'
+            });
+        }
     } else if (step === 6) {
         // Handle Confirmation
         if (selectionValue === 'EDIT') {
