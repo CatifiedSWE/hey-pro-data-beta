@@ -82,26 +82,32 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 5. Send Acknowledgement Email to User
+    // 5. Send Acknowledgement Email to User (non-blocking)
     let emailSent = false;
     const userEmail = submitted_fields.email;
     
     if (userEmail) {
-      const userName = submitted_fields.firstName || submitted_fields.companyName || 'there';
-      const userTypeDisplay = user_type.charAt(0).toUpperCase() + user_type.slice(1);
-      
-      const emailResult = await sendWaitlistAcknowledgement({
-        email: userEmail,
-        name: userName,
-        userType: userTypeDisplay
-      });
-      
-      emailSent = emailResult.success;
-      
-      if (emailResult.success) {
-        console.log(`[Email Sent] Acknowledgement email sent to: ${userEmail}`);
-      } else {
-        console.error('[Email Error] Failed to send acknowledgement:', emailResult.error);
+      try {
+        const userName = submitted_fields.firstName || submitted_fields.companyName || 'there';
+        const userTypeDisplay = user_type.charAt(0).toUpperCase() + user_type.slice(1);
+        
+        const emailResult = await sendWaitlistAcknowledgement({
+          email: userEmail,
+          name: userName,
+          userType: userTypeDisplay
+        });
+        
+        emailSent = emailResult.success;
+        
+        if (emailResult.success) {
+          console.log(`[Email Sent] Acknowledgement email sent to: ${userEmail}`);
+        } else {
+          console.error('[Email Error] Failed to send acknowledgement:', emailResult.error);
+        }
+      } catch (emailError) {
+        // Email sending should never break the submission
+        console.error('[Email Error] Exception during email send:', emailError);
+        emailSent = false;
       }
     }
     
