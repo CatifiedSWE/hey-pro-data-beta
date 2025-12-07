@@ -28,16 +28,40 @@ export async function sendWaitlistAcknowledgement(
       .from('email_queue')
       .insert([
         {
-          recipient_email: email,
-          email_type: 'waitlist_acknowledgement',
-          template_data: {
-            name: name,
-            userType: userType,
-            subject: 'Thank you for joining the waitlist!',
-            message: `Hi ${name}, we've received your details and you're now on the waitlist as a ${userType}. We're onboarding in batches to keep things organized. We'll email you when your turn opens up!`
-          },
+          to_email: email,
+          subject: 'Thank you for joining the waitlist!',
+          html_content: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background-color: #ff5168; color: white; padding: 30px; text-align: center; }
+                .content { background-color: #f9f9f9; padding: 30px; }
+                h1 { margin: 0; font-size: 24px; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>Welcome to the Waitlist!</h1>
+                </div>
+                <div class="content">
+                  <p>Hi ${name},</p>
+                  <p>We've received your details and you're now on the waitlist as a <strong>${userType}</strong>.</p>
+                  <p>We're onboarding in batches to keep things organized. We'll email you when your turn opens up!</p>
+                  <p>Thanks,<br/><strong>The HeyProData Team</strong></p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `,
           status: 'pending',
-          created_at: new Date().toISOString()
+          metadata: {
+            name: name,
+            userType: userType
+          }
         }
       ]);
 
