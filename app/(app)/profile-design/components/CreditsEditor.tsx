@@ -75,6 +75,278 @@ const defaultAccoladeForm = {
     date: "",
 };
 
+const PRODUCTION_TYPES = [
+    "Audio Production",
+    "Animation",
+    "Commercial",
+    "Corporate Video",
+    "Docuseries",
+    "Documentary",
+    "Educational Video",
+    "Training Video",
+    "Experimental Film",
+    "Feature Film",
+    "Fashion Show",
+    "Live Event",
+    "Micro Film",
+    "Music Video",
+    "Online Content",
+    "Promotional Video",
+    "Trailers",
+    "Reality TV",
+    "Competition Show",
+    "Short Film",
+    "Short-form Social Media Content (TikTok, Reels, Shorts)",
+    "Stage Production",
+    "Student Film",
+    "TV",
+    "VFX Project",
+    "Web Series",
+];
+
+const ROLES_BY_CATEGORY = [
+    {
+        category: "Direction",
+        roles: [
+            "Director",
+            "Director | Commercial",
+            "Assistant Director",
+            "Assistant Director | TV",
+            "1st Assistant Director (1st AD)",
+            "2nd Assistant Director (2nd AD)",
+            "3rd Assistant Director (3rd AD)",
+            "Action Director",
+        ],
+    },
+    {
+        category: "Production",
+        roles: [
+            "Line Producer",
+            "Producer",
+            "Producer | Creative",
+            "Producer | Executive",
+            "Producer | Senior",
+            "Associate Producer",
+            "Assistant Producer",
+            "Program Producer",
+            "Project Coordinator",
+            "Project Manager",
+            "Operation Manager",
+            "Production",
+            "Production Manager",
+            "Production Coordinator",
+            "Production Consultant",
+            "Production Assistant",
+            "Production Runner",
+            "Show Runner",
+            "Show Caller",
+            "Stage Manager",
+        ],
+    },
+    {
+        category: "Camera",
+        roles: [
+            "DOP",
+            "DOP | Assistant",
+            "DOP | Associate",
+            "Camera Operator",
+            "Camera Operator | Remote Head",
+            "Camera Operator | Steadicam",
+            "Camera Operator | Trinity 2",
+            "Camera Assistant",
+            "Camera Assistant | Junior",
+            "Camera Trainee",
+            "2nd AC",
+            "Drone",
+            "Aerial Filming",
+            "DIT",
+            "Data Wrangler",
+            "Qtake Assistant",
+            "Video Assist",
+            "Video Assist | Streaming",
+            "Video Assist | Utility",
+            "Video Streaming",
+            "Video Technician",
+        ],
+    },
+    {
+        category: "Lighting",
+        roles: ["Gaffer"],
+    },
+    {
+        category: "Grip",
+        roles: ["Grip"],
+    },
+    {
+        category: "Art",
+        roles: [
+            "Art Director",
+            "Art PA",
+            "Production Designer",
+            "Set Design | Production Design Assistant",
+            "Set Dresser",
+        ],
+    },
+    {
+        category: "Wardrobe",
+        roles: [
+            "Costume Designer",
+            "Wardrobe Stylist",
+            "Wardrobe Stylist | Avant-Garde",
+            "Wardrobe Supervisor",
+            "Wardrobe PA",
+            "Fashion Stylist",
+            "Fashion Stylist | Assistant",
+            "Fashion Assistant | Celebrity",
+        ],
+    },
+    {
+        category: "Hair",
+        roles: ["Hair Stylist"],
+    },
+    {
+        category: "Makeup",
+        roles: [
+            "Makeup Artist",
+            "Makeup Artist | SFX",
+            "Makeup Artist | Body Painter",
+            "Makeup Artist | Face Painter",
+            "Image Consultant",
+        ],
+    },
+    {
+        category: "Casting",
+        roles: [
+            "Casting",
+            "Casting Director",
+            "Artist Liaison",
+            "Model Agent",
+            "Talent Manager",
+        ],
+    },
+    {
+        category: "Stunts",
+        roles: ["Fight Choreographer"],
+    },
+    {
+        category: "Post-Production",
+        roles: [
+            "Editor",
+            "Editor | Offline",
+            "Editor | Senior",
+            "Colorist",
+            "Post Producer",
+            "Post Production Coordinator",
+        ],
+    },
+    {
+        category: "Animation",
+        roles: [
+            "Animator",
+            "2D Animation",
+            "3D Animation",
+            "AI Video AD Creator",
+        ],
+    },
+    {
+        category: "VFX",
+        roles: [
+            "VFX",
+            "VFX Artist",
+            "VFX Coordinator",
+        ],
+    },
+    {
+        category: "Design",
+        roles: [
+            "Graphic Designer",
+            "Infographics",
+            "Storyboarding",
+        ],
+    },
+    {
+        category: "Sound",
+        roles: [
+            "Sound Engineer",
+            "Sound Mixer",
+            "Sound | Boom Pole Operator",
+            "Sound | Field Sound Mixer",
+            "Music Composer",
+        ],
+    },
+    {
+        category: "Locations",
+        roles: [
+            "Location Manager",
+            "Location Assistant",
+            "Location PA",
+        ],
+    },
+    {
+        category: "SFX",
+        roles: ["SFX Selection"],
+    },
+    {
+        category: "Photography",
+        roles: [
+            "Photographer",
+            "Photographer | Aerial",
+            "Photographer | BTS",
+        ],
+    },
+    {
+        category: "Videography",
+        roles: [
+            "Videographer",
+            "Videographer | BTS",
+        ],
+    },
+    {
+        category: "Writing",
+        roles: [
+            "Novelist",
+            "Screenwriter",
+            "Scriptwriter",
+            "Script Supervisor",
+            "Writer | Horror",
+            "Writer | Non-Fiction",
+            "Writer | Young Adult Fiction",
+        ],
+    },
+    {
+        category: "Media & Content",
+        roles: [
+            "Content Creator",
+            "Media Consultant",
+            "Prompt Alchemist",
+            "Spreadsheet Whisperer",
+        ],
+    },
+    {
+        category: "Sustainability",
+        roles: [
+            "Sustainable Film Advisor",
+            "Sustainable On Set Coordinator",
+        ],
+    },
+    {
+        category: "Transport & Logistics",
+        roles: [
+            "Logistics Manager",
+            "Transport Event Materials",
+        ],
+    },
+    {
+        category: "Events",
+        roles: [
+            "Event Manager",
+            "Event Organizer",
+            "Fashion Show Director",
+            "Fashion Backstage Director",
+        ],
+    },
+];
+
 interface YearPickerProps {
     value: string;
     onChange: (year: string) => void;
