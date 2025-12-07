@@ -233,25 +233,43 @@ export const processNextStep = async (
                       delay: 1000
                   });
               } else if (checkResult.exists && checkResult.hasCompletedOnboarding) {
-                  // User exists AND has completed onboarding - tell them to sign in
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: "It seems you already exist in our system and have completed onboarding. Please use the 'Sign in to profile' option instead.",
-                      isIntro: true
-                  });
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: 'What would you like to do?',
-                      options: [
-                          { label: 'Sign in to profile', value: 'SWITCH_TO_SIGNIN', icon: 'LogIn' },
-                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
-                          { label: 'Done', value: 'DONE', icon: 'Check' }
-                      ],
-                      inputType: 'options_only',
-                      delay: 1000
-                  });
+                  // User exists AND has completed onboarding
+                  if (checkResult.hasGoogleAuth) {
+                      // User signed up with Google - show Google button directly
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: "You already have an account with Google. Let's sign you in:",
+                          isIntro: true
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Click below to continue with Google:',
+                          inputType: 'google_auth',
+                          delay: 1000
+                      });
+                  } else {
+                      // User has email/password - tell them to use sign in
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: "It seems you already exist in our system and have completed onboarding. Please use the 'Sign in to profile' option instead.",
+                          isIntro: true
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'What would you like to do?',
+                          options: [
+                              { label: 'Sign in to profile', value: 'SWITCH_TO_SIGNIN', icon: 'LogIn' },
+                              { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                              { label: 'Done', value: 'DONE', icon: 'Check' }
+                          ],
+                          inputType: 'options_only',
+                          delay: 1000
+                      });
+                  }
               } else if (checkResult.exists && !checkResult.hasCompletedOnboarding) {
                   // User exists but hasn't completed onboarding - send password setup link
                   const setupResponse = await fetch('/api/auth/send-password-setup-link', {
@@ -353,13 +371,25 @@ export const processNextStep = async (
                       delay: 1000
                   });
               } else if (checkResult.exists && checkResult.hasCompletedOnboarding) {
-                  // User exists AND has completed onboarding - ask for password
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: 'Welcome back! Please enter your password to continue.',
-                      inputType: 'password'
-                  });
+                  // User exists AND has completed onboarding
+                  // Check what provider they use
+                  if (checkResult.hasGoogleAuth) {
+                      // User signed up with Google - show Google button
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Welcome back! You signed up with Google. Click below to continue:',
+                          inputType: 'google_auth'
+                      });
+                  } else {
+                      // User has email/password - ask for password
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Welcome back! Please enter your password to continue.',
+                          inputType: 'password'
+                      });
+                  }
               }
           }
           

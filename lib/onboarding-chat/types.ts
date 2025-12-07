@@ -17,7 +17,8 @@ export type InputType =
   | 'textarea'
   | 'file'
   | 'options_only'
-  | 'share_card';
+  | 'share_card'
+  | 'google_auth';  // NEW: For Google OAuth button
 
 export interface Option {
   label: string;
