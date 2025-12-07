@@ -600,7 +600,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'We are building the infrastructure for MENA\'s production industry. A verified, transparent network.'
+                  text: "We are building the infrastructure for MENA's production industry. A verified, transparent network."
               });
           }
           
