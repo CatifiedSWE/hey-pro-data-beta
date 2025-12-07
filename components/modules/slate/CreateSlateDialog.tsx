@@ -26,6 +26,8 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
     const [tagInput, setTagInput] = useState("");
     const [location, setLocation] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [cropperOpen, setCropperOpen] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState<string>("");
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
