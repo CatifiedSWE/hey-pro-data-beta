@@ -119,14 +119,19 @@ export default function Profile() {
 
   // Memoize section components to prevent unnecessary re-creation and unmounting
   // MUST be before conditional returns to maintain hook call order
-  const sectionComponents = useMemo(() => ({
-    about: <AboutSection key="about" about={profile?.about || ''} onUpdate={refetch} />,
-    skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
-    credits: <CreditsSectionWrapper key="credits" />,
-    languages: <LanguagesSection key="languages" />,
-    contact_details: <ContactDetailsSection key="contact_details" email={profile?.email} phone={profile?.phone} countryCode={profile?.country_code} isVisible={visibility.contact_details} onVisibilityToggle={() => toggleVisibility('contact_details')} />,
-    available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} />,
-  }), [profile?.about, profile?.email, profile?.phone, profile?.country_code, skills, fetchSkills, refetch, visibility, toggleVisibility]);
+  const sectionComponents = useMemo(() => {
+    // Transform travel countries data from API format to UI format (array of country names)
+    const travelCountryNames = travelCountries.map(tc => tc.country_name);
+    
+    return {
+      about: <AboutSection key="about" about={profile?.about || ''} onUpdate={refetch} />,
+      skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
+      credits: <CreditsSectionWrapper key="credits" />,
+      languages: <LanguagesSection key="languages" />,
+      contact_details: <ContactDetailsSection key="contact_details" email={profile?.email} phone={profile?.phone} countryCode={profile?.country_code} isVisible={visibility.contact_details} onVisibilityToggle={() => toggleVisibility('contact_details')} />,
+      available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={travelCountryNames} />,
+    };
+  }, [profile?.about, profile?.email, profile?.phone, profile?.country_code, skills, travelCountries, fetchSkills, refetch, visibility, toggleVisibility]);
 
   // Non-hook data and functions
   const handlePhotoUpload = async (file: File, type: 'profile' | 'banner') => {
