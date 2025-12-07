@@ -17,17 +17,22 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ disabled = f
     setLoading(true);
     
     try {
-      // Initiate OAuth flow with redirect to profile page
+      // Store the intended redirect destination in localStorage
+      // This will be read by the callback handler
+      localStorage.setItem('auth_redirect_after_login', '/profile');
+      
+      // Initiate OAuth flow with redirect to callback page
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/callback?next=/profile`
+          redirectTo: `${window.location.origin}/callback`
         }
       });
 
       if (error) {
         console.error('[Google Auth] Error:', error);
         setLoading(false);
+        localStorage.removeItem('auth_redirect_after_login');
         // Show error in UI
         alert('Failed to sign in with Google. Please try again.');
       }
@@ -35,6 +40,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ disabled = f
     } catch (err) {
       console.error('[Google Auth] Exception:', err);
       setLoading(false);
+      localStorage.removeItem('auth_redirect_after_login');
       alert('Failed to sign in with Google. Please try again.');
     }
   };
