@@ -480,7 +480,7 @@ function SkillsSectionWrapper({ skills, onUpdate, isVisible, onVisibilityToggle 
   return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} isVisible={isVisible} onVisibilityToggle={onVisibilityToggle} />;
 }
 
-function SkillsSection({ skills, onUpdate }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; } }[]; onUpdate: () => void }) {
+function SkillsSection({ skills, onUpdate, isVisible, onVisibilityToggle }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; } }[]; onUpdate: () => void; isVisible: boolean; onVisibilityToggle: () => void }) {
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
@@ -489,11 +489,26 @@ function SkillsSection({ skills, onUpdate }: { skills: { id: string, department:
     setIsEditorOpen(true);
   };
 
+  const isEmpty = !skills || skills.length === 0;
+
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">Skills</h2>
         <div className="flex gap-1.5">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onVisibilityToggle}
+            className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
+            title={isVisible ? "Hide from public" : "Show to public"}
+          >
+            {isVisible ? (
+              <Eye className="h-5 w-5 text-[#31A7AC]" />
+            ) : (
+              <EyeOff className="h-5 w-5 text-gray-400" />
+            )}
+          </Button>
           <AddNewSkill
             onUpdate={onUpdate}
             trigger={
@@ -502,34 +517,41 @@ function SkillsSection({ skills, onUpdate }: { skills: { id: string, department:
               </Button>
             }
           />
-          <SkillEditor
-            initialSkills={skills}
-            onUpdate={onUpdate}
-            initialSelectedSkillId={selectedSkillId}
-            isOpen={isEditorOpen}
-            onOpenChange={setIsEditorOpen}
-            trigger={
-              <Button size="icon" variant="default" className="rounded-full border border-[#31A7AC]/30 bg-[#31A7AC] text-[#ffffff]">
-                <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            }
-          />
-
+          {!isEmpty && (
+            <SkillEditor
+              initialSkills={skills}
+              onUpdate={onUpdate}
+              initialSelectedSkillId={selectedSkillId}
+              isOpen={isEditorOpen}
+              onOpenChange={setIsEditorOpen}
+              trigger={
+                <Button size="icon" variant="default" className="rounded-full border border-[#31A7AC]/30 bg-[#31A7AC] text-[#ffffff]">
+                  <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+              }
+            />
+          )}
         </div>
       </div>
-      <div className="space-y-4">
-        {skills.map((skill, index) => (
-          <SkillItem 
-            key={skill.id || index} 
-            id={skill.id}
-            department={skill.department} 
-            role={skill.role} 
-            description={skill.description} 
-            experience={skill.experience}
-            onEdit={() => handleEditSkill(skill.id)}
-          />
-        ))}
-      </div>
+      {isEmpty ? (
+        <div className="text-center py-8 text-gray-500">
+          <p>Showcase your skills by adding one</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {skills.map((skill, index) => (
+            <SkillItem 
+              key={skill.id || index} 
+              id={skill.id}
+              department={skill.department} 
+              role={skill.role} 
+              description={skill.description} 
+              experience={skill.experience}
+              onEdit={() => handleEditSkill(skill.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
