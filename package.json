@@ -6,7 +6,13 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy:check": "bash scripts/deploy-check.sh",
+    "deploy:build": "npm install && npm run build",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:restart": "pm2 restart heyprodata",
+    "pm2:stop": "pm2 stop heyprodata",
+    "pm2:logs": "pm2 logs heyprodata"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
