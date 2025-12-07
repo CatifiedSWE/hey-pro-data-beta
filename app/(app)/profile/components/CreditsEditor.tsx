@@ -413,6 +413,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
     const [editingCreditId, setEditingCreditId] = useState<string | null>(null);
     const [cropperOpen, setCropperOpen] = useState(false);
     const [imageToCrop, setImageToCrop] = useState<string>("");
+    const [roleComboboxOpen, setRoleComboboxOpen] = useState(false);
 
     useEffect(() => {
         if (isDialogOpen && mode === 'edit' && creditToEdit) {
