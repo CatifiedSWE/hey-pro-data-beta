@@ -463,33 +463,9 @@ function AboutSection({ bio, onUpdate, isVisible, onVisibilityToggle }: { bio: s
   )
 }
 
-function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: () => void }) {
-  // If skills is empty, show a placeholder
-  if (!skills || skills.length === 0) {
-    return (
-      <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">Skills</h2>
-          <div className="flex gap-1.5">
-            <AddNewSkill
-              onUpdate={onUpdate}
-              trigger={
-                <Button size="icon" variant="default" className="rounded-full border border-[#31A7AC]/30 bg-[#FA6E80] text-[#ffffff]">
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-              }
-            />
-          </div>
-        </div>
-        <div className="text-center py-8 text-gray-500">
-          <p>Showcase your skills by adding one</p>
-        </div>
-      </div>
-    );
-  }
-
+function SkillsSectionWrapper({ skills, onUpdate, isVisible, onVisibilityToggle }: { skills: any[]; onUpdate: () => void; isVisible: boolean; onVisibilityToggle: () => void }) {
   // Transform skills data from API format to UI format
-  const transformedSkills = skills.map(skill => ({
+  const transformedSkills = skills && skills.length > 0 ? skills.map(skill => ({
     id: skill.id,
     department: skill.department || 'General',
     role: skill.skill_name,
@@ -499,9 +475,9 @@ function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: (
       title: skill.experience_level,
       description: ''
     } : undefined
-  }));
+  })) : [];
 
-  return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} />;
+  return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} isVisible={isVisible} onVisibilityToggle={onVisibilityToggle} />;
 }
 
 function SkillsSection({ skills, onUpdate }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; } }[]; onUpdate: () => void }) {
