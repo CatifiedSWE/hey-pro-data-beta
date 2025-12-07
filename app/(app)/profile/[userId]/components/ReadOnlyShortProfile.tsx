@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react"
 import Image from "next/image"
-import { LinkIcon, MapPin, Calendar as CalendarIcon, Heart, MessageCircle, Loader2 } from "lucide-react"
+import { LinkIcon, MapPin, Calendar as CalendarIcon, Bookmark, MessageCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { countries } from "@/lib/countries"
 import { ProfileShareModal } from "@/components/profile/ProfileShareModal"
