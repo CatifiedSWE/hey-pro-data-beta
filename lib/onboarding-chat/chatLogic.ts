@@ -1,5 +1,6 @@
 import { ChatState, Message, Option, Persona, FormData } from './types';
 import { submitData, checkEmail } from './mockBackend';
+import { OnboardingStorage } from '../onboarding-storage';
 
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -552,25 +553,38 @@ export const processNextStep = async (
 
   // --- CREW FLOW ---
   if (currentFlow === 'CREW') {
+    // Save category at start of flow
+    if (step === 0 && !OnboardingStorage.getCategory()) {
+        OnboardingStorage.save({ category: 'crew' });
+    }
+    
     // 0: Initial prompt already sent
     if (step === 0) {
         // Just received First Name
         nextFormData.firstName = input as string;
+        OnboardingStorage.save({ first_name: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Surname?', inputType: 'text' });
     } else if (step === 1) {
         nextFormData.surname = input as string;
+        OnboardingStorage.save({ last_name: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Primary role in production?', inputType: 'text' });
     } else if (step === 2) {
         nextFormData.role = input as string;
+        OnboardingStorage.save({ role: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Country?', inputType: 'text' });
     } else if (step === 3) {
         nextFormData.country = input as string;
+        OnboardingStorage.save({ country: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Work link / Portfolio? (Optional but encouraged)', inputType: 'url' });
     } else if (step === 4) {
         nextFormData.workLink = input as string;
+        if (input) {
+            OnboardingStorage.save({ website: input as string });
+        }
         nextMessages.push({ id: generateId(), type: 'bot', text: 'And finally, your email?', inputType: 'email' });
     } else if (step === 5) {
         nextFormData.email = input as string;
+        OnboardingStorage.save({ email: input as string });
         
         // Check if email exists (registered user)
         const emailCheckResult = await checkEmail(nextFormData.email);
@@ -686,29 +700,71 @@ export const processNextStep = async (
 
   // --- SUPPLIER FLOW ---
   if (currentFlow === 'SUPPLIER') {
+      // Save category at start of flow
+      if (step === 0 && !OnboardingStorage.getCategory()) {
+          OnboardingStorage.save({ category: 'vendor' });
+      }
+      
       if (step === 0) {
           nextFormData.companyName = input as string;
+          OnboardingStorage.save({ company_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Primary service?', inputType: 'text' });
       } else if (step === 1) {
           nextFormData.primaryService = input as string;
+          OnboardingStorage.save({ primary_service: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Company website/link? (Optional)', inputType: 'url' });
       } else if (step === 2) {
           nextFormData.companyLink = input as string;
+          if (input) {
+              OnboardingStorage.save({ company_link: input as string });
+          }
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Please upload your Trade License.', inputType: 'file' });
       } else if (step === 3) {
-          nextFormData.tradeLicense = input as File;
+          // Handle file upload
+          const file = input as File;
+          nextFormData.tradeLicense = file;
+          
+          // Upload file to Supabase Storage and get URL
+          try {
+              const uploadFormData = new FormData();
+              uploadFormData.append('file', file);
+              
+              const uploadResponse = await fetch('/api/onboarding/upload-file', {
+                  method: 'POST',
+                  body: uploadFormData
+              });
+              
+              const uploadResult = await uploadResponse.json();
+              
+              if (uploadResult.success) {
+                  nextFormData.tradeLicenseUrl = uploadResult.url;
+                  OnboardingStorage.save({ trade_license_url: uploadResult.url });
+                  console.log('[Upload] Trade license uploaded:', uploadResult.url);
+              } else {
+                  console.error('[Upload] Failed to upload file:', uploadResult.error);
+                  // Continue anyway - file upload is optional for now
+              }
+          } catch (uploadError) {
+              console.error('[Upload] Error uploading file:', uploadError);
+              // Continue anyway
+          }
+          
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Got it. Now, who is the contact person? First Name?', inputType: 'text' });
       } else if (step === 4) {
           nextFormData.firstName = input as string;
+          OnboardingStorage.save({ first_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Surname?', inputType: 'text' });
       } else if (step === 5) {
           nextFormData.surname = input as string;
+          OnboardingStorage.save({ last_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Your role in the company?', inputType: 'text' });
       } else if (step === 6) {
           nextFormData.role = input as string;
+          OnboardingStorage.save({ role: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Email address?', inputType: 'email' });
       } else if (step === 7) {
           nextFormData.email = input as string;
+          OnboardingStorage.save({ email: input as string });
           
           // Check if email exists (registered user)
           const emailCheckResult = await checkEmail(nextFormData.email);
@@ -760,6 +816,7 @@ export const processNextStep = async (
           } else {
               // Normal flow - phone input received
               nextFormData.phone = input as string;
+              OnboardingStorage.save({ phone: input as string });
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
@@ -818,17 +875,28 @@ export const processNextStep = async (
 
   // --- CLIENT FLOW ---
   if (currentFlow === 'CLIENT') {
+      // Save category at start of flow
+      if (step === 0 && !OnboardingStorage.getCategory()) {
+          OnboardingStorage.save({ category: 'agency' });
+      }
+      
       if (step === 0) {
           nextFormData.projectDetails = input as string;
+          OnboardingStorage.save({ project_details: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Your Name?', inputType: 'text' });
       } else if (step === 1) {
           nextFormData.firstName = input as string;
+          OnboardingStorage.save({ contact_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Company?', inputType: 'text' });
       } else if (step === 2) {
           nextFormData.projectCompanyName = input as string;
+          if (input) {
+              OnboardingStorage.save({ company_name: input as string });
+          }
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Email?', inputType: 'email' });
       } else if (step === 3) {
           nextFormData.email = input as string;
+          OnboardingStorage.save({ email: input as string });
           
           // Check if email exists (registered user)
           const emailCheckResult = await checkEmail(nextFormData.email);
@@ -880,6 +948,9 @@ export const processNextStep = async (
           } else {
               // Normal flow - phone input received
               nextFormData.phone = input as string;
+              if (input) {
+                  OnboardingStorage.save({ phone: input as string });
+              }
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
