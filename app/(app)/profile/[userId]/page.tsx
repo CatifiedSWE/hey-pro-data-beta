@@ -121,18 +121,52 @@ export default function UserProfilePage() {
 
           {activeTab === "profile" ? (
             <div className="max-w-[600px]">
-              {/* Profile Sections */}
-              <ReadOnlyAboutSection bio={profile.bio} />
-              <div className="my-8" />
+              {/* Profile Sections - Only show if visible */}
+              {visibility.about && (
+                <>
+                  <ReadOnlyAboutSection bio={profile.bio} />
+                  <div className="my-8" />
+                </>
+              )}
               
               {/* Highlights Section - Shows on mobile above skills */}
               <div className="lg:hidden mb-8">
                 <ReadOnlyHighlights highlights={profile.highlights} />
               </div>
               
-              <ReadOnlySkillsSection skills={profile.skills} />
-              <div className="my-8" />
-              <ReadOnlyCreditsSection credits={profile.credits} />
+              {visibility.skills && (
+                <>
+                  <ReadOnlySkillsSection skills={profile.skills} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.credits && (
+                <>
+                  <ReadOnlyCreditsSection credits={profile.credits} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.languages && (
+                <>
+                  <ReadOnlyLanguagesSection languages={profile.languages || []} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.contact_details && (
+                <>
+                  <ReadOnlyContactDetailsSection email={profile.email} phone={profile.phone} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.available_to_travel && (
+                <>
+                  <ReadOnlyAvailableToTravelSection travelCountries={profile.travelCountries || []} />
+                </>
+              )}
             </div>
           ) : (
             <UserSlateView userId={userId} userName={profile.name} />
