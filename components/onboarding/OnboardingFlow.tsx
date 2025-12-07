@@ -9,7 +9,7 @@ import { FileUploadCard } from './FileUploadCard';
 import { SummaryCard } from './SummaryCard';
 import { ShareLinkCard } from './ShareLinkCard';
 import { FLOW_STEPS, StepConfig, FormField } from '@/lib/onboarding-state';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface OnboardingFlowProps {
@@ -324,27 +324,51 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       <CardFullScreen>
         <CardHeader className="mt-12">
              <h2 className="text-2xl font-bold">{step.title}</h2>
+             {step.subtitle && <p className="text-lg text-gray-500 mt-2">{step.subtitle}</p>}
         </CardHeader>
-        <CardBody>
-            <ShareLinkCard url={typeof window !== 'undefined' ? window.location.origin : 'https://heyprodata.com'} />
+        <CardBody className="justify-center items-center">
+            <div className="flex flex-col w-full max-w-md gap-6">
+                <ShareLinkCard url={typeof window !== 'undefined' ? window.location.origin : 'https://heyprodata.com'} />
+                
+                <SecondaryButton 
+                    onClick={() => onNext(step.nextStep || 'landing')}
+                    variant="outline"
+                    className="w-full"
+                    icon={<RefreshCw size={18} />}
+                >
+                    Restart
+                </SecondaryButton>
+            </div>
         </CardBody>
-        <CardFooter>
-            <PrimaryButton onClick={() => onNext(step.nextStep || 'landing')}>
-                Done
-            </PrimaryButton>
-        </CardFooter>
       </CardFullScreen>
   );
 
-  switch (step.type) {
-    case 'hero': return renderHero();
-    case 'question': return renderQuestion();
-    case 'form': return renderForm();
-    case 'upload': return renderUpload();
-    case 'summary': return renderSummary();
-    case 'success': return renderSuccess();
-    case 'info': return renderSuccess(); // Reuse success/info layout
-    case 'share': return renderShare();
-    default: return <div>Unknown step type: {step.type}</div>;
-  }
+  const getStepContent = () => {
+    switch (step.type) {
+        case 'hero': return renderHero();
+        case 'question': return renderQuestion();
+        case 'form': return renderForm();
+        case 'upload': return renderUpload();
+        case 'summary': return renderSummary();
+        case 'success': return renderSuccess();
+        case 'info': return renderSuccess(); // Reuse success/info layout
+        case 'share': return renderShare();
+        default: return <div>Unknown step type: {step.type}</div>;
+    }
+  };
+
+  return (
+    <AnimatePresence mode="wait">
+        <motion.div
+            key={currentStepId}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="w-full h-full"
+        >
+            {getStepContent()}
+        </motion.div>
+    </AnimatePresence>
+  );
 };
