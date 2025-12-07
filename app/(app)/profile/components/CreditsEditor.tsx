@@ -385,7 +385,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                         onChange={(e) => handleCreditChange("productionType", e.target.value)}
                                         className={`${baseInputClasses} appearance-none`}
                                     >
-                                        <option value="">Select type</option>
+                                        <option value="">Production type</option>
                                         <option value="Feature Film">Feature Film</option>
                                         <option value="Commercial">Commercial</option>
                                         <option value="Music Video">Music Video</option>
@@ -397,7 +397,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                         onChange={(e) => handleCreditChange("role", e.target.value)}
                                         className={`${baseInputClasses} appearance-none`}
                                     >
-                                        <option value="">Select Role</option>
+                                        <option value="">Roles</option>
                                         <option value="Feature Film">Feature Film</option>
                                         <option value="Commercial">Commercial</option>
                                         <option value="Music Video">Music Video</option>
@@ -410,7 +410,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     <input
                                         value={creditForm.projectTitle}
                                         onChange={(e) => handleCreditChange("projectTitle", e.target.value)}
-                                        placeholder="City of Echoes"
+                                        placeholder="Project title"
                                         className={baseInputClasses}
                                     />
                                 </div>
@@ -424,12 +424,12 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1  gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
                                     <input
                                         value={creditForm.localCompany}
                                         onChange={(e) => handleCreditChange("localCompany", e.target.value)}
-                                        placeholder="Local Production company"
+                                        placeholder="Local Production Company"
                                         className={baseInputClasses}
                                     />
                                 </div>
@@ -437,7 +437,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     <input
                                         value={creditForm.internationalCompany}
                                         onChange={(e) => handleCreditChange("internationalCompany", e.target.value)}
-                                        placeholder="International Production company"
+                                        placeholder="International Production Company"
                                         className={baseInputClasses}
                                     />
                                 </div>
