@@ -232,20 +232,12 @@ export default function VisaSection({ onUpdate }: VisaSectionProps) {
 
                             <div className="flex flex-col gap-6">
                                 <div className="flex flex-col gap-3">
-                                    <Select value={nationality} onValueChange={setNationality}>
-                                        <SelectTrigger className="h-[41px] w-full rounded-[16px] border border-transparent bg-[#31A7AC] px-[21px] text-sm font-semibold text-white shadow-none focus:ring-2 focus:ring-[#31A7AC]/40 focus:ring-offset-0">
-                                            <SelectValue placeholder="Nationality" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                {nationalityOptions.map((country) => (
-                                                    <SelectItem key={country} value={country}>
-                                                        {country}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                    <Input
+                                        placeholder="Nationality"
+                                        className="h-[41px] rounded-[16px] border border-transparent bg-[#31A7AC] px-[21px] text-sm font-semibold text-white placeholder:text-white/70 focus-visible:border-[#31A7AC] focus-visible:ring-[#31A7AC]/40"
+                                        value={nationality}
+                                        onChange={(e) => setNationality(e.target.value)}
+                                    />
                                     {renderDatePicker({
                                         id: "passport-expiry",
                                         placeholder: "Passport expiry date",
