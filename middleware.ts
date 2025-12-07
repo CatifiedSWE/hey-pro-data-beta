@@ -17,15 +17,11 @@ export const config = {
 // Routes that don't require authentication
 const publicRoutes = [
   '/',              // Landing page
-  '/login',
-  '/signup',
-  '/otp',
   '/callback',
-  '/forget-password',
-  '/reset-password',
   '/form',
   '/help',
-  '/onboarding',    // Allow onboarding for both auth and non-auth users
+  '/onboarding',    // Main onboarding flow - ONLY ENTRY POINT
+  '/set-password',  // Password setup for existing users (Phase 1)
 ];
 
 // Routes that authenticated users should be redirected away from
@@ -53,6 +49,13 @@ export async function middleware(request: NextRequest) {
   // Skip middleware for API routes and static files
   if (pathname.startsWith('/api') || pathname.startsWith('/_next')) {
     return NextResponse.next();
+  }
+
+  // PHASE 1: Block old auth pages - redirect to onboarding (gated system)
+  const blockedAuthPages = ['/login', '/signup', '/otp', '/forget-password', '/reset-password'];
+  if (blockedAuthPages.some(page => pathname.startsWith(page))) {
+    console.log(`[Middleware] Blocking old auth page: ${pathname}, redirecting to /onboarding`);
+    return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
   // Allow public routes without authentication check

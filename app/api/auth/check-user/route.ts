@@ -1,0 +1,66 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@/lib/supabase/server';
+
+/**
+ * Check if a user exists and whether they have a password set
+ * Used in onboarding flow to determine authentication path
+ */
+export async function POST(req: NextRequest) {
+  try {
+    const { email } = await req.json();
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email required' }, { status: 400 });
+    }
+
+    const supabase = createServerClient();
+
+    // Check if user exists in user_profiles
+    const { data: profileData } = await supabase
+      .from('user_profiles')
+      .select('user_id, email, has_completed_onboarding')
+      .ilike('email', email)
+      .maybeSingle();
+
+    if (!profileData) {
+      // User doesn't exist
+      return NextResponse.json({
+        exists: false,
+        hasPassword: false,
+        needsPasswordSetup: false,
+        userId: null
+      });
+    }
+
+    // User exists - now check if they have a password set
+    // Check auth.identities table to see if they have email provider
+    const { data: identities, error: identitiesError } = await supabase
+      .from('identities')
+      .select('provider')
+      .eq('user_id', profileData.user_id);
+
+    if (identitiesError) {
+      console.error('[Check User] Error checking identities:', identitiesError);
+    }
+
+    // Check if user has 'email' provider (means they have password)
+    const hasEmailProvider = identities?.some(identity => identity.provider === 'email');
+
+    // If they don't have email provider, they need password setup
+    const needsPasswordSetup = !hasEmailProvider;
+
+    console.log(`[Check User] ${email}: exists=true, hasPassword=${hasEmailProvider}, needsSetup=${needsPasswordSetup}`);
+
+    return NextResponse.json({
+      exists: true,
+      hasPassword: hasEmailProvider,
+      needsPasswordSetup: needsPasswordSetup,
+      userId: profileData.user_id,
+      hasCompletedOnboarding: profileData.has_completed_onboarding
+    });
+
+  } catch (err) {
+    console.error('[Check User] Error:', err);
+    return NextResponse.json({ error: 'Check failed' }, { status: 500 });
+  }
+}

@@ -165,10 +165,10 @@ export const processNextStep = async (
     };
   }
 
-  // --- EXISTING MEMBER FLOW ---
+  // --- EXISTING MEMBER FLOW (PHASE 1: Updated for gated system) ---
   if (currentFlow === 'EXISTING') {
-      // Logic for existing member handling (Simplified for demo to prompt email)
       if (step === 0) {
+          // Ask for email
           nextMessages.push({
               id: generateId(),
               type: 'bot',
@@ -178,9 +178,18 @@ export const processNextStep = async (
       } else if (step === 1) {
           const email = input as string;
           nextFormData.email = email;
-          const { exists } = await checkEmail(email);
           
-          if (exists) {
+          // Call new check-user API that checks password status
+          const checkResponse = await fetch('/api/auth/check-user', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+          });
+          
+          const checkResult = await checkResponse.json();
+          
+          if (!checkResult.exists) {
+              // User doesn't exist - show options
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
