@@ -1,6 +1,6 @@
 "use client"
 
-import { Edit, List, GripVertical, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { Edit, List, GripVertical, ChevronLeft, ChevronRight, Plus, Eye, EyeOff } from "lucide-react";
 
 import {
   Dialog,
@@ -42,8 +42,12 @@ import AddNewSkill from "./components/add-new-skill";
 import { useProfile, ProfileData } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
 import ProfileSkeleton from "./components/ProfileSkeleton";
+import LanguagesSection from "./components/LanguagesSection";
+import ContactDetailsSection from "./components/ContactDetailsSection";
+import AvailableToTravelSection from "./components/AvailableToTravelSection";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
-type SectionType = "about" | "skills" | "credits"
+type SectionType = "about" | "skills" | "credits" | "languages" | "contact_details" | "available_to_travel"
 
 // Extended profile type to include additional fields not in the base ProfileData
 interface ExtendedProfileData extends ProfileData {
