@@ -270,7 +270,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+                <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
                 {isSaved ? 'Saved' : 'Save'}
               </>
             )}
