@@ -175,22 +175,52 @@ export default function ExplorePage({
   
   return (
     <>
-      <div className="w-full flex flex-col items-center gap-4">
+      <div className="w-full flex flex-col gap-4">
         {/* Sorting Controls - Above profile grid */}
-        <div className="w-full max-w-[615px] flex justify-end items-center gap-2 px-2 md:px-0 mb-2">
-          <span className="text-sm text-gray-600 flex items-center gap-1">
+        <div className="w-full flex justify-end items-center gap-2 px-2 md:px-0 mb-2" data-testid="sorting-controls">
+          <span className="text-sm text-gray-600 font-medium flex items-center gap-1.5">
             <ArrowUpDown className="h-4 w-4" />
             Sort by:
           </span>
           <Select value={sortBy} onValueChange={(value) => handleSortChange(value as SortOption)}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-300 text-gray-900">
+            <SelectTrigger 
+              className="w-[180px] h-10 bg-white border border-gray-300 hover:border-gray-400 text-gray-900 rounded-lg shadow-sm transition-colors"
+              data-testid="sort-dropdown-trigger"
+            >
               <SelectValue placeholder="Select sorting" />
             </SelectTrigger>
-            <SelectContent className="bg-white border border-gray-200 shadow-lg">
-              <SelectItem value="newest" className="cursor-pointer hover:bg-gray-100">Newest First</SelectItem>
-              <SelectItem value="oldest" className="cursor-pointer hover:bg-gray-100">Oldest First</SelectItem>
-              <SelectItem value="name-asc" className="cursor-pointer hover:bg-gray-100">Name (A-Z)</SelectItem>
-              <SelectItem value="name-desc" className="cursor-pointer hover:bg-gray-100">Name (Z-A)</SelectItem>
+            <SelectContent 
+              className="bg-white border border-gray-200 shadow-lg rounded-lg" 
+              data-testid="sort-dropdown-content"
+            >
+              <SelectItem 
+                value="newest" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-newest"
+              >
+                Newest First
+              </SelectItem>
+              <SelectItem 
+                value="oldest" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-oldest"
+              >
+                Oldest First
+              </SelectItem>
+              <SelectItem 
+                value="name-asc" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-name-asc"
+              >
+                Name (A-Z)
+              </SelectItem>
+              <SelectItem 
+                value="name-desc" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-name-desc"
+              >
+                Name (Z-A)
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
