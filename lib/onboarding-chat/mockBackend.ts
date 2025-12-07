@@ -19,7 +19,12 @@ export const submitData = async (userType: Persona, formData: FormData): Promise
   }
 };
 
-export const checkEmail = async (email: string): Promise<{ exists: boolean }> => {
+export const checkEmail = async (email: string): Promise<{ 
+  exists: boolean;
+  isRegistered: boolean;
+  hasCompletedOnboarding: boolean;
+  message?: string;
+}> => {
   try {
     const response = await fetch('/api/hpd/check-email', {
       method: 'POST',
@@ -29,11 +34,16 @@ export const checkEmail = async (email: string): Promise<{ exists: boolean }> =>
 
     if (response.ok) {
       const data = await response.json();
-      return { exists: data.exists };
+      return {
+        exists: data.exists || false,
+        isRegistered: data.isRegistered || false,
+        hasCompletedOnboarding: data.hasCompletedOnboarding || false,
+        message: data.message
+      };
     }
-    return { exists: false };
+    return { exists: false, isRegistered: false, hasCompletedOnboarding: false };
   } catch (error) {
     console.error('Check email error:', error);
-    return { exists: false };
+    return { exists: false, isRegistered: false, hasCompletedOnboarding: false };
   }
 };
