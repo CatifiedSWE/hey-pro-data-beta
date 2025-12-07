@@ -105,6 +105,8 @@ export default function ExplorePage({
 
   // Handle sort change - refetch all profiles with new sorting
   const handleSortChange = async (newSort: SortOption) => {
+    if (sortBy === newSort) return; // Don't refetch if same sort is selected
+    
     setSortBy(newSort);
     setIsLoading(true);
     
@@ -137,7 +139,7 @@ export default function ExplorePage({
       
       if (response.data.success) {
         setProfiles(response.data.data.profiles);
-        setPage(response.data.data.pagination.currentPage);
+        setPage(1); // Reset to page 1 when sorting changes
         setHasNextPage(response.data.data.pagination.hasNextPage);
       }
     } catch (error) {
