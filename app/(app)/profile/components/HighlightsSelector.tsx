@@ -297,7 +297,7 @@ export function HighlightsSelector({
                                 Saving...
                             </>
                         ) : (
-                            `Save Highlights (${selectedItems.length})`
+                            `Save Heylights (${selectedItems.length})`
                         )}
                     </Button>
                 </div>
