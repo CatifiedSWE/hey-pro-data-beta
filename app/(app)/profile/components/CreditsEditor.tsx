@@ -590,7 +590,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     </div>
                                 ) : (
                                     <div className="rounded-[20px] border border-dashed border-[#31A7AC] bg-white/80 px-6 py-8 text-center">
-                                        <p className="text-sm text-[#211536] font-medium mb-2">Upload artwork / press stills</p>
+                                        <p className="text-sm text-[#211536] font-medium mb-2">Upload image (Max 5 MB)</p>
                                         <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB</p>
                                         <Button
                                             type="button"
@@ -614,7 +614,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
 
                         <div className="hidden lg:block w-px bg-gradient-to-b from-[#31A7AC] via-[#FA6E80] to-[#F8B661] rounded-full" aria-hidden />
 
-                        <section className="flex-1 rounded-[20px] bg-white text-[#211536] p-6 space-y-5">
+                        <section className="flex-1 rounded-[20px] text-[#211536] space-y-5">
                             <div className="flex items-center justify-between gap-3">
                                 <div>
                                     <p className="text-[22px] text-[#000000]">My Accolades</p>
