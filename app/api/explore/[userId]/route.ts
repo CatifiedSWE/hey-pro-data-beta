@@ -248,12 +248,17 @@ export async function GET(
       })) || [],
       languages: languages?.map(lang => ({
         id: lang.id,
-        language: lang.language,
+        language_name: lang.language_name,
+        language: lang.language_name, // For backward compatibility
+        can_speak: lang.can_speak,
+        can_write: lang.can_write,
         proficiency: lang.proficiency
       })) || [],
       travelCountries: travelCountries?.map(tc => ({
         id: tc.id,
-        country: tc.country
+        country_name: tc.country_name,
+        country: tc.country_name, // For backward compatibility
+        country_code: tc.country_code
       })) || [],
       credits: credits?.map(c => ({
         id: c.id,
