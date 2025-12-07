@@ -555,3 +555,26 @@ function SkillsSection({ skills, onUpdate, isVisible, onVisibilityToggle }: { sk
     </div>
   )
 }
+
+function CreditsSectionWrapper({ isVisible, onVisibilityToggle }: { isVisible: boolean; onVisibilityToggle: () => void }) {
+  return (
+    <div className="relative">
+      <div className="absolute top-[29px] right-[29px] z-10">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={onVisibilityToggle}
+          className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
+          title={isVisible ? "Hide from public" : "Show to public"}
+        >
+          {isVisible ? (
+            <Eye className="h-5 w-5 text-[#31A7AC]" />
+          ) : (
+            <EyeOff className="h-5 w-5 text-gray-400" />
+          )}
+        </Button>
+      </div>
+      <CreditsSection />
+    </div>
+  );
+}
