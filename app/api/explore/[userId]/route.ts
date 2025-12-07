@@ -313,6 +313,14 @@ export async function GET(
         date: a.availability_date,
         status: a.status
       })) || [],
+      visa: visaInfo ? {
+        nationality: visaInfo.nationality,
+        visaType: visaInfo.visa_type,
+        issuedBy: visaInfo.issued_by,
+        expiryDate: visaInfo.expiry_date,
+        passportExpiryDate: visaInfo.passport_expiry_date
+      } : null,
+      workIdentities: profile.work_identities,
       userHasSaved: userHasSaved,
       createdAt: profile.created_at,
       updatedAt: profile.updated_at
