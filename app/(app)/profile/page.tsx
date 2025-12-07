@@ -83,7 +83,7 @@ export default function Profile() {
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false)
   
   // Use the profile hook for real data
-  const { profile, links, recommendations, roles, skills, visa, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills } = useProfile();
+  const { profile, links, recommendations, roles, skills, visa, travelCountries, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills, fetchTravelCountries } = useProfile();
   
   // Use the section visibility hook
   const { visibility, loading: visibilityLoading, toggleVisibility } = useSectionVisibility();
