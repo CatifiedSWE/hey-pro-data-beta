@@ -617,9 +617,8 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                         <section className="flex-1 rounded-[20px] text-[#211536] space-y-5">
                             <div className="flex items-center justify-between gap-3">
                                 <div>
-                                    <p className="text-[22px] text-[#000000]">My Accolades</p>
+                                    <h2 className="text-[22px] leading-[34px] font-[400] text-[#211536]">My Accolades</h2>
                                 </div>
-
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
@@ -662,10 +661,10 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-full justify-start rounded-[15px] h-[41px] border border-[#828282] bg-white px-5 text-sm font-normal text-[#211536]"
+                                            className="w-full justify-start rounded-[15px] h-[41px] border border-[#DCDCDC] bg-[#FBFBFB] px-4 text-sm font-normal text-[#211536]"
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4 text-[#9F9F9F]" />
-                                            {accoladeForm.year || "Select year"}
+                                            {accoladeForm.year || "Year"}
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">
@@ -686,7 +685,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 <Button
                                     onClick={handleAddAward}
                                     size="sm"
-                                    className="border h-[41px] rounded-[15px] "
+                                    className="border h-[41px] rounded-[15px]"
                                     variant="default"
                                 >
                                     Add new award
