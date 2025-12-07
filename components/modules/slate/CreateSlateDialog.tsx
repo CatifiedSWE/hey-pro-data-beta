@@ -45,11 +45,40 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
             return;
         }
 
-        setMediaFile(file);
         setMediaType(type);
         
-        const url = URL.createObjectURL(file);
-        setMediaPreview(url);
+        // For videos, just set the preview directly
+        if (type === "video") {
+            setMediaFile(file);
+            const url = URL.createObjectURL(file);
+            setMediaPreview(url);
+        } else {
+            // For images, open the cropper
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImageToCrop(reader.result as string);
+                setCropperOpen(true);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCropComplete = (croppedImage: string) => {
+        // Convert base64 to File object
+        fetch(croppedImage)
+            .then(res => res.blob())
+            .then(blob => {
+                const file = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
+                setMediaFile(file);
+                setMediaPreview(croppedImage);
+            });
+    };
+
+    const handleEditImage = () => {
+        if (mediaPreview && mediaType === "image") {
+            setImageToCrop(mediaPreview);
+            setCropperOpen(true);
+        }
     };
 
     const clearMedia = () => {
