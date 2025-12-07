@@ -17,6 +17,7 @@ interface UserProfileData {
   avatar: string;
   banner: string;
   bio: string;
+  about?: string;
   country: string;
   city: string;
   location: string;
@@ -127,12 +128,10 @@ export default function ReadOnlyProfileContent({ profile }: ReadOnlyProfileProps
         {/* Header (ShortProfile) */}
         <ReadOnlyShortProfile profile={profile} />
 
-        <div className="w-full bg-slate-200 h-px sm:h-[1px] mb-5" />
-
         {/* Tabs & Content */}
         <div className="space-y-2 mx-auto w-full">
-          {/* Tabs Buttons */}
-          <div className="flex flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8">
+          {/* Tabs Buttons - Hidden */}
+          <div className="flex flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8" style={{ display: 'none' }}>
             <Button
               onClick={() => setActiveTab("profile")}
               className={`flex-1 min-h-[44px] text-sm sm:text-base font-semibold rounded-[12px] sm:rounded-[15px] ${
@@ -165,7 +164,7 @@ export default function ReadOnlyProfileContent({ profile }: ReadOnlyProfileProps
               
               <div className="space-y-8">
                 {/* About */}
-                <ReadOnlyAbout bio={profile.bio} />
+                <ReadOnlyAbout about={profile.about} />
 
                 {/* Skills */}
                 <ReadOnlySkills skills={profile.skills} />
@@ -353,8 +352,8 @@ function ReadOnlyShortProfile({ profile }: { profile: UserProfileData }) {
   );
 }
 
-function ReadOnlyAbout({ bio }: { bio: string }) {
-  if (!bio) return null;
+function ReadOnlyAbout({ about }: { about?: string }) {
+  if (!about) return null;
   
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
@@ -362,7 +361,7 @@ function ReadOnlyAbout({ bio }: { bio: string }) {
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">About</h2>
       </div>
       <div className="space-y-4 text-sm leading-[21px] text-[#181818] sm:text-base whitespace-pre-wrap">
-        {bio}
+        {about}
       </div>
     </div>
   );

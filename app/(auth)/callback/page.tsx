@@ -22,6 +22,14 @@ export default function AuthCallback() {
       apiCallbackUrl.searchParams.set(key, value);
     });
 
+    // Check if there's a stored redirect destination from localStorage
+    const storedRedirect = localStorage.getItem('auth_redirect_after_login');
+    if (storedRedirect) {
+      apiCallbackUrl.searchParams.set('next', storedRedirect);
+      // Clean up localStorage
+      localStorage.removeItem('auth_redirect_after_login');
+    }
+
     console.log('[Callback Page] Redirecting to server-side handler...');
     window.location.href = apiCallbackUrl.toString();
   }, []);

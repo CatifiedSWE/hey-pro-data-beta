@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react"
 import Image from "next/image"
-import { LinkIcon, MapPin, Calendar as CalendarIcon, Heart, MessageCircle, Loader2 } from "lucide-react"
+import { LinkIcon, MapPin, Calendar as CalendarIcon, Bookmark, MessageCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { countries } from "@/lib/countries"
 import { ProfileShareModal } from "@/components/profile/ProfileShareModal"
@@ -80,7 +80,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
       if (isSaved) {
         await unsaveProfile(profile.userId || profile.user_id);
         setIsSaved(false);
-        toast.success('Profile removed from saved');
+        toast.success('Profile removed from your saved list');
       } else {
         await saveProfile(profile.userId || profile.user_id);
         setIsSaved(true);
@@ -150,7 +150,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
             {saveLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+              <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
             )}
           </button>
           
@@ -171,7 +171,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
         </div>
       </div>
       
-      <div className="flex sm:mt-10 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
+      <div className="flex sm:mt-4 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-4">
             <h1 className="text-[22px] font-semibold leading-[33px] text-black">{displayName}</h1>
@@ -200,6 +200,41 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
               </div>
             )}
           </div>
+          
+          {/* Visa Details and Work Status */}
+          {(profile?.visa || profile?.workIdentities) && (
+            <div className="flex flex-col gap-1 text-sm text-gray-600">
+              {profile?.visa && (profile.visa.nationality || profile.visa.visaType || profile.visa.issuedBy) && (
+                <div className="flex items-center gap-1">
+                  <span>
+                    {[profile.visa.nationality, profile.visa.visaType, profile.visa.issuedBy]
+                      .filter(Boolean)
+                      .join(' • ')}
+                  </span>
+                </div>
+              )}
+              
+              {profile?.workIdentities && (
+                <div className="flex items-center gap-1">
+                  {profile.workIdentities.freelance && <span>Freelance</span>}
+                  {profile.workIdentities.employee?.enabled && (
+                    <span>
+                      {profile.workIdentities.freelance ? ' • ' : ''}
+                      {profile.workIdentities.employee.designation || 'Employee'}
+                      {profile.workIdentities.employee.company && ` at ${profile.workIdentities.employee.company}`}
+                    </span>
+                  )}
+                  {profile.workIdentities.businessOwner?.enabled && (
+                    <span>
+                      {(profile.workIdentities.freelance || profile.workIdentities.employee?.enabled) ? ' • ' : ''}
+                      {profile.workIdentities.businessOwner.designation || 'Business Owner'}
+                      {profile.workIdentities.businessOwner.businessName && ` at ${profile.workIdentities.businessOwner.businessName}`}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -235,7 +270,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+                <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
                 {isSaved ? 'Saved' : 'Save'}
               </>
             )}

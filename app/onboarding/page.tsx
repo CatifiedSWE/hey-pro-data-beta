@@ -7,6 +7,7 @@ import { ChatState } from '@/lib/onboarding-chat/types';
 import { Mascot } from '@/app/components/onboarding-chat/Mascot';
 import { OptionCard } from '@/app/components/onboarding-chat/OptionCard';
 import { ShareCard } from '@/app/components/onboarding-chat/ShareCard';
+import { GoogleAuthButton } from '@/app/components/onboarding-chat/GoogleAuthButton';
 
 export default function OnboardingPage() {
   const [chatState, setChatState] = useState<ChatState>(INITIAL_STATE);
@@ -42,6 +43,7 @@ export default function OnboardingPage() {
   const needsInput = ['text', 'email', 'password', 'phone', 'url', 'textarea'].includes(currentMessage.inputType || '');
   const isOptions = currentMessage.inputType === 'options_only';
   const isShareCard = currentMessage.inputType === 'share_card';
+  const isGoogleAuth = currentMessage.inputType === 'google_auth';
   const isSingleOption = currentMessage.options && currentMessage.options.length === 1;
 
   const handleOptionSelect = (value: string) => {
@@ -232,6 +234,8 @@ export default function OnboardingPage() {
 
             {isShareCard && <ShareCard />}
 
+            {isGoogleAuth && <GoogleAuthButton disabled={isProcessing} />}
+
             {needsInput && currentMessage.inputType !== 'textarea' && (
               <div className="relative group max-w-3xl mx-auto">
                 <input
@@ -289,7 +293,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Footer */}
-      {!isOptions && !isShareCard && (
+      {!isOptions && !isShareCard && !isGoogleAuth && (
         <div className="border-t-2 border-slate-200 bg-white p-4 md:p-6 pb-8 z-20">
           <div className="max-w-3xl mx-auto flex justify-between items-center">
             <div className="hidden md:block">

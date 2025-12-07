@@ -79,6 +79,13 @@ export async function GET(
       .select('*')
       .eq('user_id', userId);
 
+    // Fetch visa information
+    const { data: visaInfo } = await supabase
+      .from('user_visa_info')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
     // Fetch credits with full details
     const { data: credits } = await supabase
       .from('user_credits')
@@ -210,7 +217,8 @@ export async function GET(
       displayName: displayName,
       avatar: profileAvatar,
       banner: profile.banner_url,
-      bio: profile.bio,
+      bio: profile.bio, // Short bio for profile card
+      about: profile.about, // Detailed about section
       country: profile.country,
       city: profile.city,
       location: profile.city && profile.country 
@@ -248,12 +256,17 @@ export async function GET(
       })) || [],
       languages: languages?.map(lang => ({
         id: lang.id,
-        language: lang.language,
+        language_name: lang.language_name,
+        language: lang.language_name, // For backward compatibility
+        can_speak: lang.can_speak,
+        can_write: lang.can_write,
         proficiency: lang.proficiency
       })) || [],
       travelCountries: travelCountries?.map(tc => ({
         id: tc.id,
-        country: tc.country
+        country_name: tc.country_name,
+        country: tc.country_name, // For backward compatibility
+        country_code: tc.country_code
       })) || [],
       credits: credits?.map(c => ({
         id: c.id,
@@ -300,6 +313,14 @@ export async function GET(
         date: a.availability_date,
         status: a.status
       })) || [],
+      visa: visaInfo ? {
+        nationality: visaInfo.nationality,
+        visaType: visaInfo.visa_type,
+        issuedBy: visaInfo.issued_by,
+        expiryDate: visaInfo.expiry_date,
+        passportExpiryDate: visaInfo.passport_expiry_date
+      } : null,
+      workIdentities: profile.work_identities,
       userHasSaved: userHasSaved,
       createdAt: profile.created_at,
       updatedAt: profile.updated_at

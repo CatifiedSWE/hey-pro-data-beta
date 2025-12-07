@@ -10,7 +10,7 @@ import { cookies } from 'next/headers';
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const next = requestUrl.searchParams.get('next') || '/slate';
+  const next = requestUrl.searchParams.get('next') || '/profile';
 
   console.log('[Auth Callback API] Processing OAuth callback...');
 
@@ -65,13 +65,23 @@ export async function GET(request: NextRequest) {
     try {
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
-        .select('user_id, first_name, surname')
+        .select('user_id, first_name, surname, has_completed_onboarding')
         .eq('user_id', session.user.id)
         .single();
 
       if (profileError || !profile || !profile.first_name || !profile.surname) {
         console.log('[Auth Callback API] No complete profile, redirecting to form');
         return NextResponse.redirect(new URL('/form', request.url));
+      }
+
+      // If redirecting to /profile and user hasn't completed onboarding yet,
+      // mark them as completed to prevent redirect loop back to onboarding
+      if (next === '/profile' && !profile.has_completed_onboarding) {
+        console.log('[Auth Callback API] Marking Google OAuth user as having completed onboarding');
+        await supabase
+          .from('user_profiles')
+          .update({ has_completed_onboarding: true })
+          .eq('user_id', session.user.id);
       }
 
       console.log('[Auth Callback API] Profile found, redirecting to:', next);

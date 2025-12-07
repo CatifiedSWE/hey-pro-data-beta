@@ -93,10 +93,10 @@ export default function UserProfilePage() {
         </Button>
         
         <ReadOnlyShortProfile profile={profile} initialSaved={isSaved} />
-        <div className="w-full bg-slate-200 h-px sm:h-[1px] mb-5" />
 
         <div className="space-y-2 mx-auto w-full">
-          <div className="flex flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8">
+          {/* Profile and Slate buttons - Hidden */}
+          <div className="flex flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8" style={{ display: 'none' }}>
             <Button
               onClick={() => setActiveTab("profile")}
               className={`flex-1 min-h-[44px] text-sm sm:text-base font-semibold rounded-[12px] sm:rounded-[15px] ${
@@ -121,50 +121,55 @@ export default function UserProfilePage() {
 
           {activeTab === "profile" ? (
             <div className="max-w-[600px]">
-              {/* Profile Sections - Only show if visible */}
-              {visibility.about && (
-                <>
-                  <ReadOnlyAboutSection bio={profile.bio} />
-                  <div className="my-8" />
-                </>
-              )}
-              
-              {/* Highlights Section - Shows on mobile above skills */}
+              {/* Highlights Section - Shows on mobile above other sections */}
               <div className="lg:hidden mb-8">
                 <ReadOnlyHighlights highlights={profile.highlights} />
               </div>
               
-              {visibility.skills && (
+              {/* About Section */}
+              {visibility.about && profile.about && (
+                <>
+                  <ReadOnlyAboutSection about={profile.about} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {/* Skills Section */}
+              {visibility.skills && profile.skills && profile.skills.length > 0 && (
                 <>
                   <ReadOnlySkillsSection skills={profile.skills} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.credits && (
+              {/* Credits Section */}
+              {visibility.credits && profile.credits && profile.credits.length > 0 && (
                 <>
                   <ReadOnlyCreditsSection credits={profile.credits} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.languages && (
+              {/* Languages Section */}
+              {visibility.languages && profile.languages && profile.languages.length > 0 && (
                 <>
-                  <ReadOnlyLanguagesSection languages={profile.languages || []} />
+                  <ReadOnlyLanguagesSection languages={profile.languages} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.contact_details && (
+              {/* Contact Details Section */}
+              {visibility.contact_details && (profile.email || profile.phone) && (
                 <>
                   <ReadOnlyContactDetailsSection email={profile.email} phone={profile.phone} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.available_to_travel && (
+              {/* Available to Travel Section */}
+              {visibility.available_to_travel && profile.travelCountries && profile.travelCountries.length > 0 && (
                 <>
-                  <ReadOnlyAvailableToTravelSection travelCountries={profile.travelCountries || []} />
+                  <ReadOnlyAvailableToTravelSection travelCountries={profile.travelCountries} />
                 </>
               )}
             </div>
