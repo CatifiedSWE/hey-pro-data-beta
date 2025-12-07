@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
-import { createServerClient as createSSRClient } from '@supabase/ssr';
 import { sendWaitlistAcknowledgement } from '@/lib/email/acknowledgement';
 
 export async function POST(req: NextRequest) {
