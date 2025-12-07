@@ -13,6 +13,10 @@ import ReadOnlySkillsSection from "./components/ReadOnlySkillsSection";
 import ReadOnlyCreditsSection from "./components/ReadOnlyCreditsSection";
 import ReadOnlyHighlights from "./components/ReadOnlyHighlights";
 import UserSlateView from "./components/UserSlateView";
+import ReadOnlyLanguagesSection from "./components/ReadOnlyLanguagesSection";
+import ReadOnlyContactDetailsSection from "./components/ReadOnlyContactDetailsSection";
+import ReadOnlyAvailableToTravelSection from "./components/ReadOnlyAvailableToTravelSection";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
 export default function UserProfilePage() {
   const params = useParams();
