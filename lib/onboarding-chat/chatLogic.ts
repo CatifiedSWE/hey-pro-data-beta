@@ -377,20 +377,59 @@ export const processNextStep = async (
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Your role in the company?', inputType: 'text' });
       } else if (step === 6) {
           nextFormData.role = input as string;
-          nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone number?', inputType: 'phone' });
+          nextMessages.push({ id: generateId(), type: 'bot', text: 'Email address?', inputType: 'email' });
       } else if (step === 7) {
-          nextFormData.phone = input as string;
-          nextMessages.push({
-              id: generateId(),
-              type: 'bot',
-              text: `Summary:\n${nextFormData.companyName} (${nextFormData.primaryService})\nContact: ${nextFormData.firstName} ${nextFormData.surname}`,
-              options: [
-                { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
-                { label: 'Edit something', value: 'EDIT', icon: 'Edit2' }
-              ],
-              inputType: 'options_only'
-          });
+          nextFormData.email = input as string;
+          
+          // Check if email exists (registered user)
+          const emailCheckResult = await checkEmail(nextFormData.email);
+          
+          if (emailCheckResult.exists && emailCheckResult.isRegistered) {
+              // Email is registered - show login prompt
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: `This email is already registered! Please login to access your profile.`,
+                  options: [
+                      { label: 'Go to Login', value: 'GO_TO_LOGIN', icon: 'LogIn' },
+                      { label: 'Try different email', value: 'RETRY_EMAIL', icon: 'Mail' }
+                  ],
+                  inputType: 'options_only'
+              });
+          } else {
+              // Email is available - proceed to phone
+              nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone number?', inputType: 'phone' });
+          }
       } else if (step === 8) {
+          // Handle login redirect or retry email or phone input
+          if (selectionValue === 'GO_TO_LOGIN') {
+              if (typeof window !== 'undefined') {
+                  window.location.href = '/login';
+              }
+              return currentState;
+          } else if (selectionValue === 'RETRY_EMAIL') {
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'No problem. What's your email?',
+                  inputType: 'email'
+              });
+              nextStep = 7; // Go back to email step
+          } else {
+              // Normal flow - phone input received
+              nextFormData.phone = input as string;
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: `Summary:\n${nextFormData.companyName} (${nextFormData.primaryService})\nContact: ${nextFormData.firstName} ${nextFormData.surname}\n${nextFormData.email}`,
+                  options: [
+                    { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
+                    { label: 'Edit something', value: 'EDIT', icon: 'Edit2' }
+                  ],
+                  inputType: 'options_only'
+              });
+          }
+      } else if (step === 9) {
           if (selectionValue === 'EDIT') {
                nextMessages.push({
                 id: generateId(),
