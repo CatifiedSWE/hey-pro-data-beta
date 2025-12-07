@@ -948,23 +948,13 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-3">
-                                    <select
+                                    <input
                                         value={accoladeForm.type}
                                         onChange={(e) => handleAccoladeChange("type", e.target.value)}
+                                        placeholder="Accolade Type"
                                         className="w-full h-[41px] rounded-[15px] border border-[#DCDCDC] bg-[#FBFBFB] px-4 font-[400] text-sm text-[#211536] placeholder:text-[#9F9F9F] focus-visible:outline-[#31A7AC]"
-                                    >
-                                        <option value="">Accolade Type</option>
-                                        <option value="Best Director">Best Director</option>
-                                        <option value="Best Cinematography">Best Cinematography</option>
-                                        <option value="Best Screenplay">Best Screenplay</option>
-                                        <option value="Best Editing">Best Editing</option>
-                                        <option value="Best Visual Effects">Best Visual Effects</option>
-                                        <option value="Best Sound Design">Best Sound Design</option>
-                                        <option value="Best Production Design">Best Production Design</option>
-                                        <option value="Best Original Score">Best Original Score</option>
-                                        <option value="Best Actor">Best Actor</option>
-                                        <option value="Best Actress">Best Actress</option>
-                                    </select>
+                                        data-testid="accolade-type-input"
+                                    />
                                 </div>
                                 <div className="space-y-3">
                                     <input
