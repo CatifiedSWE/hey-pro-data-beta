@@ -170,20 +170,20 @@ export default function ExplorePage({
     <>
       <div className="w-full flex flex-col items-center gap-4">
         {/* Sorting Controls - Above profile grid */}
-        <div className="w-full max-w-[615px] flex justify-end items-center gap-2 px-2 md:px-0">
+        <div className="w-full max-w-[615px] flex justify-end items-center gap-2 px-2 md:px-0 mb-2">
           <span className="text-sm text-gray-600 flex items-center gap-1">
             <ArrowUpDown className="h-4 w-4" />
             Sort by:
           </span>
           <Select value={sortBy} onValueChange={(value) => handleSortChange(value as SortOption)}>
-            <SelectTrigger className="w-[180px] bg-white border-gray-200">
-              <SelectValue />
+            <SelectTrigger className="w-[180px] bg-white border-gray-300 text-gray-900">
+              <SelectValue placeholder="Select sorting" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-              <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+            <SelectContent className="bg-white border border-gray-200 shadow-lg">
+              <SelectItem value="newest" className="cursor-pointer hover:bg-gray-100">Newest First</SelectItem>
+              <SelectItem value="oldest" className="cursor-pointer hover:bg-gray-100">Oldest First</SelectItem>
+              <SelectItem value="name-asc" className="cursor-pointer hover:bg-gray-100">Name (A-Z)</SelectItem>
+              <SelectItem value="name-desc" className="cursor-pointer hover:bg-gray-100">Name (Z-A)</SelectItem>
             </SelectContent>
           </Select>
         </div>
