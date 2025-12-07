@@ -107,6 +107,7 @@ export default function ExplorePage({
   const handleSortChange = async (newSort: SortOption) => {
     if (sortBy === newSort) return; // Don't refetch if same sort is selected
     
+    console.log('Sorting changed to:', newSort);
     setSortBy(newSort);
     setIsLoading(true);
     
@@ -135,12 +136,16 @@ export default function ExplorePage({
       if (searchParams?.role) params.append('role', searchParams.role as string);
       if (searchParams?.location) params.append('location', searchParams.location as string);
 
+      console.log('Fetching sorted profiles with params:', params.toString());
       const response = await axios.get(`/api/explore?${params.toString()}`);
       
       if (response.data.success) {
+        console.log('Received sorted profiles:', response.data.data.profiles.length);
         setProfiles(response.data.data.profiles);
         setPage(1); // Reset to page 1 when sorting changes
         setHasNextPage(response.data.data.pagination.hasNextPage);
+      } else {
+        console.error('Failed to fetch sorted profiles:', response.data);
       }
     } catch (error) {
       console.error('Error sorting profiles:', error);
