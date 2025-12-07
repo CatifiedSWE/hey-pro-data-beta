@@ -242,7 +242,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                 <FileUploadCard
                     key={field.name}
                     label={field.label}
-                    onFileSelect={(file) => handleInputChange(field.name, file)}
+                    onFileSelect={(url) => handleInputChange(field.name, url)}
                     error={errors[field.name]}
                 />
              ))}
