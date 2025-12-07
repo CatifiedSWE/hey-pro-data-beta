@@ -127,9 +127,9 @@ export default function UserProfilePage() {
               </div>
               
               {/* About Section */}
-              {visibility.about && profile.bio && (
+              {visibility.about && (profile.about || profile.bio) && (
                 <>
-                  <ReadOnlyAboutSection bio={profile.bio} />
+                  <ReadOnlyAboutSection bio={profile.about || profile.bio} />
                   <div className="my-8" />
                 </>
               )}
