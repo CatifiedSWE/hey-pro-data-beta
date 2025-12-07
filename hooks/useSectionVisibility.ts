@@ -54,12 +54,16 @@ export function useSectionVisibility(userId?: string) {
     }));
 
     try {
-      const response = await axios.patch('/api/profile/section-visibility', {
-        section_name: sectionName,
-        is_visible: newVisibility
+      const response = await apiCalling({
+        method: 'patch',
+        route: '/profile/section-visibility',
+        data: {
+          section_name: sectionName,
+          is_visible: newVisibility
+        }
       });
 
-      if (response.data.success) {
+      if (response.status) {
         toast.success(`Section ${newVisibility ? 'shown' : 'hidden'} successfully`);
       } else {
         // Revert on error
@@ -67,7 +71,7 @@ export function useSectionVisibility(userId?: string) {
           ...prev,
           [sectionName]: !newVisibility
         }));
-        toast.error('Failed to update visibility');
+        toast.error(response.message || 'Failed to update visibility');
       }
     } catch (err: any) {
       console.error('Error updating visibility:', err);
@@ -76,7 +80,7 @@ export function useSectionVisibility(userId?: string) {
         ...prev,
         [sectionName]: !newVisibility
       }));
-      toast.error(err.response?.data?.error || 'Failed to update visibility');
+      toast.error('Failed to update visibility');
     }
   };
 
