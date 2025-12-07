@@ -268,7 +268,7 @@ export default function Profile() {
                   </div>
                   
                   <div className="flex-none ">
-                    <AvalableCountryForTravel availableCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} />
+                    <AvalableCountryForTravel availableCountries={travelCountries.map(tc => tc.country_name)} />
                   </div>
                 </div>
                 {showLeftArrow && (
