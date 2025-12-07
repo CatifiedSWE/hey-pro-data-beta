@@ -164,7 +164,7 @@ export default function ReadOnlyProfileContent({ profile }: ReadOnlyProfileProps
               
               <div className="space-y-8">
                 {/* About */}
-                <ReadOnlyAbout bio={profile.bio} />
+                <ReadOnlyAbout about={profile.about} />
 
                 {/* Skills */}
                 <ReadOnlySkills skills={profile.skills} />
