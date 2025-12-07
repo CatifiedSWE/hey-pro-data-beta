@@ -19,12 +19,38 @@ export default function SetPasswordPage() {
   useEffect(() => {
     // Check if we have a valid session from the magic link
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      // First, try to get the hash from URL which contains the access token
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
+      const type = hashParams.get('type');
+
+      // If we have tokens in the URL (from password reset email), set the session
+      if (accessToken && type === 'recovery') {
+        console.log('[Set Password] Recovery tokens found in URL, setting session...');
+        const { data, error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || ''
+        });
+
+        if (sessionError || !data.session) {
+          console.error('[Set Password] Failed to set session:', sessionError);
+          setValidToken(false);
+          setError('Invalid or expired link. Please request a new password setup link.');
+          return;
+        }
+
+        console.log('[Set Password] Session established successfully');
         setValidToken(true);
       } else {
-        setValidToken(false);
-        setError('Invalid or expired link. Please request a new password setup link.');
+        // No tokens in URL, check if we already have a session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setValidToken(true);
+        } else {
+          setValidToken(false);
+          setError('Invalid or expired link. Please request a new password setup link.');
+        }
       }
     };
 
@@ -68,12 +94,28 @@ export default function SetPasswordPage() {
 
     try {
       // Update the user's password
-      const { error: updateError } = await supabase.auth.updateUser({
+      const { data: userData, error: updateError } = await supabase.auth.updateUser({
         password: password
       });
 
       if (updateError) {
         throw updateError;
+      }
+
+      // Mark onboarding as complete in user_profiles table
+      if (userData?.user?.id) {
+        console.log('[Set Password] Marking onboarding as complete for user:', userData.user.id);
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .update({ has_completed_onboarding: true })
+          .eq('user_id', userData.user.id);
+
+        if (profileError) {
+          console.error('[Set Password] Failed to update onboarding status:', profileError);
+          // Don't fail the whole operation if this fails
+        } else {
+          console.log('[Set Password] Onboarding marked as complete');
+        }
       }
 
       setSuccess(true);
