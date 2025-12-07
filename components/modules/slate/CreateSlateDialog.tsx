@@ -5,10 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { X, Image as ImageIcon, MapPin, Tag, Loader2 } from "lucide-react";
+import { X, Image as ImageIcon, MapPin, Tag, Loader2, Edit } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase/client";
+import { ImageCropper } from "@/components/ui/image-cropper";
 
 interface CreateSlateDialogProps {
     open: boolean;
