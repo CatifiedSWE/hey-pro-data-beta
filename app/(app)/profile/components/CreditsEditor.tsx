@@ -369,16 +369,15 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                     <DialogTitle>{mode === 'edit' ? 'Edit Credit' : 'Add New Credit'}</DialogTitle>
                 </VisuallyHidden>
                 <div className="px-[30px] pt-[30px] pb-6 flex flex-col gap-6">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                            <h2 className="text-[20px] leading-[34px] font-[400]  text-[#211536]">
-                                {mode === 'edit' ? 'Edit Credit' : 'Add New Credit'}
-                            </h2>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        <section className=" rounded-[20px] p-6 space-y-5">
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        <section className="flex-1 rounded-[20px] space-y-5">
+                            <div className="flex flex-wrap items-start justify-between gap-4">
+                                <div>
+                                    <h2 className="text-[22px] leading-[34px] font-[400] text-[#211536]">
+                                        {mode === 'edit' ? 'Edit Credit' : 'Manage Credits'}
+                                    </h2>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <select
