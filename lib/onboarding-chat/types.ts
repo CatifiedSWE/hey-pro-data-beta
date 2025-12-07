@@ -11,6 +11,7 @@ export type MessageType = 'bot' | 'user';
 export type InputType = 
   | 'text'
   | 'email'
+  | 'password'
   | 'phone'
   | 'url'
   | 'textarea'

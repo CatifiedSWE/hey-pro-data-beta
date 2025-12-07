@@ -39,7 +39,7 @@ export default function OnboardingPage() {
 
   const isLastMessage = visibleMessageIndex === chatState.messages.length - 1;
   const progress = Math.min(((visibleMessageIndex + 1) / (chatState.messages.length + 2)) * 100, 100);
-  const needsInput = ['text', 'email', 'phone', 'url', 'textarea'].includes(currentMessage.inputType || '');
+  const needsInput = ['text', 'email', 'password', 'phone', 'url', 'textarea'].includes(currentMessage.inputType || '');
   const isOptions = currentMessage.inputType === 'options_only';
   const isShareCard = currentMessage.inputType === 'share_card';
   const isSingleOption = currentMessage.options && currentMessage.options.length === 1;
@@ -232,13 +232,13 @@ export default function OnboardingPage() {
 
             {isShareCard && <ShareCard />}
 
-            {needsInput && (
+            {needsInput && currentMessage.inputType !== 'textarea' && (
               <div className="relative group max-w-3xl mx-auto">
                 <input
                   ref={inputRef as React.RefObject<HTMLInputElement>}
-                  type={currentMessage.inputType === 'phone' ? 'tel' : currentMessage.inputType === 'email' ? 'email' : 'text'}
+                  type={currentMessage.inputType === 'phone' ? 'tel' : currentMessage.inputType === 'email' ? 'email' : currentMessage.inputType === 'password' ? 'password' : 'text'}
                   className="w-full p-6 text-2xl md:text-3xl font-bold border-[3px] border-slate-200 rounded-2xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
-                  placeholder="Type here..."
+                  placeholder={currentMessage.inputType === 'password' ? 'Enter your password...' : 'Type here...'}
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   onKeyDown={handleKeyDown}

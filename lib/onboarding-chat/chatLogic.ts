@@ -373,6 +373,65 @@ export const processNextStep = async (
               });
           }
       } else if (step === 2) {
+          const action = nextFormData.action;
+          
+          // Handle password input for SIGNIN flow
+          if (action === 'SIGNIN' && !selectionValue) {
+              const password = input as string;
+              const email = nextFormData.email;
+              
+              // Verify password
+              const verifyResponse = await fetch('/api/auth/verify-password', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password })
+              });
+              
+              const verifyResult = await verifyResponse.json();
+              
+              if (verifyResult.success) {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'Perfect! Signing you in...',
+                      isIntro: true
+                  });
+                  
+                  // Redirect to profile after a short delay
+                  setTimeout(() => {
+                      if (typeof window !== 'undefined') {
+                          window.location.href = '/profile';
+                      }
+                  }, 1500);
+              } else {
+                  // Password incorrect - allow retry
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: verifyResult.error || 'Incorrect password. Please try again.',
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'What would you like to do?',
+                      options: [
+                          { label: 'Try again', value: 'RETRY_PASSWORD', icon: 'RefreshCcw' },
+                          { label: 'Try different email', value: 'RETRY_EMAIL', icon: 'Mail' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 1000
+                  });
+                  nextStep = 3; // Move to step 3 for retry handling
+              }
+              return {
+                  formData: nextFormData,
+                  step: nextStep,
+                  messages: [...currentState.messages, ...nextMessages]
+              };
+          }
+          
           if (selectionValue === 'RETRY') {
               nextMessages.push({
                   id: generateId(),
@@ -381,21 +440,25 @@ export const processNextStep = async (
                   inputType: 'email'
               });
               nextStep = 1; // Reset to step 1 so next input is treated as email
-          } else if (selectionValue === 'RESEND_LOGIN') {
-              // Resend login link
-              await fetch('/api/auth/send-login-link', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email: nextFormData.email })
-              });
-              
+          } else if (selectionValue === 'SWITCH_TO_SIGNIN') {
+              // User wants to switch to sign in
+              nextFormData.action = 'SIGNIN';
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Link resent! Check your email.',
-                  isIntro: true
+                  text: 'Welcome back! Please enter your password to continue.',
+                  inputType: 'password'
               });
-              nextStep = step; // Stay on current step
+          } else if (selectionValue === 'SWITCH_TO_ACTIVATION') {
+              // User wants to switch to activation
+              nextFormData.action = 'ACTIVATION';
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "Got it. Enter your email and I'll send you a secure link to set your password.",
+                  inputType: 'email'
+              });
+              nextStep = 1; // Go back to email input
           } else if (selectionValue === 'RESEND_SETUP') {
               // Resend password setup link
               const resendResponse = await fetch('/api/auth/send-password-setup-link', {
@@ -449,19 +512,34 @@ export const processNextStep = async (
                       { id: generateId(), type: 'bot', text: 'What’s the Company name?', inputType: 'text', delay: 1000 }
                   ]
               };
-          } else if (selectionValue === 'SIGNIN') {
-              // Redirect to login page
-              if (typeof window !== 'undefined') {
-                  window.location.href = '/login';
-              }
+          } else if (selectionValue === 'DONE') {
+              // End conversation
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Redirecting you to sign-in page...',
+                  text: 'All set. See you soon!',
                   isIntro: true
               });
+          }
+      } else if (step === 3) {
+          // Handle retry options after failed password attempt
+          if (selectionValue === 'RETRY_PASSWORD') {
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Please enter your password to continue.',
+                  inputType: 'password'
+              });
+              nextStep = 2; // Go back to password input
+          } else if (selectionValue === 'RETRY_EMAIL') {
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'What is your email address?',
+                  inputType: 'email'
+              });
+              nextStep = 1; // Go back to email input
           } else if (selectionValue === 'DONE') {
-              // End conversation
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
@@ -523,13 +601,25 @@ export const processNextStep = async (
             });
         }
     } else if (step === 6) {
-        // Handle Confirmation or Login redirect
+        // Handle Confirmation or Email retry
         if (selectionValue === 'GO_TO_LOGIN') {
-            // Redirect to login page
-            if (typeof window !== 'undefined') {
-                window.location.href = '/login';
-            }
-            return currentState; // Return current state to prevent further processing
+            // Instead of redirecting to login, prompt them to use "I am an existing user" flow
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: "To sign in, please refresh the page and select 'I'm an existing member' → 'Sign in to profile'.",
+                isIntro: true
+            });
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: 'Need help?',
+                options: [
+                    { label: 'Restart now', value: 'RESTART', icon: 'RotateCcw' }
+                ],
+                inputType: 'options_only',
+                delay: 1000
+            });
         } else if (selectionValue === 'RETRY_EMAIL') {
             // Go back to email input
             nextMessages.push({
@@ -640,12 +730,25 @@ export const processNextStep = async (
               nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone number?', inputType: 'phone' });
           }
       } else if (step === 8) {
-          // Handle login redirect or retry email or phone input
+          // Handle email retry or phone input
           if (selectionValue === 'GO_TO_LOGIN') {
-              if (typeof window !== 'undefined') {
-                  window.location.href = '/login';
-              }
-              return currentState;
+              // Instead of redirecting to login, prompt them to use "I am an existing user" flow
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "To sign in, please refresh the page and select 'I'm an existing member' → 'Sign in to profile'.",
+                  isIntro: true
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Need help?',
+                  options: [
+                      { label: 'Restart now', value: 'RESTART', icon: 'RotateCcw' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 1000
+              });
           } else if (selectionValue === 'RETRY_EMAIL') {
               nextMessages.push({
                   id: generateId(),
@@ -747,12 +850,25 @@ export const processNextStep = async (
               nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone?', inputType: 'phone' });
           }
       } else if (step === 4) {
-          // Handle login redirect or retry email
+          // Handle email retry or phone input
           if (selectionValue === 'GO_TO_LOGIN') {
-              if (typeof window !== 'undefined') {
-                  window.location.href = '/login';
-              }
-              return currentState;
+              // Instead of redirecting to login, prompt them to use "I am an existing user" flow
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "To sign in, please refresh the page and select 'I'm an existing member' → 'Sign in to profile'.",
+                  isIntro: true
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Need help?',
+                  options: [
+                      { label: 'Restart now', value: 'RESTART', icon: 'RotateCcw' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 1000
+              });
           } else if (selectionValue === 'RETRY_EMAIL') {
               nextMessages.push({
                   id: generateId(),
