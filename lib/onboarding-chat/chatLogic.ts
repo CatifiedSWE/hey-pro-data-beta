@@ -230,17 +230,22 @@ export const processNextStep = async (
                   delay: 1000
               });
           } else if (checkResult.exists && checkResult.hasPassword) {
-              // User EXISTS and HAS password - send login link
+              // User EXISTS and HAS authentication (password OR Google) - send login link
               await fetch('/api/auth/send-login-link', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ email })
               });
               
+              // Customize message based on auth type
+              const welcomeMessage = checkResult.hasGoogleAuth 
+                  ? 'Welcome back! I've sent a secure login link to your email.'
+                  : 'Welcome back! I've sent a secure login link to your email.';
+              
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Welcome back! I've sent a secure login link to your email.',
+                  text: welcomeMessage,
                   isIntro: true
               });
               nextMessages.push({
@@ -262,7 +267,7 @@ export const processNextStep = async (
                   delay: 2000
               });
           } else if (checkResult.exists && !checkResult.hasPassword) {
-              // User EXISTS but NO password - send password setup link
+              // User EXISTS but NO authentication method at all - send password setup link
               await fetch('/api/auth/send-password-setup-link', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },

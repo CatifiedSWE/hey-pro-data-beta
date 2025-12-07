@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // User exists - now check if they have a password set
-    // Check auth.identities table to see if they have email provider
+    // User exists - now check if they have any authentication method
+    // Check auth.identities table to see what providers they have
     const { data: identities, error: identitiesError } = await supabase
       .from('identities')
       .select('provider')
@@ -43,17 +43,24 @@ export async function POST(req: NextRequest) {
       console.error('[Check User] Error checking identities:', identitiesError);
     }
 
-    // Check if user has 'email' provider (means they have password)
+    // Check if user has 'email' provider (password auth)
     const hasEmailProvider = identities?.some(identity => identity.provider === 'email');
+    
+    // Check if user has 'google' provider (Google OAuth)
+    const hasGoogleProvider = identities?.some(identity => identity.provider === 'google');
+    
+    // User has authentication if they have email OR google provider
+    const hasAuthentication = hasEmailProvider || hasGoogleProvider;
+    
+    // Only need password setup if user exists but has NO authentication method at all
+    const needsPasswordSetup = !hasAuthentication;
 
-    // If they don't have email provider, they need password setup
-    const needsPasswordSetup = !hasEmailProvider;
-
-    console.log(`[Check User] ${email}: exists=true, hasPassword=${hasEmailProvider}, needsSetup=${needsPasswordSetup}`);
+    console.log(`[Check User] ${email}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuth=${hasAuthentication}, needsSetup=${needsPasswordSetup}`);
 
     return NextResponse.json({
       exists: true,
-      hasPassword: hasEmailProvider,
+      hasPassword: hasAuthentication, // True if they have ANY auth method (email or google)
+      hasGoogleAuth: hasGoogleProvider,
       needsPasswordSetup: needsPasswordSetup,
       userId: profileData.user_id,
       hasCompletedOnboarding: profileData.has_completed_onboarding
