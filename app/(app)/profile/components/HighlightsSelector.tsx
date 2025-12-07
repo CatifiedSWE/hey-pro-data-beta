@@ -189,7 +189,7 @@ export function HighlightsSelector({
                 </TabsTrigger>
                 <TabsTrigger 
                     value="slate" 
-                    className="data-[state=active]:bg-white data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-sm h-10 text-sm md:text-base font-medium transition-all"
+                    className="hidden data-[state=active]:bg-white data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-sm h-10 text-sm md:text-base font-medium transition-all"
                 >
                     <LayoutGrid className="w-4 h-4 mr-2" />
                     <span className="truncate">Slate ({slatePosts.length})</span>
