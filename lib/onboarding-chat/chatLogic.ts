@@ -460,7 +460,7 @@ export const processNextStep = async (
                     delay: 1000
                 });
           }
-      } else if (step === 9) {
+      } else if (step === 10) {
            if (selectionValue === 'RESTART') {
                window.location.reload();
            } else {
