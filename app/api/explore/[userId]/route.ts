@@ -217,8 +217,8 @@ export async function GET(
       displayName: displayName,
       avatar: profileAvatar,
       banner: profile.banner_url,
-      bio: profile.about || profile.bio, // Prioritize 'about' field
-      about: profile.about || profile.bio, // Also include 'about' for consistency
+      bio: profile.bio, // Short bio for profile card
+      about: profile.about, // Detailed about section
       country: profile.country,
       city: profile.city,
       location: profile.city && profile.country 
