@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import apiCalling from '@/lib/apiCalling';
 import { toast } from 'sonner';
 
 type SectionName = 'about' | 'skills' | 'credits' | 'languages' | 'contact_details' | 'available_to_travel';
