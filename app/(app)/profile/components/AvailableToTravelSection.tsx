@@ -21,11 +21,6 @@ export default function AvailableToTravelSection({ travelCountries }: Omit<Avail
         <div className="flex gap-1.5">
           <AvalableCountryForTravel
             availableCountries={travelCountries}
-            trigger={
-              <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
-                <Edit className="h-5 w-5" />
-              </Button>
-            }
           />
         </div>
       </div>
