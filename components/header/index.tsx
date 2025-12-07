@@ -102,7 +102,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/login')
+    router.push('/onboarding')
   }
 
   // Determine display values
