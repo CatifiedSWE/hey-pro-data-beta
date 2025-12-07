@@ -448,18 +448,54 @@ export const processNextStep = async (
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Email?', inputType: 'email' });
       } else if (step === 3) {
           nextFormData.email = input as string;
-          nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone?', inputType: 'phone' });
+          
+          // Check if email exists (registered user)
+          const emailCheckResult = await checkEmail(nextFormData.email);
+          
+          if (emailCheckResult.exists && emailCheckResult.isRegistered) {
+              // Email is registered - show login prompt
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: `This email is already registered! Please login to access your profile.`,
+                  options: [
+                      { label: 'Go to Login', value: 'GO_TO_LOGIN', icon: 'LogIn' },
+                      { label: 'Try different email', value: 'RETRY_EMAIL', icon: 'Mail' }
+                  ],
+                  inputType: 'options_only'
+              });
+          } else {
+              // Email is available - proceed
+              nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone?', inputType: 'phone' });
+          }
       } else if (step === 4) {
-          nextFormData.phone = input as string;
-           nextMessages.push({
-              id: generateId(),
-              type: 'bot',
-              text: 'Ready to submit?',
-              options: [
-                { label: 'Send Brief', value: 'SUBMIT', icon: 'Send' }
-              ],
-              inputType: 'options_only'
-          });
+          // Handle login redirect or retry email
+          if (selectionValue === 'GO_TO_LOGIN') {
+              if (typeof window !== 'undefined') {
+                  window.location.href = '/login';
+              }
+              return currentState;
+          } else if (selectionValue === 'RETRY_EMAIL') {
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'No problem. What's your email?',
+                  inputType: 'email'
+              });
+              nextStep = 3; // Go back to email step
+          } else {
+              // Normal flow - phone input received
+              nextFormData.phone = input as string;
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Ready to submit?',
+                  options: [
+                    { label: 'Send Brief', value: 'SUBMIT', icon: 'Send' }
+                  ],
+                  inputType: 'options_only'
+              });
+          }
       } else if (step === 5) {
           await submitData('CLIENT', nextFormData);
           nextMessages.push({
