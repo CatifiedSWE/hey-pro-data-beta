@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import {
   Search,
   X,
@@ -13,6 +13,7 @@ import {
   Calendar,
   NewspaperIcon,
   SatelliteDishIcon,
+  MoreVertical,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -94,8 +95,10 @@ export default function Header() {
   const { user, signOut } = useAuth()
   const { profile } = useProfile()
   const router = useRouter()
+  const pathname = usePathname()
 
   const unreadCount = notifications.filter((n) => !n.read).length
+  const isProfilePage = pathname === '/profile'
 
   const handleSignOut = async () => {
     await signOut()
@@ -252,15 +255,38 @@ export default function Header() {
                 className="relative"
                 onMouseLeave={() => setUserMenuOpen(false)}
               >
-                <div
-                  onClick={() => setUserMenuOpen((prev) => !prev)}
-                  onMouseEnter={() => setUserMenuOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
-                    <AvatarImage src={avatarUrl} alt={displayName} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
-                  </Avatar>
+                {/* Desktop: Hover for menu, Click for profile */}
+                <div className="hidden md:block">
+                    <div
+                        onMouseEnter={() => setUserMenuOpen(true)}
+                        className="cursor-pointer"
+                    >
+                        <Link href="/profile">
+                            <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
+                                <AvatarImage src={avatarUrl} alt={displayName} />
+                                <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                            </Avatar>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Mobile: Logic based on page */}
+                <div className="md:hidden">
+                    {isProfilePage ? (
+                        <div 
+                            onClick={() => setUserMenuOpen((prev) => !prev)}
+                            className="cursor-pointer flex items-center justify-center h-[50px] w-[50px]"
+                        >
+                            <MoreVertical className="h-6 w-6" />
+                        </div>
+                    ) : (
+                        <Link href="/profile">
+                            <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
+                                <AvatarImage src={avatarUrl} alt={displayName} />
+                                <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                            </Avatar>
+                        </Link>
+                    )}
                 </div>
 
                 {userMenuOpen && (
@@ -291,14 +317,16 @@ export default function Header() {
                         <p className="font-[500] text-lg text-center truncate w-full px-2">{displayName}</p>
                       </div>
                       <div className="-space-y-5">
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
-                          <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="">
-                            <span className="font-[400]">
-                              Profile
-                            </span>
+                        {!isProfilePage && (
+                            <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
+                            <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="">
+                                <span className="font-[400]">
+                                Profile
+                                </span>
 
-                          </Link>
-                        </Button>
+                            </Link>
+                            </Button>
+                        )}
                         <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
                           <Link href="/saved" onClick={() => setUserMenuOpen(false)}>
                             <span className="font-[400]">
