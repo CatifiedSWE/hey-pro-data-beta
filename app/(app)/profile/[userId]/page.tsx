@@ -28,6 +28,9 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  
+  // Fetch visibility settings for this user
+  const { visibility, loading: visibilityLoading } = useSectionVisibility(userId);
 
   useEffect(() => {
     const fetchProfile = async () => {
