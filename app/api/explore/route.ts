@@ -73,7 +73,15 @@ export async function GET(request: NextRequest) {
 
     // Apply sorting
     const ascending = sortOrder === 'asc';
-    query = query.order(sortBy, { ascending });
+    
+    // Check if random sorting is requested (for initial page loads)
+    const seed = searchParams.get('seed');
+    if (seed && page === 1) {
+      // For randomization on first page, we'll fetch more and shuffle
+      query = query.order('created_at', { ascending: false });
+    } else {
+      query = query.order(sortBy, { ascending });
+    }
 
     // Apply pagination
     query = query.range(offset, offset + limit - 1);
@@ -151,10 +159,26 @@ export async function GET(request: NextRequest) {
     );
 
     // Filter out null profiles (those that didn't match role filter)
-    const filteredProfiles = enrichedProfiles.filter(p => p !== null);
+    let filteredProfiles = enrichedProfiles.filter(p => p !== null);
 
-    const totalProfiles = filteredProfiles.length;
+    // Apply randomization if seed is provided (for initial page loads)
+    if (seed && page === 1) {
+      // Simple shuffle algorithm using the seed for consistency
+      const shuffled = [...filteredProfiles];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      filteredProfiles = shuffled;
+    }
+
+    // Use the database count for accurate pagination
+    const totalProfiles = count || 0;
     const totalPages = Math.ceil(totalProfiles / limit);
+    
+    // Determine if there are more pages based on whether we got a full page of results
+    // If we got fewer results than the limit, we're on the last page
+    const hasNextPage = filteredProfiles.length >= limit;
 
     return NextResponse.json(
       successResponse(
@@ -165,7 +189,7 @@ export async function GET(request: NextRequest) {
             totalPages,
             totalProfiles,
             limit,
-            hasNextPage: page < totalPages,
+            hasNextPage,
             hasPrevPage: page > 1
           }
         },

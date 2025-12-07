@@ -195,8 +195,9 @@ export default function ReadOnlyProfileContent({ profile }: ReadOnlyProfileProps
 // --- Sub-Components ---
 
 function ReadOnlyShortProfile({ profile }: { profile: UserProfileData }) {
-  const nationality = countries.find((country) => country.code === profile.country)?.name ?? profile.country ?? "Unknown";
-  const locationDescriptor = [nationality, profile.city?.trim()].filter(Boolean).join(" • ");
+  // Use country code instead of full name for shorter display
+  const countryCode = profile.country ?? "Unknown";
+  const locationDescriptor = [countryCode, profile.city?.trim()].filter(Boolean).join(" • ");
   
   const highlightedRoles = profile.roles.slice(0, 6);
   const extraRecommendations = Math.max(profile.recommendations.length - 3, 0);

@@ -5,10 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { X, Image as ImageIcon, MapPin, Tag, Loader2 } from "lucide-react";
+import { X, Image as ImageIcon, MapPin, Tag, Loader2, Edit } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase/client";
+import { ImageCropper } from "@/components/ui/image-cropper";
 
 interface CreateSlateDialogProps {
     open: boolean;
@@ -25,6 +26,8 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
     const [tagInput, setTagInput] = useState("");
     const [location, setLocation] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [cropperOpen, setCropperOpen] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState<string>("");
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -42,11 +45,40 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
             return;
         }
 
-        setMediaFile(file);
         setMediaType(type);
         
-        const url = URL.createObjectURL(file);
-        setMediaPreview(url);
+        // For videos, just set the preview directly
+        if (type === "video") {
+            setMediaFile(file);
+            const url = URL.createObjectURL(file);
+            setMediaPreview(url);
+        } else {
+            // For images, open the cropper
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImageToCrop(reader.result as string);
+                setCropperOpen(true);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCropComplete = (croppedImage: string) => {
+        // Convert base64 to File object
+        fetch(croppedImage)
+            .then(res => res.blob())
+            .then(blob => {
+                const file = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
+                setMediaFile(file);
+                setMediaPreview(croppedImage);
+            });
+    };
+
+    const handleEditImage = () => {
+        if (mediaPreview && mediaType === "image") {
+            setImageToCrop(mediaPreview);
+            setCropperOpen(true);
+        }
     };
 
     const clearMedia = () => {
@@ -185,12 +217,23 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
                                 ) : (
                                     <video src={mediaPreview} controls className="max-h-[400px] w-auto" />
                                 )}
-                                <button 
-                                    onClick={clearMedia}
-                                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
-                                >
-                                    <X className="h-5 w-5" />
-                                </button>
+                                <div className="absolute top-2 right-2 flex gap-2">
+                                    {mediaType === 'image' && (
+                                        <button 
+                                            onClick={handleEditImage}
+                                            className="p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                                            title="Edit & Crop"
+                                        >
+                                            <Edit className="h-5 w-5" />
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={clearMedia}
+                                        className="p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                                    >
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-10">
@@ -292,6 +335,16 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
                     </Button>
                 </div>
             </DialogContent>
+
+            {/* Image Cropper Dialog */}
+            <ImageCropper
+                open={cropperOpen}
+                onClose={() => setCropperOpen(false)}
+                imageSrc={imageToCrop}
+                onCropComplete={handleCropComplete}
+                aspectRatio={9 / 16}
+                allowSkip={true}
+            />
         </Dialog>
     );
 }

@@ -25,40 +25,70 @@ const makeValues = (arr: string[]): FilterValue[] =>
 
 const filterOptions: FilterOption[] = [
     {
-        label: "Camera Operator",
+        label: "Animation",
         value: makeValues([
+            "Animator",
+            "2D Animation",
+            "3D Animation",
+            "AI Video AD Creator"
+        ])
+    },
+    {
+        label: "Art",
+        value: makeValues([
+            "Art Director",
+            "Art PA",
+            "Production Designer",
+            "Set Design | Production Design Assistant",
+            "Set Dresser"
+        ])
+    },
+    {
+        label: "Camera",
+        value: makeValues([
+            "DOP",
+            "DOP | Assistant",
+            "DOP | Associate",
             "Camera Operator",
-            "Steadicam Operator",
-            "Gimbal Operator",
-            "Drone Operator"
+            "Camera Operator | Remote Head",
+            "Camera Operator | Steadicam",
+            "Camera Operator | Trinity 2",
+            "Camera Assistant",
+            "Camera Assistant | Junior",
+            "Camera Trainee",
+            "2nd AC",
+            "Drone",
+            "Aerial Filming",
+            "DIT",
+            "Data Wrangler",
+            "Qtake Assistant",
+            "Video Assist",
+            "Video Assist | Streaming",
+            "Video Assist | Utility",
+            "Video Streaming",
+            "Video Technician"
         ])
     },
     {
-        label: "Cinematographer",
+        label: "Casting",
         value: makeValues([
-            "Cinematographer",
-            "Director of Photography (DP)",
-            "Camera Operator",
-            "1st AC (Focus Puller)",
-            "2nd AC (Clapper Loader)",
-            "Digital Imaging Technician (DIT)",
-            "Steadicam Operator",
-            "Gimbal Operator",
-            "Drone Operator",
-            "Camera Trainee"
+            "Casting",
+            "Casting Director",
+            "Artist Liaison",
+            "Model Agent",
+            "Talent Manager"
         ])
     },
     {
-        label: "Colorist",
+        label: "Design",
         value: makeValues([
-            "Colorist",
-            "Color Timer",
-            "Colorist (Color Grading)",
-            "Colorist (Color Correction)"
+            "Graphic Designer",
+            "Infographics",
+            "Storyboarding"
         ])
     },
     {
-        label: "Director",
+        label: "Direction",
         value: makeValues([
             "Director",
             "Director | Commercial",
@@ -66,119 +96,183 @@ const filterOptions: FilterOption[] = [
             "Assistant Director | TV",
             "1st Assistant Director (1st AD)",
             "2nd Assistant Director (2nd AD)",
-            "3rd Assistant Director (3rd AD)"
+            "3rd Assistant Director (3rd AD)",
+            "Action Director"
         ])
     },
     {
-        label: "Editor",
+        label: "Events",
         value: makeValues([
-            "Editor",
-            "Assistant Editor",
-            "Colorist",
-            "VFX Artist",
-            "Motion Graphics Designer",
-            "Sound Editor",
-            "Sound Designer",
-            "Foley Artist",
-            "Re-Recording Mixer"
+            "Event Manager",
+            "Event Organizer",
+            "Fashion Show Director",
+            "Fashion Backstage Director"
         ])
     },
     {
-        label: "Gaffer",
+        label: "Grip",
         value: makeValues([
-            "Gaffer",
-            "Key Gaffer",
-            "Best Boy Gaffer",
-            "Gimbal Gaffer",
-            "Drone Gaffer",
-            "3rd AC (Grip)",
-            "2nd AC (Grip)",
-            "1st AC (Grip)"
+            "Grip"
         ])
     },
     {
-        label: "Location Scout",
+        label: "Hair",
         value: makeValues([
-            "Location Scout",
-            "Location Assistant",
-            "Location Assistant (LA)",
-            "Location Assistant (LA) | Commercial",
-            "Location Assistant (LA) | TV"
-        ])
-    },
-    {
-        label: "Makeup Artist",
-        value: makeValues([
-            "Makeup Artist",
-            "Makeup Artist | Commercial",
-            "Makeup Artist | TV"
-        ])
-    },
-    {
-        label: "Other",
-        value: makeValues([
-            "Other",
-            "Other | Commercial",
-            "Other | TV",
-            "Other | Commercial | TV"
-        ])
-    },
-    {
-        label: "Producer",
-        value: makeValues([
-            "Producer",
-            "Executive Producer",
-            "Line Producer",
-            "Production Manager",
-            "Production Coordinator",
-            "Production Assistant"
-        ])
-    },
-    {
-        label: "Production Designer",
-        value: makeValues([
-            "Production Designer",
-            "Art Director",
-            "Set Designer",
-            "Set Decorator",
-            "Props Master",
-            "Costume Designer",
-            "Makeup Artist",
             "Hair Stylist"
         ])
     },
     {
-        label: "Sound Designer",
+        label: "Lighting",
         value: makeValues([
-            "Sound Designer",
-            "Sound Mixer",
-            "Boom Operator",
-            "Location Sound Recordist"
+            "Gaffer"
         ])
     },
     {
-        label: "Sound Engineer",
+        label: "Locations",
+        value: makeValues([
+            "Location Manager",
+            "Location Assistant",
+            "Location PA"
+        ])
+    },
+    {
+        label: "Makeup",
+        value: makeValues([
+            "Makeup Artist",
+            "Makeup Artist | SFX",
+            "Makeup Artist | Body Painter",
+            "Makeup Artist | Face Painter",
+            "Image Consultant"
+        ])
+    },
+    {
+        label: "Media & Content",
+        value: makeValues([
+            "Content Creator",
+            "Media Consultant",
+            "Prompt Alchemist",
+            "Spreadsheet Whisperer"
+        ])
+    },
+    {
+        label: "Photography",
+        value: makeValues([
+            "Photographer",
+            "Photographer | Aerial",
+            "Photographer | BTS"
+        ])
+    },
+    {
+        label: "Post-Production",
+        value: makeValues([
+            "Editor",
+            "Editor | Offline",
+            "Editor | Senior",
+            "Colorist",
+            "Post Producer",
+            "Post Production Coordinator"
+        ])
+    },
+    {
+        label: "Production",
+        value: makeValues([
+            "Line Producer",
+            "Producer",
+            "Producer | Creative",
+            "Producer | Executive",
+            "Producer | Senior",
+            "Associate Producer",
+            "Assistant Producer",
+            "Program Producer",
+            "Project Coordinator",
+            "Project Manager",
+            "Operation Manager",
+            "Production",
+            "Production Manager",
+            "Production Coordinator",
+            "Production Consultant",
+            "Production Assistant",
+            "Production Runner",
+            "Show Runner",
+            "Show Caller",
+            "Stage Manager"
+        ])
+    },
+    {
+        label: "SFX",
+        value: makeValues([
+            "SFX Selection"
+        ])
+    },
+    {
+        label: "Sound",
         value: makeValues([
             "Sound Engineer",
-            "Sound Technician",
-            "Sound Engineer | Commercial",
-            "Sound Engineer | TV"
+            "Sound Mixer",
+            "Sound | Boom Pole Operator",
+            "Sound | Field Sound Mixer",
+            "Music Composer"
         ])
     },
     {
-        label: "VFX Artist",
+        label: "Stunts",
         value: makeValues([
-            "VFX Artist",
-            "VFX Supervisor",
-            "VFX Assistant",
-            "VFX Assistant (VA)",
-            "VFX Assistant (VA) | Commercial",
-            "VFX Assistant (VA) | TV"
+            "Fight Choreographer"
         ])
     },
     {
-        label: "Writer",
-        value: makeValues(["Writer", "Screenwriter", "Script Supervisor", "Story Editor"])
+        label: "Sustainability",
+        value: makeValues([
+            "Sustainable Film Advisor",
+            "Sustainable On Set Coordinator"
+        ])
+    },
+    {
+        label: "Transport & Logistics",
+        value: makeValues([
+            "Logistics Manager",
+            "Transport Event Materials"
+        ])
+    },
+    {
+        label: "VFX",
+        value: makeValues([
+            "VFX",
+            "VFX Artist",
+            "VFX Coordinator"
+        ])
+    },
+    {
+        label: "Videography",
+        value: makeValues([
+            "Videographer",
+            "Videographer | BTS"
+        ])
+    },
+    {
+        label: "Wardrobe",
+        value: makeValues([
+            "Costume Designer",
+            "Wardrobe Stylist",
+            "Wardrobe Stylist | Avant-Garde",
+            "Wardrobe Supervisor",
+            "Wardrobe PA",
+            "Fashion Stylist",
+            "Fashion Stylist | Assistant",
+            "Fashion Assistant | Celebrity"
+        ])
+    },
+    {
+        label: "Writing",
+        value: makeValues([
+            "Novelist",
+            "Screenwriter",
+            "Scriptwriter",
+            "Script Supervisor",
+            "Writer | Horror",
+            "Writer | Non-Fiction",
+            "Writer | Young Adult Fiction"
+        ])
     }
 ];
 
@@ -351,7 +445,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
     return (
         <>
             <div className="max-w-7xl mx-auto">
-                <span className="hidden p-2 md:inline-block bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent text-3xl font-semibold">Crew Directory</span>
+                <span className="hidden p-2 md:inline-block bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent text-2xl font-semibold">Crew</span>
                 <div className="sticky top-0 z-20 flex w-full flex-row gap-2 bg-white/90 p-4 backdrop-blur sm:flex-row sm:items-center">
 
                     <DropdownMenu open={isFilterOpen} onOpenChange={setIsFilterOpen}>

@@ -13,6 +13,10 @@ import ReadOnlySkillsSection from "./components/ReadOnlySkillsSection";
 import ReadOnlyCreditsSection from "./components/ReadOnlyCreditsSection";
 import ReadOnlyHighlights from "./components/ReadOnlyHighlights";
 import UserSlateView from "./components/UserSlateView";
+import ReadOnlyLanguagesSection from "./components/ReadOnlyLanguagesSection";
+import ReadOnlyContactDetailsSection from "./components/ReadOnlyContactDetailsSection";
+import ReadOnlyAvailableToTravelSection from "./components/ReadOnlyAvailableToTravelSection";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -24,6 +28,9 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  
+  // Fetch visibility settings for this user
+  const { visibility, loading: visibilityLoading } = useSectionVisibility(userId);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -82,7 +89,7 @@ export default function UserProfilePage() {
           className="self-start flex items-center gap-2 text-[#FA6E80] hover:text-[#fa5a6e] hover:bg-[#FA6E80]/10 mb-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back to Crew Directory</span>
+          <span>Back to Crew</span>
         </Button>
         
         <ReadOnlyShortProfile profile={profile} initialSaved={isSaved} />
@@ -114,18 +121,52 @@ export default function UserProfilePage() {
 
           {activeTab === "profile" ? (
             <div className="max-w-[600px]">
-              {/* Profile Sections */}
-              <ReadOnlyAboutSection bio={profile.bio} />
-              <div className="my-8" />
+              {/* Profile Sections - Only show if visible */}
+              {visibility.about && (
+                <>
+                  <ReadOnlyAboutSection bio={profile.bio} />
+                  <div className="my-8" />
+                </>
+              )}
               
               {/* Highlights Section - Shows on mobile above skills */}
               <div className="lg:hidden mb-8">
                 <ReadOnlyHighlights highlights={profile.highlights} />
               </div>
               
-              <ReadOnlySkillsSection skills={profile.skills} />
-              <div className="my-8" />
-              <ReadOnlyCreditsSection credits={profile.credits} />
+              {visibility.skills && (
+                <>
+                  <ReadOnlySkillsSection skills={profile.skills} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.credits && (
+                <>
+                  <ReadOnlyCreditsSection credits={profile.credits} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.languages && (
+                <>
+                  <ReadOnlyLanguagesSection languages={profile.languages || []} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.contact_details && (
+                <>
+                  <ReadOnlyContactDetailsSection email={profile.email} phone={profile.phone} />
+                  <div className="my-8" />
+                </>
+              )}
+              
+              {visibility.available_to_travel && (
+                <>
+                  <ReadOnlyAvailableToTravelSection travelCountries={profile.travelCountries || []} />
+                </>
+              )}
             </div>
           ) : (
             <UserSlateView userId={userId} userName={profile.name} />

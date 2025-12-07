@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ProfileProgress } from "./profileProgress"
 import { countries } from "@/lib/countries"
 import { toast } from "sonner"
-import { useProfile, type ProfileData, type LinkData, type RoleData, type RecommendationData } from "@/contexts/ProfileContext"
+import { useProfile, type ProfileData, type LinkData, type RoleData, type RecommendationData, type VisaData } from "@/contexts/ProfileContext"
 import { useAuth } from "@/contexts/AuthContext"
 
 import AvalableDilog from "./Avalable"
@@ -20,12 +20,13 @@ interface ShortProfileProps {
   profile: ProfileData | null;
   links: LinkData[];
   roles?: RoleData[];
+  visa?: VisaData | null;
   recommendations?: RecommendationData[];
   onPhotoUpload: (file: File, type: 'profile' | 'banner') => Promise<{ success: boolean; message?: string; url?: string }>;
   onLinksUpdate?: () => void;
 }
 
-export default function ShortProfile({ profile, links, roles = [], recommendations = [], onPhotoUpload, onLinksUpdate }: ShortProfileProps) {
+export default function ShortProfile({ profile, links, roles = [], visa, recommendations = [], onPhotoUpload, onLinksUpdate }: ShortProfileProps) {
     const [coverImageHovered, setCoverImageHovered] = useState(false)
     const [uploadingBanner, setUploadingBanner] = useState(false)
     const [uploadingProfile, setUploadingProfile] = useState(false)
@@ -194,8 +195,11 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
     const dotColor = isAvailable ? "bg-[#34A353]" : "bg-[#FA6E80]";
     const statusTextColor = isAvailable ? "text-[#34A353]" : "text-[#FA6E80]";
 
+    // Construct Visa string
+    const visaDetails = [visa?.nationality, visa?.visa_type, visa?.visa_issued_by].filter(Boolean).join(" • ");
+
     return (
-        <section className="relative w-full border-b  border-[#DADADA] pb-6 ">
+        <section className="relative w-full pb-6 ">
             <div
                 className="relative h-[228px]"
                 onMouseEnter={() => setCoverImageHovered(true)}
@@ -304,7 +308,8 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
                 </div>
             </div>
 
-            <div className="absolute right-4 top-[98px]  sm:top-[200px] flex items-center gap-3">
+            {/* Mobile-only Edit Button (previously desktop too, now sm:hidden) */}
+            <div className="absolute right-4 top-[98px] sm:hidden flex items-center gap-3">
                 <ProfileEditor
                     profile={profile}
                     trigger={
@@ -317,7 +322,9 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
                     }
                 />
             </div>
-            <div className="absolute inset-x-0 top-[160px] max-w-[367.8px] left-[200px] hidden justify-center font-[400] text-[11px] sm:flex ">
+
+            {/* Desktop Info Container (Location, Availability, Edit Button) */}
+            <div className="absolute inset-x-0 top-[160px] max-w-[367.8px] left-[200px] hidden justify-center font-[400] text-[11px] sm:flex gap-3">
                 <div className="flex items-center gap-2  px-4 py-2 text-[#393939] ">
                     <MapPin className="h-3.5 w-3.5 text-[#393939]" />
                     <span className="whitespace-nowrap">{locationDescriptor}</span>
@@ -330,17 +337,34 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
                         onUpdate={handleAvailabilityUpdate}
                     />
                 </div>
-                <CalendarDialog
-                    triggerClassName="flex h-[40px] items-center gap-2 rounded-full border-none bg-[#31A7AC] px-4 py-0 text-[11px] font-[400] text-white  hover:bg-[#27939f]"
-                    triggerLabel={
-                        <>
-                            <CalendarIcon className="h-4 w-4" />
-                            View Calendar
-                        </>
+                
+                {/* Hidden Calendar Dialog */}
+                <div className="hidden">
+                    <CalendarDialog
+                        triggerClassName="flex h-[40px] items-center gap-2 rounded-full border-none bg-[#31A7AC] px-4 py-0 text-[11px] font-[400] text-white  hover:bg-[#27939f]"
+                        triggerLabel={
+                            <>
+                                <CalendarIcon className="h-4 w-4" />
+                                View Calendar
+                            </>
+                        }
+                    />
+                </div>
+
+                {/* Desktop Edit Button (Moved from top-right) */}
+                <ProfileEditor
+                    profile={profile}
+                    trigger={
+                        <Button
+                            className="h-[28px] w-[28px] rounded-full bg-[#31A7AC] text-white shadow-[0_4px_16px_rgba(49,167,172,0.35)] hover:bg-[#27939f] self-center"
+                            aria-label="Edit profile"
+                        >
+                            <Edit2 className="h-4 w-4" />
+                        </Button>
                     }
                 />
             </div>
-            <div className="flex sm:mt-10 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
+            <div className="flex sm:mt-4 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
                 <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-4">
                         <h1 className="text-[22px] font-semibold leading-[33px] text-black">{displayName}</h1>
@@ -370,6 +394,13 @@ export default function ShortProfile({ profile, links, roles = [], recommendatio
                         )}
                     </div>
                     
+                    {/* Visa details */}
+                    {visaDetails && (
+                        <div className="text-sm font-medium text-[#181818]">
+                            {visaDetails}
+                        </div>
+                    )}
+
                     {/* Work Identities Display - adapted to match design's text style if possible, or use pills */}
                     {profile?.work_identities && (
                          <div className="text-sm text-[#181818]">

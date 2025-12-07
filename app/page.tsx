@@ -1,65 +1,55 @@
-'use client';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { createServerClient } from '@supabase/ssr';
+import { LandingHero } from './components/landing/LandingHero';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
-
-/**
- * Root page with routing logic as per AUTH_FLOW_TYPESCRIPT_GUIDE.md
- * Checks authentication and profile completion, then routes accordingly
- */
-export default function RootPage() {
-  const router = useRouter();
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    const checkAuthAndRoute = async () => {
-      try {
-        // Step 1: Get current session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        // Step 2: No session → redirect to login
-        if (!session) {
-          router.push('/login');
-          return;
-        }
-        
-        // Step 3: Has session → check profile
-        const token = session.access_token;
-        
-        const response = await fetch('/api/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  
+  // Create Supabase server client
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
           }
-        });
-        
-        const profileData = await response.json();
-        
-        // Step 4: Route based on profile existence
-        if (profileData.success && profileData.data) {
-          router.push('/slate');  // Profile exists → redirect to slate feed
-        } else {
-          router.push('/form');  // No profile → redirect to form
-        }
-      } catch (error) {
-        console.error('Root routing error:', error);
-        // On error, default to login
-        router.push('/login');
-      } finally {
-        setChecking(false);
-      }
-    };
-
-    checkAuthAndRoute();
-  }, [router]);
-
-  // Show loading state while checking
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="text-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FA6E80] mx-auto"></div>
-        <p className="text-gray-900 text-lg">Loading...</p>
-      </div>
-    </div>
+        },
+      },
+    }
   );
+
+  // Check authentication status
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (user) {
+    // User is authenticated, check onboarding status
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('has_completed_onboarding')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    if (profile?.has_completed_onboarding) {
+      // User completed onboarding → redirect to profile
+      redirect('/profile');
+    } else {
+      // User hasn't completed onboarding → redirect to onboarding
+      redirect('/onboarding');
+    }
+  }
+  
+  // Not authenticated → show landing page
+  return <LandingHero />;
 }

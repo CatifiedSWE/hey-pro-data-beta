@@ -114,7 +114,7 @@ export default function Highlights({ highlights: propHighlights }: HighlightsPro
                         className="w-full h-11 rounded-[10px] border-[#31A7AC] text-black hover:bg-[#31A7AC]/5 transition-colors"
                         onClick={() => setIsSelectorOpen(true)}
                     >
-                        Edit Highlights
+                        Edit Heylights
                     </Button>
                     
                     <div className="space-y-8">
@@ -131,7 +131,7 @@ export default function Highlights({ highlights: propHighlights }: HighlightsPro
                                     className="text-[#FA6E80] hover:text-[#FA596E] hover:bg-pink-50"
                                     onClick={() => setIsSelectorOpen(true)}
                                 >
-                                    <Plus className="w-4 h-4 mr-1" /> Add Highlights
+                                    <Plus className="w-4 h-4 mr-1" /> Add Heylights
                                 </Button>
                             </div>
                         )}
@@ -162,7 +162,7 @@ export default function Highlights({ highlights: propHighlights }: HighlightsPro
                     className="w-full h-11 rounded-[10px] border-[#31A7AC] text-black hover:bg-transparent"
                     onClick={() => setIsSelectorOpen(true)}
                 >
-                    Edit Highlights
+                    Edit Heylights
                 </Button>
 
                 <div className="flex flex-row overflow-x-auto gap-x-6 scrollbar-hide pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -181,7 +181,7 @@ export default function Highlights({ highlights: propHighlights }: HighlightsPro
                                 className="text-[#FA6E80] hover:text-[#FA596E]"
                                 onClick={() => setIsSelectorOpen(true)}
                             >
-                                <Plus className="w-4 h-4 mr-1" /> Add Highlights
+                                <Plus className="w-4 h-4 mr-1" /> Add Heylights
                             </Button>
                         </div>
                     )}

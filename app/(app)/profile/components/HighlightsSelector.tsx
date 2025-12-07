@@ -177,9 +177,9 @@ export function HighlightsSelector({
                 {/* 
                   Override default TabsList styles:
                   - sm:w-[680px] (default) -> sm:w-full (override) to prevent overflow/fixed width
-                  - flex-col (default) -> grid grid-cols-2 to force equal width side-by-side
+                  - flex-col (default) -> grid grid-cols-1 for single tab full width
                 */}
-                <TabsList className="grid w-full sm:w-full grid-cols-2 bg-gray-100 p-1 h-12">
+                <TabsList className="grid w-full sm:w-full grid-cols-1 bg-gray-100 p-1 h-12">
                 <TabsTrigger 
                     value="credits" 
                     className="data-[state=active]:bg-white data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-sm h-10 text-sm md:text-base font-medium transition-all"
@@ -189,7 +189,7 @@ export function HighlightsSelector({
                 </TabsTrigger>
                 <TabsTrigger 
                     value="slate" 
-                    className="data-[state=active]:bg-white data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-sm h-10 text-sm md:text-base font-medium transition-all"
+                    className="hidden data-[state=active]:bg-white data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-sm h-10 text-sm md:text-base font-medium transition-all"
                 >
                     <LayoutGrid className="w-4 h-4 mr-2" />
                     <span className="truncate">Slate ({slatePosts.length})</span>
@@ -217,7 +217,7 @@ export function HighlightsSelector({
                                             </div>
                                             <h3 className="text-lg font-semibold text-gray-900">Ready to shine?</h3>
                                             <p className="text-sm text-gray-500 mt-2 max-w-xs">
-                                                Add credits to your profile first to feature them as highlights.
+                                                Add credits to your profile first to feature them as heylights.
                                             </p>
                                         </div>
                                     ) : (
@@ -297,7 +297,7 @@ export function HighlightsSelector({
                                 Saving...
                             </>
                         ) : (
-                            `Save Highlights (${selectedItems.length})`
+                            `Save Heylights (${selectedItems.length})`
                         )}
                     </Button>
                 </div>

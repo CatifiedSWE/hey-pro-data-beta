@@ -2,6 +2,7 @@
 
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "flag-icons/css/flag-icons.min.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -9,6 +10,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-poppins: 'Poppins', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
   /* --font-sans: var(--font-geist-sans); */
   /* --font-mono: var(--font-geist-mono); */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -102,6 +104,20 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* HeyProData Tokens */
+  --hp-primary: #ff5168;
+  --hp-accent: #25c9d0;
+  --hp-base: #000000;
+  --hp-bg: #ffffff;
+  --hp-shadow: 0 16px 40px rgba(0,0,0,0.08);
+  
+  --card-radius: 24px;
+  --btn-radius: 16px;
+  
+  --duration-fast: 180ms;
+  --duration-medium: 360ms;
+  --duration-slow: 560ms;
 }
 
 .dark {
@@ -178,5 +194,66 @@
   .mask-fade-right {
     mask-image: linear-gradient(to right, black 85%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+
+  /* Onboarding chat animations */
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
+  @keyframes popIn {
+    0% { 
+      opacity: 0; 
+      transform: scale(0.9); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.15;
+    }
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  
+  .animate-pop {
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .delay-75 {
+    animation-delay: 75ms;
+  }
+
+  .delay-700 {
+    animation-delay: 700ms;
   }
 }

@@ -24,11 +24,21 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { CalendarIcon, Upload, ChevronDownIcon } from "lucide-react";
+import { CalendarIcon, Upload, ChevronDownIcon, Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import React from "react";
+
 interface CreditsEditorProps {
     trigger: React.ReactNode;
     initialCredits?: {
@@ -66,6 +76,278 @@ const defaultAccoladeForm = {
     date: "",
 };
 
+const PRODUCTION_TYPES = [
+    "Audio Production",
+    "Animation",
+    "Commercial",
+    "Corporate Video",
+    "Docuseries",
+    "Documentary",
+    "Educational Video",
+    "Training Video",
+    "Experimental Film",
+    "Feature Film",
+    "Fashion Show",
+    "Live Event",
+    "Micro Film",
+    "Music Video",
+    "Online Content",
+    "Promotional Video",
+    "Trailers",
+    "Reality TV",
+    "Competition Show",
+    "Short Film",
+    "Short-form Social Media Content (TikTok, Reels, Shorts)",
+    "Stage Production",
+    "Student Film",
+    "TV",
+    "VFX Project",
+    "Web Series",
+];
+
+const ROLES_BY_CATEGORY = [
+    {
+        category: "Direction",
+        roles: [
+            "Director",
+            "Director | Commercial",
+            "Assistant Director",
+            "Assistant Director | TV",
+            "1st Assistant Director (1st AD)",
+            "2nd Assistant Director (2nd AD)",
+            "3rd Assistant Director (3rd AD)",
+            "Action Director",
+        ],
+    },
+    {
+        category: "Production",
+        roles: [
+            "Line Producer",
+            "Producer",
+            "Producer | Creative",
+            "Producer | Executive",
+            "Producer | Senior",
+            "Associate Producer",
+            "Assistant Producer",
+            "Program Producer",
+            "Project Coordinator",
+            "Project Manager",
+            "Operation Manager",
+            "Production",
+            "Production Manager",
+            "Production Coordinator",
+            "Production Consultant",
+            "Production Assistant",
+            "Production Runner",
+            "Show Runner",
+            "Show Caller",
+            "Stage Manager",
+        ],
+    },
+    {
+        category: "Camera",
+        roles: [
+            "DOP",
+            "DOP | Assistant",
+            "DOP | Associate",
+            "Camera Operator",
+            "Camera Operator | Remote Head",
+            "Camera Operator | Steadicam",
+            "Camera Operator | Trinity 2",
+            "Camera Assistant",
+            "Camera Assistant | Junior",
+            "Camera Trainee",
+            "2nd AC",
+            "Drone",
+            "Aerial Filming",
+            "DIT",
+            "Data Wrangler",
+            "Qtake Assistant",
+            "Video Assist",
+            "Video Assist | Streaming",
+            "Video Assist | Utility",
+            "Video Streaming",
+            "Video Technician",
+        ],
+    },
+    {
+        category: "Lighting",
+        roles: ["Gaffer"],
+    },
+    {
+        category: "Grip",
+        roles: ["Grip"],
+    },
+    {
+        category: "Art",
+        roles: [
+            "Art Director",
+            "Art PA",
+            "Production Designer",
+            "Set Design | Production Design Assistant",
+            "Set Dresser",
+        ],
+    },
+    {
+        category: "Wardrobe",
+        roles: [
+            "Costume Designer",
+            "Wardrobe Stylist",
+            "Wardrobe Stylist | Avant-Garde",
+            "Wardrobe Supervisor",
+            "Wardrobe PA",
+            "Fashion Stylist",
+            "Fashion Stylist | Assistant",
+            "Fashion Assistant | Celebrity",
+        ],
+    },
+    {
+        category: "Hair",
+        roles: ["Hair Stylist"],
+    },
+    {
+        category: "Makeup",
+        roles: [
+            "Makeup Artist",
+            "Makeup Artist | SFX",
+            "Makeup Artist | Body Painter",
+            "Makeup Artist | Face Painter",
+            "Image Consultant",
+        ],
+    },
+    {
+        category: "Casting",
+        roles: [
+            "Casting",
+            "Casting Director",
+            "Artist Liaison",
+            "Model Agent",
+            "Talent Manager",
+        ],
+    },
+    {
+        category: "Stunts",
+        roles: ["Fight Choreographer"],
+    },
+    {
+        category: "Post-Production",
+        roles: [
+            "Editor",
+            "Editor | Offline",
+            "Editor | Senior",
+            "Colorist",
+            "Post Producer",
+            "Post Production Coordinator",
+        ],
+    },
+    {
+        category: "Animation",
+        roles: [
+            "Animator",
+            "2D Animation",
+            "3D Animation",
+            "AI Video AD Creator",
+        ],
+    },
+    {
+        category: "VFX",
+        roles: [
+            "VFX",
+            "VFX Artist",
+            "VFX Coordinator",
+        ],
+    },
+    {
+        category: "Design",
+        roles: [
+            "Graphic Designer",
+            "Infographics",
+            "Storyboarding",
+        ],
+    },
+    {
+        category: "Sound",
+        roles: [
+            "Sound Engineer",
+            "Sound Mixer",
+            "Sound | Boom Pole Operator",
+            "Sound | Field Sound Mixer",
+            "Music Composer",
+        ],
+    },
+    {
+        category: "Locations",
+        roles: [
+            "Location Manager",
+            "Location Assistant",
+            "Location PA",
+        ],
+    },
+    {
+        category: "SFX",
+        roles: ["SFX Selection"],
+    },
+    {
+        category: "Photography",
+        roles: [
+            "Photographer",
+            "Photographer | Aerial",
+            "Photographer | BTS",
+        ],
+    },
+    {
+        category: "Videography",
+        roles: [
+            "Videographer",
+            "Videographer | BTS",
+        ],
+    },
+    {
+        category: "Writing",
+        roles: [
+            "Novelist",
+            "Screenwriter",
+            "Scriptwriter",
+            "Script Supervisor",
+            "Writer | Horror",
+            "Writer | Non-Fiction",
+            "Writer | Young Adult Fiction",
+        ],
+    },
+    {
+        category: "Media & Content",
+        roles: [
+            "Content Creator",
+            "Media Consultant",
+            "Prompt Alchemist",
+            "Spreadsheet Whisperer",
+        ],
+    },
+    {
+        category: "Sustainability",
+        roles: [
+            "Sustainable Film Advisor",
+            "Sustainable On Set Coordinator",
+        ],
+    },
+    {
+        category: "Transport & Logistics",
+        roles: [
+            "Logistics Manager",
+            "Transport Event Materials",
+        ],
+    },
+    {
+        category: "Events",
+        roles: [
+            "Event Manager",
+            "Event Organizer",
+            "Fashion Show Director",
+            "Fashion Backstage Director",
+        ],
+    },
+];
+
 interface YearPickerProps {
     value: string;
     onChange: (year: string) => void;
@@ -100,6 +382,7 @@ function YearPicker({ value, onChange, fromYear = 1980, toYear = new Date().getF
         </div>
     );
 }
+
 interface Accolade {
     id: string;
     type: string;
@@ -107,6 +390,7 @@ interface Accolade {
     by: string;
     year: string;
 }
+
 export default function CreditsEditor({ trigger, initialCredits }: CreditsEditorProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [creditForm, setCreditForm] = useState(defaultCreditForm);
@@ -118,6 +402,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
     const [open, setOpen] = useState(false);
     const [accolades, setAccolades] = React.useState<Accolade[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [roleComboboxOpen, setRoleComboboxOpen] = useState(false);
 
     useEffect(() => {
         if (isDialogOpen && initialCredits?.length) {
@@ -158,12 +443,15 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
         };
         reader.readAsDataURL(file);
     };
+    
     useEffect(() => {
         setOpen(false);
     }, [accoladeForm]);
+    
     const handelOpenChange = () => {
         setOpen(!open);
     };
+    
     const handleAddAward = () => {
         if (!accoladeForm.type || !accoladeForm.category) {
             toast.error("Please fill at least type and category");
@@ -197,6 +485,10 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
     const baseInputClasses =
         "w-full h-[41px] rounded-[15px] border border-[#828282] bg-white px-5 text-sm text-[#211536] placeholder:text-[#A3A3A3] focus-visible:outline-[#31A7AC]";
 
+    // Flatten all roles for search
+    const allRoles = ROLES_BY_CATEGORY.flatMap(cat => 
+        cat.roles.map(role => ({ category: cat.category, role }))
+    );
 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -223,23 +515,60 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                         onChange={(e) => handleCreditChange("productionType", e.target.value)}
                                         className={`${baseInputClasses} appearance-none`}
                                     >
-                                        <option value="">Select type</option>
-                                        <option value="Feature Film">Feature Film</option>
-                                        <option value="Commercial">Commercial</option>
-                                        <option value="Music Video">Music Video</option>
+                                        <option value="">Production type</option>
+                                        {PRODUCTION_TYPES.map((type) => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <select
-                                        value={creditForm.role}
-                                        onChange={(e) => handleCreditChange("role", e.target.value)}
-                                        className={`${baseInputClasses} appearance-none`}
-                                    >
-                                        <option value="">Select Role</option>
-                                        <option value="Feature Film">Feature Film</option>
-                                        <option value="Commercial">Commercial</option>
-                                        <option value="Music Video">Music Video</option>
-                                    </select>
+                                    <Popover open={roleComboboxOpen} onOpenChange={setRoleComboboxOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={roleComboboxOpen}
+                                                className={cn(
+                                                    baseInputClasses,
+                                                    "justify-between font-normal",
+                                                    !creditForm.role && "text-[#A3A3A3]"
+                                                )}
+                                            >
+                                                {creditForm.role || "Roles"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[300px] p-0" align="start">
+                                            <Command>
+                                                <CommandInput placeholder="Search roles..." />
+                                                <CommandList>
+                                                    <CommandEmpty>No role found.</CommandEmpty>
+                                                    {ROLES_BY_CATEGORY.map((category) => (
+                                                        <CommandGroup key={category.category} heading={category.category}>
+                                                            {category.roles.map((role) => (
+                                                                <CommandItem
+                                                                    key={role}
+                                                                    value={role}
+                                                                    onSelect={(currentValue) => {
+                                                                        handleCreditChange("role", currentValue === creditForm.role ? "" : currentValue);
+                                                                        setRoleComboboxOpen(false);
+                                                                    }}
+                                                                >
+                                                                    <Check
+                                                                        className={cn(
+                                                                            "mr-2 h-4 w-4",
+                                                                            creditForm.role === role ? "opacity-100" : "opacity-0"
+                                                                        )}
+                                                                    />
+                                                                    {role}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    ))}
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                             </div>
 
@@ -248,7 +577,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                     <input
                                         value={creditForm.projectTitle}
                                         onChange={(e) => handleCreditChange("projectTitle", e.target.value)}
-                                        placeholder="City of Echoes"
+                                        placeholder="Project title"
                                         className={baseInputClasses}
                                     />
                                 </div>
@@ -298,7 +627,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                                 className="w-full justify-start h-[41px] rounded-[15px] border border-[#828282] bg-white px-5 text-sm font-normal text-[#211536]"
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4 text-[#9F9F9F]" />
-                                                {creditForm.releaseYear || "Select year"}
+                                                {creditForm.releaseYear || "Release year"}
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">
@@ -338,7 +667,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                                     className="w-[200px] rounded-[15px] h-[38px] justify-between font-normal border border-[#828282]"
                                                 >
                                                     <span className="text-[#494949]">
-                                                        {startDate ? startDate.toLocaleDateString() : "Select date"}
+                                                        {startDate ? startDate.toLocaleDateString() : "Start date"}
                                                     </span>
 
                                                     <ChevronDownIcon className="h-4 w-4 text-[#9F9F9F]" />
@@ -368,7 +697,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                                     className="w-[200px] justify-between rounded-[15px] h-[38px] font-normal border border-[#828282]"
                                                 >
                                                     <span className="text-[#494949]">
-                                                        {endDate ? endDate.toLocaleDateString() : "Select date"}
+                                                        {endDate ? endDate.toLocaleDateString() : "End date"}
                                                     </span>
                                                     <ChevronDownIcon className="h-4 w-4 text-[#9F9F9F]" />
                                                 </Button>
@@ -393,7 +722,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                 <textarea
                                     value={creditForm.description}
                                     onChange={(e) => handleCreditChange("description", e.target.value)}
-                                    placeholder="Write about this project..."
+                                    placeholder="Description"
                                     className="w-full min-h-[104px] rounded-[20px] border border-[#828282] bg-white px-5 py-3 text-sm text-[#211536] placeholder:text-[#A3A3A3] focus-visible:outline-[#31A7AC]"
                                 />
                             </div>
@@ -428,8 +757,8 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                     </div>
                                 ) : (
                                     <div className="rounded-[20px] border border-dashed border-[#31A7AC] bg-white/80 px-6 py-8 text-center">
-                                        <p className="text-sm text-[#211536] font-medium mb-2">Upload artwork / press stills</p>
-                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB</p>
+                                        <p className="text-sm text-[#211536] font-medium mb-2">Upload image (Max 5 MB)</p>
+                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB • Portrait 9:16 ratio recommended</p>
                                         <Button
                                             type="button"
                                             variant="outline"
@@ -457,28 +786,16 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                 <div>
                                     <p className="text-[22px] text-[#000000]">My Accolades</p>
                                 </div>
-
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-3">
-                                    <select
+                                    <input
                                         value={accoladeForm.type}
                                         onChange={(e) => handleAccoladeChange("type", e.target.value)}
-                                        className="w-full h-[41px] rounded-[15px] border border-[#DCDCDC] bg-[#FBFBFB] px-4 font-[400] text-sm text-[#211536] placeholder:text-[#9F9F9F] focus-visible:outline-[#31A7AC]"
-                                    >
-                                        <option value="">Accolade Type</option>
-                                        <option value="Best Director">Best Director</option>
-                                        <option value="Best Cinematography">Best Cinematography</option>
-                                        <option value="Best Screenplay">Best Screenplay</option>
-                                        <option value="Best Editing">Best Editing</option>
-                                        <option value="Best Visual Effects">Best Visual Effects</option>
-                                        <option value="Best Sound Design">Best Sound Design</option>
-                                        <option value="Best Production Design">Best Production Design</option>
-                                        <option value="Best Original Score">Best Original Score</option>
-                                        <option value="Best Actor">Best Actor</option>
-                                        <option value="Best Actress">Best Actress</option>
-                                    </select>
+                                        placeholder="Accolade Type"
+                                        className="w-full h-[41px] rounded-[15px] border border-[#DCDCDC] bg-[#FBFBFB] px-4 text-sm text-[#211536] placeholder:text-[#9F9F9F] focus-visible:outline-[#31A7AC]"
+                                    />
                                 </div>
                                 <div className="space-y-3">
                                     <input
@@ -503,7 +820,7 @@ export default function CreditsEditor({ trigger, initialCredits }: CreditsEditor
                                             className="w-full justify-start rounded-[15px] h-[41px] border border-[#828282] bg-white px-5 text-sm font-normal text-[#211536]"
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4 text-[#9F9F9F]" />
-                                            {accoladeForm.year || "Select year"}
+                                            {accoladeForm.year || "Year"}
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">

@@ -25,7 +25,8 @@ export interface ProfileData {
   alias_surname?: string;
   profile_photo_url?: string;
   banner_url?: string; // Changed from banner_photo_url
-  bio?: string;
+  about?: string; // About section - separate from bio
+  bio?: string; // Bio section - separate from about
   country?: string;
   city?: string;
   email?: string;
@@ -96,6 +97,7 @@ export interface TravelCountryData {
   id: string;
   user_id: string;
   country_name: string;
+  country_code: string;
   sort_order?: number;
   created_at?: string;
 }

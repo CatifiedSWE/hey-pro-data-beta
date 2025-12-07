@@ -1,7 +1,8 @@
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Use fallback values if environment variables are not set
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_service_key';
 
 /**
  * Create a Supabase client for server-side operations
@@ -25,7 +26,7 @@ export const validateAuthToken = async (authHeader: string | null): Promise<User
 
   try {
     // Create a client with the user's token
-    const supabase = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    const supabase = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_anon_key', {
       global: {
         headers: {
           Authorization: `Bearer ${token}`,

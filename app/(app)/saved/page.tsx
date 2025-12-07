@@ -391,16 +391,46 @@ export default function SavedPage() {
                 <p className="text-gray-600 mt-2">Your personal collection of bookmarked content</p>
             </div>
 
-            <Tabs defaultValue="slates" className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-8 bg-white p-1 border rounded-xl shadow-sm h-12" data-testid="saved-tabs">
-                    <TabsTrigger value="slates" className="data-[state=active]:bg-[#FA6E80]/10 data-[state=active]:text-[#FA6E80] rounded-lg transition-all" data-testid="slates-tab">Slates</TabsTrigger>
-                    <TabsTrigger value="collabs" className="data-[state=active]:bg-[#6A89BE]/10 data-[state=active]:text-[#6A89BE] rounded-lg transition-all" data-testid="collabs-tab">Collabs</TabsTrigger>
-                    <TabsTrigger value="whats-on" className="data-[state=active]:bg-[#31A7AC]/10 data-[state=active]:text-[#31A7AC] rounded-lg transition-all" data-testid="whats-on-tab">What's On</TabsTrigger>
-                    <TabsTrigger value="profiles" className="data-[state=active]:bg-purple-500/10 data-[state=active]:text-purple-600 rounded-lg transition-all" data-testid="profiles-tab">Profiles</TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue="profiles" className="w-full">
+                  <TabsList
+    className="
+      grid 
+      w-full 
+      grid-cols-1
+      sm:grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-4
+      mb-8 
+      bg-white 
+      p-1 
+      border 
+      rounded-xl 
+      shadow-sm 
+      h-12
+    "
+    data-testid="saved-tabs"
+  >
+    {/* Example triggers – add back as needed */}
+    {/* 
+    <TabsTrigger 
+      value="slates"
+      className="data-[state=active]:bg-[#FA6E80]/10 data-[state=active]:text-[#FA6E80] rounded-lg transition-all"
+    >
+      Slates
+    </TabsTrigger>
+    */}
+
+    <TabsTrigger
+      value="profiles"
+      className="data-[state=active]:bg-purple-500/10 data-[state=active]:text-purple-600 rounded-lg transition-all"
+      data-testid="profiles-tab"
+    >
+      Profiles
+    </TabsTrigger>
+  </TabsList>
 
                 {/* Slates Tab */}
-                <TabsContent value="slates" data-testid="slates-content" className="mt-0">
+                {/* <TabsContent value="slates" data-testid="slates-content" className="mt-0">
                     {errors.slates && (
                         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                             <p className="text-red-600 text-sm">{errors.slates}</p>
@@ -495,10 +525,10 @@ export default function SavedPage() {
                             ))}
                         </div>
                     )}
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* Collabs Tab */}
-                <TabsContent value="collabs" data-testid="collabs-content" className="mt-0">
+                {/* <TabsContent value="collabs" data-testid="collabs-content" className="mt-0">
                     {errors.collabs && (
                         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                             <p className="text-red-600 text-sm">{errors.collabs}</p>
@@ -581,10 +611,10 @@ export default function SavedPage() {
                             ))}
                         </div>
                     )}
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* What's On Tab */}
-                <TabsContent value="whats-on" data-testid="whats-on-content" className="mt-0">
+                {/* <TabsContent value="whats-on" data-testid="whats-on-content" className="mt-0">
                     {errors.whatsOn && (
                         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                             <p className="text-red-600 text-sm">{errors.whatsOn}</p>
@@ -672,7 +702,7 @@ export default function SavedPage() {
                             })}
                         </div>
                     )}
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* Profiles Tab */}
                 <TabsContent value="profiles" data-testid="profiles-content" className="mt-0">

@@ -1,30 +1,170 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useInView } from "react-intersection-observer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ProjectCard from "@/components/modules/common/projectCard";
 import ViewProfileModal from "@/components/modules/common/ViewProfileModal";
 import { ProjectCardType } from "@/types";
+import { ArrowUpDown, Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import axios from "axios";
 
 interface ExplorePageProps {
-  projectsCardData: (ProjectCardType & { userId?: string })[];
+  searchParams?: { [key: string]: string | string[] | undefined };
+  initialProfiles?: (ProjectCardType & { userId?: string })[];
+  initialPagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalProfiles: number;
+    hasNextPage: boolean;
+  };
+  projectsCardData?: (ProjectCardType & { userId?: string })[];
 }
 
+type SortOption = 'name-asc' | 'name-desc' | 'newest' | 'oldest';
+
 export default function ExplorePage({
+  searchParams,
+  initialProfiles = [],
+  initialPagination = { currentPage: 1, totalPages: 0, totalProfiles: 0, hasNextPage: false },
   projectsCardData,
 }: ExplorePageProps) {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [profiles, setProfiles] = useState<(ProjectCardType & { userId?: string })[]>(
+    projectsCardData || initialProfiles
+  );
+  const [page, setPage] = useState(initialPagination.currentPage);
+  const [hasNextPage, setHasNextPage] = useState(initialPagination.hasNextPage);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  
+  // Intersection Observer for infinite scroll
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: '100px',
+  });
 
-  // Debug: Check if userId is present in the data
-  console.log('Projects data sample:', projectsCardData[0]);
+  // Load more profiles when scrolling to bottom
+  const loadMoreProfiles = useCallback(async () => {
+    if (isLoading || !hasNextPage) return;
+
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.append('page', (page + 1).toString());
+      params.append('limit', '20');
+      
+      // Apply current sorting
+      if (sortBy === 'name-asc') {
+        params.append('sortBy', 'alias_first_name');
+        params.append('sortOrder', 'asc');
+      } else if (sortBy === 'name-desc') {
+        params.append('sortBy', 'alias_first_name');
+        params.append('sortOrder', 'desc');
+      } else if (sortBy === 'newest') {
+        params.append('sortBy', 'created_at');
+        params.append('sortOrder', 'desc');
+      } else if (sortBy === 'oldest') {
+        params.append('sortBy', 'created_at');
+        params.append('sortOrder', 'asc');
+      }
+
+      // Add search params
+      if (searchParams?.keyword) params.append('keyword', searchParams.keyword as string);
+      if (searchParams?.role) params.append('role', searchParams.role as string);
+      if (searchParams?.location) params.append('location', searchParams.location as string);
+
+      const response = await axios.get(`/api/explore?${params.toString()}`);
+      
+      if (response.data.success) {
+        const newProfiles = response.data.data.profiles;
+        setProfiles(prev => [...prev, ...newProfiles]);
+        setPage(response.data.data.pagination.currentPage);
+        setHasNextPage(response.data.data.pagination.hasNextPage);
+      }
+    } catch (error) {
+      console.error('Error loading more profiles:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, hasNextPage, isLoading, sortBy, searchParams]);
+
+  // Trigger load more when scrolling to bottom
+  useEffect(() => {
+    if (inView && hasNextPage && !isLoading) {
+      loadMoreProfiles();
+    }
+  }, [inView, hasNextPage, isLoading, loadMoreProfiles]);
+
+  // Handle sort change - refetch all profiles with new sorting
+  const handleSortChange = async (newSort: SortOption) => {
+    if (sortBy === newSort) return; // Don't refetch if same sort is selected
+    
+    console.log('Sorting changed to:', newSort);
+    setSortBy(newSort);
+    setIsLoading(true);
+    
+    try {
+      const params = new URLSearchParams();
+      params.append('page', '1');
+      params.append('limit', '20');
+      
+      // Apply new sorting
+      if (newSort === 'name-asc') {
+        params.append('sortBy', 'alias_first_name');
+        params.append('sortOrder', 'asc');
+      } else if (newSort === 'name-desc') {
+        params.append('sortBy', 'alias_first_name');
+        params.append('sortOrder', 'desc');
+      } else if (newSort === 'newest') {
+        params.append('sortBy', 'created_at');
+        params.append('sortOrder', 'desc');
+      } else if (newSort === 'oldest') {
+        params.append('sortBy', 'created_at');
+        params.append('sortOrder', 'asc');
+      }
+
+      // Add search params
+      if (searchParams?.keyword) params.append('keyword', searchParams.keyword as string);
+      if (searchParams?.role) params.append('role', searchParams.role as string);
+      if (searchParams?.location) params.append('location', searchParams.location as string);
+
+      console.log('Fetching sorted profiles with params:', params.toString());
+      const response = await axios.get(`/api/explore?${params.toString()}`);
+      
+      if (response.data.success) {
+        console.log('Received sorted profiles:', response.data.data.profiles.length);
+        setProfiles(response.data.data.profiles);
+        setPage(1); // Reset to page 1 when sorting changes
+        setHasNextPage(response.data.data.pagination.hasNextPage);
+      } else {
+        console.error('Failed to fetch sorted profiles:', response.data);
+      }
+    } catch (error) {
+      console.error('Error sorting profiles:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Reset when search params change
+  useEffect(() => {
+    setProfiles(initialProfiles);
+    setPage(initialPagination.currentPage);
+    setHasNextPage(initialPagination.hasNextPage);
+  }, [searchParams?.keyword, searchParams?.role, searchParams?.location]);
 
   const handleProfileClick = (userId: string | undefined) => {
-    console.log('Profile clicked, userId:', userId);
     if (userId) {
       setSelectedUserId(userId);
       setIsModalOpen(true);
-    } else {
-      console.warn('No userId provided for profile click');
     }
   };
 
@@ -35,29 +175,106 @@ export default function ExplorePage({
   
   return (
     <>
-      <div className="w-full flex justify-center">
-        {/* 
-          Target Layout: 
-          - Max width ~615px 
-          - 3 Columns on desktop 
-          - Gap 10px
-          - Mobile: 2 columns (responsive)
-        */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-[10px] p-2 md:p-0 max-w-[615px] w-full justify-items-stretch auto-rows-max">
-          {projectsCardData.length > 0 ? (
-            projectsCardData.map((project) => (
-              <ProjectCard 
-                key={project.id || project.name} 
-                {...project} 
-                onClick={() => handleProfileClick(project.userId)}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-gray-500 mt-10">
-              <p>No profiles found matching your criteria.</p>
+      <div className="w-full flex flex-col gap-4">
+        {/* Sorting Controls - Above profile grid */}
+        <div className="w-full flex justify-end items-center gap-2 px-2 md:px-0 mb-2" data-testid="sorting-controls">
+          <span className="text-sm text-gray-600 font-medium flex items-center gap-1.5">
+            <ArrowUpDown className="h-4 w-4" />
+            Sort by:
+          </span>
+          <Select value={sortBy} onValueChange={(value) => handleSortChange(value as SortOption)}>
+            <SelectTrigger 
+              className="w-[180px] h-10 bg-white border border-gray-300 hover:border-gray-400 text-gray-900 rounded-lg shadow-sm transition-colors"
+              data-testid="sort-dropdown-trigger"
+            >
+              <SelectValue placeholder="Select sorting" />
+            </SelectTrigger>
+            <SelectContent 
+              className="bg-white border border-gray-200 shadow-lg rounded-lg" 
+              data-testid="sort-dropdown-content"
+            >
+              <SelectItem 
+                value="newest" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-newest"
+              >
+                Newest First
+              </SelectItem>
+              <SelectItem 
+                value="oldest" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-oldest"
+              >
+                Oldest First
+              </SelectItem>
+              <SelectItem 
+                value="name-asc" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-name-asc"
+              >
+                Name (A-Z)
+              </SelectItem>
+              <SelectItem 
+                value="name-desc" 
+                className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                data-testid="sort-option-name-desc"
+              >
+                Name (Z-A)
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Profile Grid */}
+        <div className="relative w-full">
+          {isLoading && page === 1 && (
+            <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-lg">
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-8 w-8 animate-spin text-[#FA6E80]" />
+                <span className="text-sm text-gray-600">Updating results...</span>
+              </div>
             </div>
           )}
+          <div 
+            className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-[10px] p-2 md:p-0 w-full justify-items-stretch auto-rows-max"
+            data-testid="profiles-grid"
+          >
+            {profiles.length > 0 ? (
+              profiles.map((project) => (
+                <ProjectCard 
+                  key={project.id || project.name} 
+                  {...project} 
+                  onClick={() => handleProfileClick(project.userId)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500 mt-10">
+                <p>No profiles found matching your criteria.</p>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Loading indicator for infinite scroll */}
+        {hasNextPage && (
+          <div ref={ref} className="w-full flex justify-center py-8">
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-gray-600">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span className="text-sm">Loading more profiles...</span>
+              </div>
+            ) : (
+              <div className="h-8" /> // Invisible trigger element
+            )}
+          </div>
+        )}
+
+        {/* End of results message */}
+        {!hasNextPage && profiles.length > 0 && (
+          <div className="w-full text-center py-8 text-sm text-gray-500">
+            You've reached the end of the crew directory
+          </div>
+        )}
       </div>
 
       {/* Profile View Modal */}

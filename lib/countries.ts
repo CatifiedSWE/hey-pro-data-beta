@@ -289,3 +289,25 @@ export const countries: Country[] = [
   { name: "Zambia", dial_code: "+260", code: "ZM", flag: "🇿🇲" },
   { name: "Zimbabwe", dial_code: "+263", code: "ZW", flag: "🇿🇼" },
 ];
+
+/**
+ * Get flag icon CSS class for a country code
+ * @param countryCode - ISO 3166-1-alpha-2 country code (e.g., "US", "GB")
+ * @returns CSS class string for flag-icons library
+ */
+export const getFlagClass = (countryCode: string): string => {
+  return `fi fi-${countryCode.toLowerCase()}`;
+};
+
+/**
+ * Get flag element with proper styling
+ * @param countryCode - ISO 3166-1-alpha-2 country code
+ * @param className - Additional CSS classes
+ */
+export const getFlagElement = (countryCode: string, className: string = ""): React.ReactElement => {
+  const React = require('react');
+  return React.createElement('span', {
+    className: `${getFlagClass(countryCode)} ${className}`.trim(),
+    style: { fontSize: '1.5em', lineHeight: 1 }
+  });
+};

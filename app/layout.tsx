@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Outfit } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import Providers from "@/components/Providers";
@@ -8,6 +8,12 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-poppins",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-outfit",
 });
 
 export const metadata: Metadata = {
@@ -75,7 +81,7 @@ function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
         </Script>
       </head>
 
-      <body className={`${poppins.variable} font-poppins bg-white text-black`}>
+      <body className={`${poppins.variable} ${outfit.variable} font-poppins bg-white text-black`}>
         <Providers>{children}</Providers>
       </body>
     </html>

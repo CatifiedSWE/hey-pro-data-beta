@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
       ...visaInfo,
       visa_issued_by: visaInfo.issued_by,
       visa_expiry_date: visaInfo.expiry_date,
-      nationality: null,
-      passport_expiry_date: null
+      nationality: visaInfo.nationality,
+      passport_expiry_date: visaInfo.passport_expiry_date
     } : null;
 
     return NextResponse.json(
@@ -142,7 +142,9 @@ export async function PATCH(request: NextRequest) {
 
     // Map frontend fields to database columns
     const updateData: any = { user_id: user.id };
-    // Note: nationality and passport_expiry_date are not stored in current DB schema
+    // Store nationality and passport_expiry_date
+    if (nationality !== undefined) updateData.nationality = nationality;
+    if (passport_expiry_date !== undefined) updateData.passport_expiry_date = passport_expiry_date;
     if (visa_type !== undefined) updateData.visa_type = visa_type;
     // Map visa_issued_by -> issued_by (database column)
     if (visa_issued_by !== undefined) updateData.issued_by = visa_issued_by;
@@ -173,8 +175,8 @@ export async function PATCH(request: NextRequest) {
       ...data,
       visa_issued_by: data.issued_by,
       visa_expiry_date: data.expiry_date,
-      nationality: null,
-      passport_expiry_date: null
+      nationality: data.nationality,
+      passport_expiry_date: data.passport_expiry_date
     };
 
     return NextResponse.json(

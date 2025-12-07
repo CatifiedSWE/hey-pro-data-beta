@@ -16,14 +16,12 @@ export const config = {
 
 // Routes that don't require authentication
 const publicRoutes = [
-  '/login',
-  '/signup',
-  '/otp',
+  '/',              // Landing page
   '/callback',
-  '/forget-password',
-  '/reset-password',
   '/form',
   '/help',
+  '/onboarding',    // Main onboarding flow - ONLY ENTRY POINT
+  '/set-password',  // Password setup for existing users (Phase 1)
 ];
 
 // Routes that authenticated users should be redirected away from
@@ -45,12 +43,34 @@ const protectedRoutes = [
   '/create',
 ];
 
-export async function proxy(request: NextRequest) {
+// Routes under development - redirect to profile page
+const underDevelopmentRoutes = [
+  '/gigs',
+  '/collab',
+  '/slate',
+  '/whats-on',
+];
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip middleware for API routes and static files
   if (pathname.startsWith('/api') || pathname.startsWith('/_next')) {
     return NextResponse.next();
+  }
+
+  // PHASE 1: Block old auth pages - redirect to onboarding (gated system)
+  const blockedAuthPages = ['/forget-password', '/reset-password'];
+  if (blockedAuthPages.some(page => pathname.startsWith(page))) {
+    console.log(`[Middleware] Blocking old auth page: ${pathname}, redirecting to /onboarding`);
+    return NextResponse.redirect(new URL('/onboarding', request.url));
+  }
+
+  // Block access to under-development routes - redirect to profile for ALL users
+  const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
+  if (isUnderDevelopmentRoute) {
+    console.log(`[Middleware] Blocking under-development page: ${pathname}, redirecting to /profile`);
+    return NextResponse.redirect(new URL('/profile', request.url));
   }
 
   // Allow public routes without authentication check
@@ -106,11 +126,60 @@ export async function proxy(request: NextRequest) {
   // Get the session from cookies - OAuth callback API route sets these properly
   const { data: { session } } = await supabase.auth.getSession();
   const isAuthenticated = !!session;
+  const userId = session?.user?.id;
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
+  // Special handling for landing page (/)
+  if (pathname === '/' && isAuthenticated && userId) {
+    // Check onboarding status
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('has_completed_onboarding')
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    if (profile?.has_completed_onboarding) {
+      // Completed onboarding → redirect to profile
+      return NextResponse.redirect(new URL('/profile', request.url));
+    } else {
+      // Not completed onboarding → redirect to onboarding
+      return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+  }
+
+  // Special handling for onboarding page
+  if (pathname.startsWith('/onboarding') && isAuthenticated && userId) {
+    // Check if user already completed onboarding
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('has_completed_onboarding')
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    if (profile?.has_completed_onboarding) {
+      // Already completed → redirect to profile
+      return NextResponse.redirect(new URL('/profile', request.url));
+    }
+    // Otherwise, allow access to complete onboarding
+  }
+
   // Redirect authenticated users away from auth pages (login/signup)
   if (isAuthenticated && isAuthRoute) {
+    // Check onboarding status before redirecting
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('has_completed_onboarding')
+        .eq('user_id', userId)
+        .maybeSingle();
+      
+      if (profile?.has_completed_onboarding) {
+        return NextResponse.redirect(new URL('/profile', request.url));
+      } else {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+    }
     return NextResponse.redirect(new URL('/slate', request.url));
   }
 

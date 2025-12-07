@@ -28,8 +28,6 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import AboutSectionComponent from "./components/About";
-import VisaSection from "./components/visa";
-import WorkStatusSection from "./components/WorkStatus";
 import AddLanguageSection from "./components/Language";
 import WhatupNumbers from "./components/WhatAppNumber";
 import AvalableCountryForTravel from "./components/AvalableCountryForTravel";
@@ -41,12 +39,15 @@ import CreditsSection from "./components/CreditView";
 import ResumePortfolio from "./components/ResumePortfolio";
 import SlateView from "./components/slate";
 import AddNewSkill from "./components/add-new-skill";
-import { RoleDialog } from "./components/role";
 import { useProfile, ProfileData } from "@/contexts/ProfileContext";
 import { toast } from "sonner";
 import ProfileSkeleton from "./components/ProfileSkeleton";
+import LanguagesSection from "./components/LanguagesSection";
+import ContactDetailsSection from "./components/ContactDetailsSection";
+import AvailableToTravelSection from "./components/AvailableToTravelSection";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
-type SectionType = "about" | "skills" | "credits"
+type SectionType = "about" | "skills" | "credits" | "languages" | "contact_details" | "available_to_travel"
 
 // Extended profile type to include additional fields not in the base ProfileData
 interface ExtendedProfileData extends ProfileData {
@@ -77,12 +78,15 @@ export default function Profile() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  // Updated section order to match design (no separate recommendations section)
-  const [sectionOrder, setSectionOrder] = useState<SectionType[]>(["about", "skills", "credits"])
+  // Updated section order to include new sections
+  const [sectionOrder, setSectionOrder] = useState<SectionType[]>(["about", "skills", "credits", "languages", "contact_details", "available_to_travel"])
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false)
   
   // Use the profile hook for real data
-  const { profile, links, recommendations, roles, skills, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills } = useProfile();
+  const { profile, links, recommendations, roles, skills, visa, travelCountries, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills, fetchTravelCountries } = useProfile();
+  
+  // Use the section visibility hook
+  const { visibility, loading: visibilityLoading, toggleVisibility } = useSectionVisibility();
 
   // Drag and drop sensors - MUST be called before any conditional returns
   const sensors = useSensors(
@@ -115,12 +119,19 @@ export default function Profile() {
 
   // Memoize section components to prevent unnecessary re-creation and unmounting
   // MUST be before conditional returns to maintain hook call order
-  const sectionComponents = useMemo(() => ({
-    about: <AboutSection key="about" bio={profile?.bio || ''} onUpdate={refetch} />,
-    skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
-    credits: <CreditsSection key="credits" />,
-    // Recommendations removed from main sections as per design
-  }), [profile?.bio, skills, fetchSkills, refetch]);
+  const sectionComponents = useMemo(() => {
+    // Transform travel countries data from API format to UI format (array of country names)
+    const travelCountryNames = travelCountries.map(tc => tc.country_name);
+    
+    return {
+      about: <AboutSection key="about" about={profile?.about || ''} onUpdate={refetch} />,
+      skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
+      credits: <CreditsSectionWrapper key="credits" />,
+      languages: <LanguagesSection key="languages" />,
+      contact_details: <ContactDetailsSection key="contact_details" email={profile?.email} phone={profile?.phone} countryCode={profile?.country_code} isVisible={visibility.contact_details} onVisibilityToggle={() => toggleVisibility('contact_details')} />,
+      available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={travelCountryNames} />,
+    };
+  }, [profile?.about, profile?.email, profile?.phone, profile?.country_code, skills, travelCountries, fetchSkills, refetch, visibility, toggleVisibility]);
 
   // Non-hook data and functions
   const handlePhotoUpload = async (file: File, type: 'profile' | 'banner') => {
@@ -199,14 +210,17 @@ export default function Profile() {
             profile={profile} 
             links={links} 
             roles={roles} 
+            visa={visa}
             recommendations={recommendations}
             onPhotoUpload={handlePhotoUpload} 
             onLinksUpdate={fetchLinks} 
         />
-        <div className="w-full bg-slate-200 h-px sm:h-[1px] mb-5" />
+        {/* Separator line hidden */}
+        {/* <div className="w-full bg-slate-200 h-px sm:h-[1px] mb-5" /> */}
 
         <div className="space-y-2 mx-auto w-full">
-          <div className="flex flex-row  gap-3 sm:gap-6 text-black mb-6 sm:mb-8">
+          {/* Profile/Slate Tabs hidden */}
+          <div className="hidden flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8">
             <Button
               onClick={() => setActiveTab("profile")}
               className={`flex-1 min-h-[44px] text-sm sm:text-base font-semibold rounded-[12px] sm:rounded-[15px] ${activeTab === "profile"
@@ -237,17 +251,11 @@ export default function Profile() {
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   <div className="flex-none ">
-                    <AboutSectionComponent title="About" about={profile?.bio || ''} onUpdate={refetch} />
+                    <AboutSectionComponent title="About" about={profile?.about || ''} onUpdate={refetch} />
                   </div>
-                  <div className="flex-none ">
-                    <VisaSection visaType={''} visaIssueBy={''} visaExpData={''} />
-                  </div>
-                  <div className="flex-none ">
-                    <WorkStatusSection 
-                      statusProp={(profile as ExtendedProfileData)?.persionalDetails?.availability}
-                      initialIdentities={profile?.work_identities}
-                    />
-                  </div>
+                  
+                  {/* Removed VisaSection, WorkStatusSection, RoleDialog from here as they are moved to ProfileEdit */}
+
                   <div className="flex-none ">
                     <AddLanguageSection languages={(profile as ExtendedProfileData)?.language || []} />
                   </div>
@@ -258,12 +266,9 @@ export default function Profile() {
                       email={profile?.email}
                     />
                   </div>
-
-                  <div className="flex-none">
-                    <RoleDialog roles={roles} onAddRole={addRole} onDeleteRole={deleteRole} />
-                  </div>
+                  
                   <div className="flex-none ">
-                    <AvalableCountryForTravel availableCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} />
+                    <AvalableCountryForTravel availableCountries={travelCountries.map(tc => tc.country_name)} />
                   </div>
                 </div>
                 {showLeftArrow && (
@@ -368,7 +373,7 @@ function SkillItem({
   return (
     <div className="space-y-2 group relative">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-base font-[400] text-[#000] sm:text-lg flex-1">{department} <span className="text-5xl">.</span> {role}</h3>
+        <h3 className="text-base font-[400] text-[#000] sm:text-lg flex-1">{role}</h3>
         {onEdit && (
           <Button
             onClick={onEdit}
@@ -409,6 +414,9 @@ function SortableItem({ id }: { id: SectionType }) {
     about: "About",
     skills: "Skills",
     credits: "Credits",
+    languages: "Languages",
+    contact_details: "Contact Details",
+    available_to_travel: "Available to Travel",
   }
 
   return (
@@ -425,56 +433,34 @@ function SortableItem({ id }: { id: SectionType }) {
   )
 }
 
-function AboutSection({ bio, onUpdate }: { bio: string; onUpdate: () => void }) {
+function AboutSection({ about, onUpdate }: { about: string; onUpdate: () => void }) {
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">About</h2>
-        <AboutSectionComponent 
-          title="About" 
-          about={bio}
-          onUpdate={onUpdate}
-          trigger={
-            <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
-              <Edit className="h-5 w-5" />
-            </Button>
-          }
-        />
+        <div className="flex gap-1.5">
+          <AboutSectionComponent 
+            title="About" 
+            about={about}
+            onUpdate={onUpdate}
+            trigger={
+              <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
+                <Edit className="h-5 w-5" />
+              </Button>
+            }
+          />
+        </div>
       </div>
       <div className="space-y-4 text-sm leading-[21px] text-[#181818] sm:text-base">
-        {bio}
+        {about || <span className="text-gray-500 italic">Tell the world about yourself</span>}
       </div>
     </div>
   )
 }
 
 function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: () => void }) {
-  // If skills is empty, show a placeholder
-  if (!skills || skills.length === 0) {
-    return (
-      <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">Skills</h2>
-          <div className="flex gap-1.5">
-            <AddNewSkill
-              onUpdate={onUpdate}
-              trigger={
-                <Button size="icon" variant="default" className="rounded-full border border-[#31A7AC]/30 bg-[#FA6E80] text-[#ffffff]">
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-                </Button>
-              }
-            />
-          </div>
-        </div>
-        <div className="text-center py-8 text-gray-500">
-          <p>Showcase your skills by adding one</p>
-        </div>
-      </div>
-    );
-  }
-
   // Transform skills data from API format to UI format
-  const transformedSkills = skills.map(skill => ({
+  const transformedSkills = skills && skills.length > 0 ? skills.map(skill => ({
     id: skill.id,
     department: skill.department || 'General',
     role: skill.skill_name,
@@ -484,7 +470,7 @@ function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: (
       title: skill.experience_level,
       description: ''
     } : undefined
-  }));
+  })) : [];
 
   return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} />;
 }
@@ -497,6 +483,8 @@ function SkillsSection({ skills, onUpdate }: { skills: { id: string, department:
     setSelectedSkillId(skillId);
     setIsEditorOpen(true);
   };
+
+  const isEmpty = !skills || skills.length === 0;
 
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
@@ -511,34 +499,45 @@ function SkillsSection({ skills, onUpdate }: { skills: { id: string, department:
               </Button>
             }
           />
-          <SkillEditor
-            initialSkills={skills}
-            onUpdate={onUpdate}
-            initialSelectedSkillId={selectedSkillId}
-            isOpen={isEditorOpen}
-            onOpenChange={setIsEditorOpen}
-            trigger={
-              <Button size="icon" variant="default" className="rounded-full border border-[#31A7AC]/30 bg-[#31A7AC] text-[#ffffff]">
-                <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            }
-          />
-
+          {!isEmpty && (
+            <SkillEditor
+              initialSkills={skills}
+              onUpdate={onUpdate}
+              initialSelectedSkillId={selectedSkillId}
+              isOpen={isEditorOpen}
+              onOpenChange={setIsEditorOpen}
+              trigger={
+                <Button size="icon" variant="default" className="rounded-full border border-[#31A7AC]/30 bg-[#31A7AC] text-[#ffffff]">
+                  <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Button>
+              }
+            />
+          )}
         </div>
       </div>
-      <div className="space-y-4">
-        {skills.map((skill, index) => (
-          <SkillItem 
-            key={skill.id || index} 
-            id={skill.id}
-            department={skill.department} 
-            role={skill.role} 
-            description={skill.description} 
-            experience={skill.experience}
-            onEdit={() => handleEditSkill(skill.id)}
-          />
-        ))}
-      </div>
+      {isEmpty ? (
+        <div className="text-center py-8 text-gray-500">
+          <p>Showcase your skills by adding one</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {skills.map((skill, index) => (
+            <SkillItem 
+              key={skill.id || index} 
+              id={skill.id}
+              department={skill.department} 
+              role={skill.role} 
+              description={skill.description} 
+              experience={skill.experience}
+              onEdit={() => handleEditSkill(skill.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
+}
+
+function CreditsSectionWrapper() {
+  return <CreditsSection />;
 }

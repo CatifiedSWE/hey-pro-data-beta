@@ -24,12 +24,277 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { CalendarIcon, Upload, ChevronDownIcon } from "lucide-react";
+import { CalendarIcon, Upload, ChevronDownIcon, Edit, ChevronsUpDown, Check } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 import apiCalling from "@/lib/apiCalling";
+import { ImageCropper } from "@/components/ui/image-cropper";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+
+// Production Types Array - 26 comprehensive types
+const PRODUCTION_TYPES = [
+    "Audio Production",
+    "Animation",
+    "Commercial",
+    "Corporate Video",
+    "Docuseries",
+    "Documentary",
+    "Educational Video",
+    "Training Video",
+    "Experimental Film",
+    "Feature Film",
+    "Fashion Show",
+    "Live Event",
+    "Micro Film",
+    "Music Video",
+    "Online Content",
+    "Promotional Video",
+    "Trailers",
+    "Reality TV",
+    "Competition Show",
+    "Short Film",
+    "Short-form Social Media Content (TikTok, Reels, Shorts)",
+    "Stage Production",
+    "Student Film",
+    "TV",
+    "VFX Project",
+    "Web Series",
+];
+
+// Roles by Category - 100+ professional roles organized in 26 categories
+const ROLES_BY_CATEGORY = [
+    {
+        category: "Direction",
+        roles: [
+            "Director",
+            "Assistant Director",
+            "1st Assistant Director (1st AD)",
+            "2nd Assistant Director (2nd AD)",
+            "3rd Assistant Director (3rd AD)",
+            "Script Supervisor",
+            "Floor Runner",
+            "COVID Officer",
+        ],
+    },
+    {
+        category: "Production",
+        roles: [
+            "Producer",
+            "Line Producer",
+            "Production Manager",
+            "Unit Manager",
+            "Unit Production Manager",
+            "Production Coordinator",
+            "Production Assistant",
+            "Production Runner",
+            "Production Accountant",
+            "Clearances",
+            "Production Secretary",
+            "Catering",
+            "Craft Services",
+            "Medic",
+            "Security",
+            "Set Educator/Tutor",
+            "Baby Wrangler",
+            "Animal Wrangler",
+            "Intimacy Coordinator",
+            "Stunt Coordinator",
+        ],
+    },
+    {
+        category: "Camera",
+        roles: [
+            "Director of Photography (DOP/DP)",
+            "Cinematographer",
+            "Camera Operator",
+            "Camera Operator | Remote Head",
+            "Camera Operator | Steadicam",
+            "Camera Operator | Trinity 2",
+            "Camera Assistant",
+            "Camera Assistant | Junior",
+            "Camera Trainee",
+            "Focus Puller",
+            "1st Assistant Camera (1st AC)",
+            "2nd Assistant Camera (2nd AC)",
+            "Clapper Loader",
+            "Digital Imaging Technician (DIT)",
+            "Data Wrangler",
+            "Drone Operator",
+            "Aerial Cinematographer",
+            "Underwater Cinematographer",
+            "Motion Control Operator",
+            "Technocrane Operator",
+            "Video Assist",
+        ],
+    },
+    {
+        category: "Lighting",
+        roles: ["Gaffer", "Best Boy Electric", "Electrician", "Lighting Technician", "Lighting Assistant", "Generator Operator"],
+    },
+    {
+        category: "Grip",
+        roles: ["Key Grip", "Best Boy Grip", "Grip", "Dolly Grip"],
+    },
+    {
+        category: "Art",
+        roles: [
+            "Production Designer",
+            "Art Director",
+            "Supervising Art Director",
+            "Set Designer",
+            "Set Decorator",
+            "Buyer",
+            "Props Master",
+            "Props Assistant",
+            "Set Dresser",
+            "Standby Props",
+            "Armourer",
+            "Greensman",
+            "Construction Manager",
+            "Carpenter",
+            "Painter",
+            "Scenic Artist",
+            "Standby Carpenter",
+            "Standby Painter",
+        ],
+    },
+    {
+        category: "Wardrobe",
+        roles: [
+            "Costume Designer",
+            "Wardrobe Supervisor",
+            "Wardrobe Assistant",
+            "Wardrobe Standby",
+            "Costume Maker",
+            "Costume Buyer",
+            "Costume Coordinator",
+            "Stylist",
+        ],
+    },
+    {
+        category: "Hair",
+        roles: ["Hair Stylist", "Hair & Makeup Artist"],
+    },
+    {
+        category: "Makeup",
+        roles: [
+            "Makeup Artist",
+            "Makeup Department Head",
+            "Key Makeup Artist",
+            "Prosthetics Makeup Artist",
+            "Special Effects Makeup Artist (SPFX Makeup)",
+        ],
+    },
+    {
+        category: "Casting",
+        roles: [
+            "Casting Director",
+            "Casting Associate",
+            "Extras Casting Director",
+            "Background Casting",
+            "Talent Coordinator",
+        ],
+    },
+    {
+        category: "Stunts",
+        roles: ["Stunt Coordinator", "Stunt Performer", "Stunt Double", "Fight Choreographer"],
+    },
+    {
+        category: "Post-Production",
+        roles: [
+            "Editor",
+            "Assistant Editor",
+            "Post-Production Supervisor",
+            "Post-Production Coordinator",
+            "Colorist",
+            "Online Editor",
+        ],
+    },
+    {
+        category: "Animation",
+        roles: ["Animator", "Character Animator", "Motion Graphics Designer", "3D Modeler"],
+    },
+    {
+        category: "VFX",
+        roles: ["VFX Supervisor", "VFX Producer", "VFX Artist", "Compositor", "Matchmove Artist", "Rotoscope Artist"],
+    },
+    {
+        category: "Design",
+        roles: ["Graphic Designer", "Title Designer", "UI/UX Designer"],
+    },
+    {
+        category: "Sound",
+        roles: [
+            "Sound Recordist",
+            "Boom Operator",
+            "Sound Mixer",
+            "Sound Designer",
+            "Foley Artist",
+            "Dialogue Editor",
+            "Music Supervisor",
+            "Composer",
+        ],
+    },
+    {
+        category: "Locations",
+        roles: ["Location Manager", "Location Scout", "Location Assistant"],
+    },
+    {
+        category: "SFX",
+        roles: ["Special Effects Supervisor (SFX Supervisor)", "Special Effects Technician (SFX Tech)"],
+    },
+    {
+        category: "Photography",
+        roles: ["Photographer", "Still Photographer", "Unit Photographer"],
+    },
+    {
+        category: "Videography",
+        roles: ["Videographer", "Behind-the-Scenes (BTS) Videographer"],
+    },
+    {
+        category: "Writing",
+        roles: [
+            "Writer",
+            "Screenwriter",
+            "Script Editor",
+            "Story Editor",
+            "Creative Producer",
+            "Development Producer",
+            "Script Consultant",
+        ],
+    },
+    {
+        category: "Media & Content",
+        roles: [
+            "Social Media Manager",
+            "Content Creator",
+            "Publicist",
+            "EPK Producer (Electronic Press Kit)",
+        ],
+    },
+    {
+        category: "Sustainability",
+        roles: ["Sustainability Coordinator", "Green Consultant"],
+    },
+    {
+        category: "Transport & Logistics",
+        roles: ["Transport Captain", "Driver"],
+    },
+    {
+        category: "Events",
+        roles: ["Event Coordinator", "Festival Programmer", "Film Programmer", "Marketing & Distribution"],
+    },
+];
 
 interface CreditsEditorProps {
     trigger: React.ReactNode;
@@ -146,6 +411,9 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [saving, setSaving] = useState(false);
     const [editingCreditId, setEditingCreditId] = useState<string | null>(null);
+    const [cropperOpen, setCropperOpen] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState<string>("");
+    const [roleComboboxOpen, setRoleComboboxOpen] = useState(false);
 
     useEffect(() => {
         if (isDialogOpen && mode === 'edit' && creditToEdit) {
@@ -230,10 +498,23 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
         }
         const reader = new FileReader();
         reader.onloadend = () => {
-            handleCreditChange("image", reader.result as string);
-            toast.success("Image uploaded");
+            // Open cropper with the uploaded image
+            setImageToCrop(reader.result as string);
+            setCropperOpen(true);
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleCropComplete = (croppedImage: string) => {
+        handleCreditChange("image", croppedImage);
+        toast.success("Image uploaded");
+    };
+
+    const handleEditImage = () => {
+        if (creditForm.image) {
+            setImageToCrop(creditForm.image);
+            setCropperOpen(true);
+        }
     };
     
     const handleAddAward = () => {
@@ -333,8 +614,8 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                 onUpdate?.();
             } else {
                 // Show more detailed error message
-                const errorMsg = response.data?.error || response.message || `Failed to ${mode === 'edit' ? 'update' : 'add'} credit`;
-                console.error('API Error:', errorMsg, response.data);
+                const errorMsg = (response as any).data?.error || (response as any).message || `Failed to ${mode === 'edit' ? 'update' : 'add'} credit`;
+                console.error('API Error:', errorMsg, (response as any).data);
                 toast.error(errorMsg);
             }
         } catch (error) {
@@ -369,16 +650,15 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                     <DialogTitle>{mode === 'edit' ? 'Edit Credit' : 'Add New Credit'}</DialogTitle>
                 </VisuallyHidden>
                 <div className="px-[30px] pt-[30px] pb-6 flex flex-col gap-6">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                            <h2 className="text-[20px] leading-[34px] font-[400]  text-[#211536]">
-                                {mode === 'edit' ? 'Edit Credit' : 'Add New Credit'}
-                            </h2>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        <section className=" rounded-[20px] p-6 space-y-5">
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        <section className="flex-1 rounded-[20px] space-y-5">
+                            <div className="flex flex-wrap items-start justify-between gap-4">
+                                <div>
+                                    <h2 className="text-[22px] leading-[34px] font-[400] text-[#211536]">
+                                        {mode === 'edit' ? 'Edit Credit' : 'Manage Credits'}
+                                    </h2>
+                                </div>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <select
@@ -386,23 +666,59 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                         onChange={(e) => handleCreditChange("productionType", e.target.value)}
                                         className={`${baseInputClasses} appearance-none`}
                                     >
-                                        <option value="">Select type</option>
-                                        <option value="Feature Film">Feature Film</option>
-                                        <option value="Commercial">Commercial</option>
-                                        <option value="Music Video">Music Video</option>
+                                        <option value="">Production type</option>
+                                        {PRODUCTION_TYPES.map((type) => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <select
-                                        value={creditForm.role}
-                                        onChange={(e) => handleCreditChange("role", e.target.value)}
-                                        className={`${baseInputClasses} appearance-none`}
-                                    >
-                                        <option value="">Select Role</option>
-                                        <option value="Feature Film">Feature Film</option>
-                                        <option value="Commercial">Commercial</option>
-                                        <option value="Music Video">Music Video</option>
-                                    </select>
+                                    <Popover open={roleComboboxOpen} onOpenChange={setRoleComboboxOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={roleComboboxOpen}
+                                                className={cn(
+                                                    baseInputClasses,
+                                                    "justify-between font-normal",
+                                                    !creditForm.role && "text-[#A3A3A3]"
+                                                )}
+                                                data-testid="roles-combobox-trigger"
+                                            >
+                                                {creditForm.role || "Roles"}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[300px] p-0" align="start">
+                                            <Command>
+                                                <CommandInput placeholder="Search roles..." />
+                                                <CommandList>
+                                                    <CommandEmpty>No role found.</CommandEmpty>
+                                                    {ROLES_BY_CATEGORY.map((category) => (
+                                                        <CommandGroup key={category.category} heading={category.category}>
+                                                            {category.roles.map((role) => (
+                                                                <CommandItem
+                                                                    key={role}
+                                                                    value={role}
+                                                                    onSelect={(currentValue) => {
+                                                                        handleCreditChange("role", currentValue);
+                                                                        setRoleComboboxOpen(false);
+                                                                    }}
+                                                                >
+                                                                    <Check className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        creditForm.role === role ? "opacity-100" : "opacity-0"
+                                                                    )} />
+                                                                    {role}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    ))}
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                             </div>
 
@@ -411,7 +727,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     <input
                                         value={creditForm.projectTitle}
                                         onChange={(e) => handleCreditChange("projectTitle", e.target.value)}
-                                        placeholder="City of Echoes"
+                                        placeholder="Project title"
                                         className={baseInputClasses}
                                     />
                                 </div>
@@ -425,12 +741,12 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1  gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
                                     <input
                                         value={creditForm.localCompany}
                                         onChange={(e) => handleCreditChange("localCompany", e.target.value)}
-                                        placeholder="Local Production company"
+                                        placeholder="Local Production Company"
                                         className={baseInputClasses}
                                     />
                                 </div>
@@ -438,7 +754,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     <input
                                         value={creditForm.internationalCompany}
                                         onChange={(e) => handleCreditChange("internationalCompany", e.target.value)}
-                                        placeholder="International Production company"
+                                        placeholder="International Production Company"
                                         className={baseInputClasses}
                                     />
                                 </div>
@@ -461,7 +777,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 className="w-full justify-start h-[41px] rounded-[15px] border border-[#828282] bg-white px-5 text-sm font-normal text-[#211536]"
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4 text-[#9F9F9F]" />
-                                                {creditForm.releaseYear || "Select year"}
+                                                {creditForm.releaseYear || "Release year"}
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">
@@ -485,7 +801,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                             onCheckedChange={(checked) => handleCreditChange("isUnreleased", checked)}
                                             className="h-[20px] w-[20px] rounded-[3px] border-[#828282] text-[#211536] focus:ring-[#211536]"
                                         />
-                                        Yet to be released
+                                        Yet To Be Released
                                     </label>
                                 </div>
                             </div>
@@ -501,7 +817,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                     className="w-[200px] rounded-[15px] h-[38px] justify-between font-normal border border-[#828282]"
                                                 >
                                                     <span className="text-[#494949]">
-                                                        {startDate ? startDate.toLocaleDateString() : "Select date"}
+                                                        {startDate ? startDate.toLocaleDateString() : "Start date"}
                                                     </span>
 
                                                     <ChevronDownIcon className="h-4 w-4 text-[#9F9F9F]" />
@@ -531,7 +847,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                     className="w-[200px] justify-between rounded-[15px] h-[38px] font-normal border border-[#828282]"
                                                 >
                                                     <span className="text-[#494949]">
-                                                        {endDate ? endDate.toLocaleDateString() : "Select date"}
+                                                        {endDate ? endDate.toLocaleDateString() : "End date"}
                                                     </span>
                                                     <ChevronDownIcon className="h-4 w-4 text-[#9F9F9F]" />
                                                 </Button>
@@ -556,7 +872,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 <textarea
                                     value={creditForm.description}
                                     onChange={(e) => handleCreditChange("description", e.target.value)}
-                                    placeholder="Write about this project..."
+                                    placeholder="Description"
                                     className="w-full min-h-[104px] rounded-[20px] border border-[#828282] bg-white px-5 py-3 text-sm text-[#211536] placeholder:text-[#A3A3A3] focus-visible:outline-[#31A7AC]"
                                 />
                             </div>
@@ -576,9 +892,17 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 size="sm"
                                                 variant="secondary"
                                                 className="bg-white text-[#211536] hover:bg-white/90"
+                                                onClick={handleEditImage}
+                                            >
+                                                <Edit className="h-4 w-4 mr-2" /> Edit & Crop
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="secondary"
+                                                className="bg-white text-[#211536] hover:bg-white/90"
                                                 onClick={() => fileInputRef.current?.click()}
                                             >
-                                                <Upload className="h-4 w-4 mr-2" /> Replace image
+                                                <Upload className="h-4 w-4 mr-2" /> Replace
                                             </Button>
                                             <Button
                                                 size="sm"
@@ -591,8 +915,8 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     </div>
                                 ) : (
                                     <div className="rounded-[20px] border border-dashed border-[#31A7AC] bg-white/80 px-6 py-8 text-center">
-                                        <p className="text-sm text-[#211536] font-medium mb-2">Upload artwork / press stills</p>
-                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB</p>
+                                        <p className="text-sm text-[#211536] font-medium mb-2">Upload image (Max 5 MB)</p>
+                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB • Portrait 9:16 ratio recommended</p>
                                         <Button
                                             type="button"
                                             variant="outline"
@@ -615,33 +939,22 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
 
                         <div className="hidden lg:block w-px bg-gradient-to-b from-[#31A7AC] via-[#FA6E80] to-[#F8B661] rounded-full" aria-hidden />
 
-                        <section className="flex-1 rounded-[20px] bg-white text-[#211536] p-6 space-y-5">
+                        <section className="flex-1 rounded-[20px] text-[#211536] space-y-5">
                             <div className="flex items-center justify-between gap-3">
                                 <div>
-                                    <p className="text-[22px] text-[#000000]">My Accolades</p>
+                                    <h2 className="text-[22px] leading-[34px] font-[400] text-[#211536]">My Accolades</h2>
                                 </div>
-
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-3">
-                                    <select
+                                    <input
                                         value={accoladeForm.type}
                                         onChange={(e) => handleAccoladeChange("type", e.target.value)}
+                                        placeholder="Accolade Type"
                                         className="w-full h-[41px] rounded-[15px] border border-[#DCDCDC] bg-[#FBFBFB] px-4 font-[400] text-sm text-[#211536] placeholder:text-[#9F9F9F] focus-visible:outline-[#31A7AC]"
-                                    >
-                                        <option value="">Accolade Type</option>
-                                        <option value="Best Director">Best Director</option>
-                                        <option value="Best Cinematography">Best Cinematography</option>
-                                        <option value="Best Screenplay">Best Screenplay</option>
-                                        <option value="Best Editing">Best Editing</option>
-                                        <option value="Best Visual Effects">Best Visual Effects</option>
-                                        <option value="Best Sound Design">Best Sound Design</option>
-                                        <option value="Best Production Design">Best Production Design</option>
-                                        <option value="Best Original Score">Best Original Score</option>
-                                        <option value="Best Actor">Best Actor</option>
-                                        <option value="Best Actress">Best Actress</option>
-                                    </select>
+                                        data-testid="accolade-type-input"
+                                    />
                                 </div>
                                 <div className="space-y-3">
                                     <input
@@ -663,10 +976,10 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className="w-full justify-start rounded-[15px] h-[41px] border border-[#828282] bg-white px-5 text-sm font-normal text-[#211536]"
+                                            className="w-full justify-start rounded-[15px] h-[41px] border border-[#DCDCDC] bg-[#FBFBFB] px-4 text-sm font-normal text-[#211536]"
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4 text-[#9F9F9F]" />
-                                            {accoladeForm.year || "Select year"}
+                                            {accoladeForm.year || "Year"}
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">
@@ -687,7 +1000,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 <Button
                                     onClick={handleAddAward}
                                     size="sm"
-                                    className="border h-[41px] rounded-[15px] "
+                                    className="border h-[41px] rounded-[15px]"
                                     variant="default"
                                 >
                                     Add new award
@@ -739,6 +1052,16 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                     </Button>
                 </div>
             </DialogContent>
+
+            {/* Image Cropper Dialog */}
+            <ImageCropper
+                open={cropperOpen}
+                onClose={() => setCropperOpen(false)}
+                imageSrc={imageToCrop}
+                onCropComplete={handleCropComplete}
+                aspectRatio={9 / 16}
+                allowSkip={true}
+            />
         </Dialog>
     );
 }

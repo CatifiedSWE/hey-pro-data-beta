@@ -34,6 +34,7 @@ import { countries, type Country } from "@/lib/countries";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useProfile } from "@/contexts/ProfileContext";
+import { Flag } from "@/components/ui/flag";
 
 export default function WhatupNumbers({
     countryCode: initialCountryCode,
@@ -156,9 +157,9 @@ export default function WhatupNumbers({
                                             variant="outline"
                                             role="combobox"
                                             aria-expanded={open}
-                                            className="w-[80px] justify-between bg-transparent border rounded-full h-11 text-4xl border-[#31A7AC]"
+                                            className="w-[80px] justify-between bg-transparent border rounded-full h-11 border-[#31A7AC]"
                                         >
-                                            {selectedCountry.flag}
+                                            <Flag countryCode={selectedCountry.code} size="lg" />
                                             <ChevronsUpDown
                                                 className="ml-2 h-4 w-4 shrink-0 opacity-50"
                                                 color="#31A7AC"
@@ -192,9 +193,9 @@ export default function WhatupNumbers({
                                                                         : "opacity-0"
                                                                 )}
                                                             />
-                                                            <div className="flex justify-between w-full">
-                                                                <span>
-                                                                    {country.flag} {country.name}
+                                                            <div className="flex justify-between w-full items-center">
+                                                                <span className="flex items-center gap-2">
+                                                                    <Flag countryCode={country.code} size="sm" /> {country.name}
                                                                 </span>
                                                                 <span className="text-muted-foreground">
                                                                     {country.dial_code}

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import {
   Search,
   X,
@@ -13,6 +13,7 @@ import {
   Calendar,
   NewspaperIcon,
   SatelliteDishIcon,
+  MoreVertical,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -77,6 +78,14 @@ const navigationMenuItems: NavigationMenuItem[] = [
   { title: "Collab", href: "/collab" },
 ]
 
+function CrewIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" className={className}>
+      <path d="M360-240ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q32 0 64.5 3.5T489-425q-13 17-22.5 35.5T451-351q-23-5-45.5-7t-45.5-2q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32h323q4 22 11 42t18 38H40Zm320-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm400-160q0 66-47 113t-113 47q-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113Zm-400 80q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm320 440q34 0 56.5-20t23.5-60q1-34-22.5-57T680-360q-34 0-57 23t-23 57q0 34 23 57t57 23Zm0 80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-5.5 43.5T818-198L920-96l-56 56-102-102q-18 11-38.5 16.5T680-120Z"/>
+    </svg>
+  )
+}
+
 export default function Header() {
   const [notificationOpen, setNotificationOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -86,8 +95,10 @@ export default function Header() {
   const { user, signOut } = useAuth()
   const { profile } = useProfile()
   const router = useRouter()
+  const pathname = usePathname()
 
   const unreadCount = notifications.filter((n) => !n.read).length
+  const isProfilePage = pathname === '/profile'
 
   const handleSignOut = async () => {
     await signOut()
@@ -120,45 +131,16 @@ export default function Header() {
                 <img 
                   src="/logo/web-app-manifest-461x161.png" 
                   alt="HeyProData" 
-                  className="h-[30px] w-auto object-contain"
+                  className="h-[50px] w-auto object-contain"
                 />
               </Link>
-
-              {/* Search Bar - Collapsible */}
-              <div className="hidden md:flex items-center shrink-0 ml-2">
-                <div className={`relative flex items-center transition-all duration-300 ease-in-out ${searchOpen ? 'w-[160px]' : 'w-[40px]'}`}>
-                  <div
-                    className={`absolute right-0 top-1/2 -translate-y-1/2 h-[34px] w-[34px] bg-[#FA6E80] hover:bg-[#f95569] text-white rounded-full flex items-center justify-center cursor-pointer z-20 ${searchOpen ? 'right-2' : 'right-1'}`}
-                    onClick={() => setSearchOpen(!searchOpen)}
-                  >
-                    <Search className="h-[18px] w-[18px]" />
-                  </div>
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    className={`
-                      w-full h-[48px] rounded-full text-sm bg-secondary/80 border-none focus-visible:ring-accent
-                      transition-all duration-300 ease-in-out
-                      ${searchOpen ? 'pl-3 pr-10 opacity-100' : 'pl-0 pr-0 opacity-0 pointer-events-none'}
-                    `}
-                  />
-                </div>
-              </div>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-1 shrink-0">
               <NavigationMenu>
                 <NavigationMenuList className="flex-wrap flex-nowrap">
-                  <NavigationMenuItem>
-                    <NavigationMenuLink
-                        asChild
-                        className={navigationMenuTriggerStyle()}
-                    >
-                        <Link href="/crew">Crew Directory</Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
+                  {/* <NavigationMenuItem>
                     <div className="flex">
                       {navigationMenuItems.map((item) => (
                         <NavigationMenuLink
@@ -171,13 +153,13 @@ export default function Header() {
                       ))}
                     </div>
 
-                  </NavigationMenuItem>
+                  </NavigationMenuItem> */}
                   <NavigationMenuItem>
                     <NavigationMenuLink
                       asChild
                       className="bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] text-white hover:text-white px-4 py-2 rounded-full"
                     >
-                      <Link href="/slate">Slate</Link>
+                      {/* <Link href="/slate">Slate</Link> */}
                     </NavigationMenuLink>
                   </NavigationMenuItem>
 
@@ -189,6 +171,10 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-4 shrink-0">
+              <Link href="/crew" className="relative cursor-pointer text-muted-foreground hover:text-foreground">
+                 <CrewIcon className="h-9 w-9" />
+              </Link>
+
               <div
                 className="relative"
                 onMouseLeave={() => setChatOpen(false)}
@@ -269,15 +255,38 @@ export default function Header() {
                 className="relative"
                 onMouseLeave={() => setUserMenuOpen(false)}
               >
-                <div
-                  onClick={() => setUserMenuOpen((prev) => !prev)}
-                  onMouseEnter={() => setUserMenuOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
-                    <AvatarImage src={avatarUrl} alt={displayName} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
-                  </Avatar>
+                {/* Desktop: Hover for menu, Click for profile */}
+                <div className="hidden md:block">
+                    <div
+                        onMouseEnter={() => setUserMenuOpen(true)}
+                        className="cursor-pointer"
+                    >
+                        <Link href="/profile">
+                            <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
+                                <AvatarImage src={avatarUrl} alt={displayName} />
+                                <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                            </Avatar>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Mobile: Logic based on page */}
+                <div className="md:hidden">
+                    {isProfilePage ? (
+                        <div 
+                            onClick={() => setUserMenuOpen((prev) => !prev)}
+                            className="cursor-pointer flex items-center justify-center h-[50px] w-[50px]"
+                        >
+                            <MoreVertical className="h-6 w-6" />
+                        </div>
+                    ) : (
+                        <Link href="/profile">
+                            <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
+                                <AvatarImage src={avatarUrl} alt={displayName} />
+                                <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                            </Avatar>
+                        </Link>
+                    )}
                 </div>
 
                 {userMenuOpen && (
@@ -308,14 +317,16 @@ export default function Header() {
                         <p className="font-[500] text-lg text-center truncate w-full px-2">{displayName}</p>
                       </div>
                       <div className="-space-y-5">
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
-                          <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="">
-                            <span className="font-[400]">
-                              Profile
-                            </span>
+                        {!isProfilePage && (
+                            <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
+                            <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="">
+                                <span className="font-[400]">
+                                Profile
+                                </span>
 
-                          </Link>
-                        </Button>
+                            </Link>
+                            </Button>
+                        )}
                         <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
                           <Link href="/saved" onClick={() => setUserMenuOpen(false)}>
                             <span className="font-[400]">
@@ -376,67 +387,6 @@ export default function Header() {
           </div>
         </div>
       </nav>
-
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-around px-6 py-3">
-          <Link
-            href="/crew"
-            className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setChatOpen(false)
-              setNotificationOpen(false)
-              setUserMenuOpen(false)
-            }}
-          >
-            <Compass className="h-6 w-6" />
-          </Link>
-
-          <Link
-            href="/gigs"
-            className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setChatOpen(false)
-              setNotificationOpen(false)
-              setUserMenuOpen(false)
-            }}
-          >
-            <Briefcase className="h-6 w-6" />
-          </Link>
-          <Link
-            href="/collab"
-            className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setChatOpen(false)
-              setNotificationOpen(false)
-              setUserMenuOpen(false)
-            }}
-          >
-            <Calendar className="h-6 w-6" />
-          </Link>
-          <Link
-            href="/whats-on"
-            className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setChatOpen(false)
-              setNotificationOpen(false)
-              setUserMenuOpen(false)
-            }}
-          >
-            <NewspaperIcon className="h-6 w-6" />
-          </Link>
-          <Link
-            href="/slate"
-            className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              setChatOpen(false)
-              setNotificationOpen(false)
-              setUserMenuOpen(false)
-            }}
-          >
-            <SatelliteDishIcon className="h-6 w-6" />
-          </Link>
-        </div>
-      </div>
     </>
   )
 }

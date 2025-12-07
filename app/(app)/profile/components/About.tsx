@@ -36,11 +36,11 @@ export default function AboutSectionComponent({ icon, title, about: initialAbout
         setIsLoading(true);
 
         try {
-            // Save to API
+            // Save to API - using 'about' field instead of 'bio'
             const response = await apiCalling({
                 method: 'patch',
                 route: '/profile',
-                data: { bio: about }
+                data: { about: about }
             });
 
             if (response.status) {

@@ -1,257 +1,62 @@
 import ExplorePage from "@/components/modules/pages/explore-page";
-import { createServerClient } from "@/lib/supabase/server";
-import { ProjectCardType } from "@/types";
+import axios from "axios";
 export const dynamic = "force-dynamic";
-
-/**
- * Fetch explore data directly from Supabase
- * Filtered by search params and excludes current user
- */
-async function getExploreData(searchParams: { [key: string]: string | string[] | undefined }): Promise<(ProjectCardType & { userId?: string })[]> {
-  try {
-    const supabase = createServerClient();
-    
-    // Get current logged-in user to exclude from results
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
-    const currentUserId = currentUser?.id;
-    
-    // Extract all filter parameters
-    const keyword = searchParams?.keyword as string;
-    const role = searchParams?.role as string;
-    const category = searchParams?.category as string;
-    const location = searchParams?.location as string;
-    const availability = searchParams?.availability as string;
-    const productionType = searchParams?.productionType as string;
-    const experience = searchParams?.experience as string;
-    const minRate = searchParams?.minRate as string;
-    const maxRate = searchParams?.maxRate as string;
-    
-    let query = supabase
-      .from('user_profiles')
-      .select(`
-        id,
-        user_id,
-        alias_first_name,
-        alias_surname,
-        first_name,
-        surname,
-        profile_photo_url,
-        banner_url,
-        bio,
-        country,
-        city,
-        created_at
-      `)
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    // Exclude current user from explore results
-    if (currentUserId) {
-      query = query.neq('user_id', currentUserId);
-    }
-
-    // Apply keyword search
-    if (keyword) {
-        // Sanitized keyword for search
-      const sanitizedKeyword = keyword.replace(/[^a-zA-Z0-9 ]/g, "");
-      if (sanitizedKeyword) {
-           query = query.or(`alias_first_name.ilike.%${sanitizedKeyword}%,alias_surname.ilike.%${sanitizedKeyword}%,first_name.ilike.%${sanitizedKeyword}%,surname.ilike.%${sanitizedKeyword}%,bio.ilike.%${sanitizedKeyword}%`);
-      }
-    }
-    
-    // Apply location filter
-    if (location) {
-      const sanitizedLocation = location.replace(/[^a-zA-Z0-9 ]/g, "");
-      if (sanitizedLocation) {
-        query = query.or(`country.ilike.%${sanitizedLocation}%,city.ilike.%${sanitizedLocation}%`);
-      }
-    }
-
-    const { data: profiles, error } = await query;
-
-    if (error) {
-      console.error("Error fetching explore profiles:", JSON.stringify(error, null, 2));
-      return [];
-    }
-
-    if (!profiles || profiles.length === 0) {
-      return [];
-    }
-
-    // Fetch Google OAuth avatars for all users at once (batch query)
-    const userIds = profiles.map(p => p.user_id);
-    const { data: authUsers } = await supabase.auth.admin.listUsers();
-    
-    // Create a map of user_id to Google avatar
-    const googleAvatarMap = new Map<string, string>();
-    if (authUsers?.users) {
-      authUsers.users.forEach(authUser => {
-        if (authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture) {
-          googleAvatarMap.set(
-            authUser.id, 
-            authUser.user_metadata.avatar_url || authUser.user_metadata.picture
-          );
-        }
-      });
-    }
-
-    // Enrich profiles with roles, skills, and Google avatars
-    const enrichedProfiles = await Promise.all(
-      profiles.map(async (profile) => {
-        try {
-            // Fetch user roles
-            const { data: roles } = await supabase
-            .from('user_roles')
-            .select('role_name')
-            .eq('user_id', profile.user_id)
-            .order('sort_order', { ascending: true });
-            
-            // Filter by role if specified
-            if (role || category) {
-                const roleNames = roles?.map(r => r.role_name.toLowerCase().trim()) || [];
-                const searchRole = (role || category).toLowerCase().trim();
-                // Check for partial match in either direction
-                if (!roleNames.some(r => r.includes(searchRole) || searchRole.includes(r))) {
-                    return null;
-                }
-            }
-
-            // Fetch user skills for experience and rate filtering
-            const { data: skills } = await supabase
-            .from('applicant_skills')
-            .select('skill_name, experience_level, day_rate, day_rate_currency')
-            .eq('user_id', profile.user_id);
-
-            // Filter by experience level if specified
-            if (experience && skills) {
-                // Map frontend experience titles to database values
-                const experienceMap: { [key: string]: string } = {
-                    "Intern": "intern",
-                    "Learning | Assisted": "learning",
-                    "Competent | Independent": "competent",
-                    "Expert | Lead": "expert"
-                };
-                
-                // Get database value from frontend title, or use as-is if not in map
-                const dbExperience = experienceMap[experience] || experience.toLowerCase().trim();
-                
-                const hasMatchingExperience = skills.some(skill => {
-                    if (!skill.experience_level) return false;
-                    const skillExp = skill.experience_level.toLowerCase().trim();
-                    // Check for exact match
-                    return skillExp === dbExperience;
-                });
-                if (!hasMatchingExperience) {
-                    return null;
-                }
-            }
-
-            // Filter by rate range if specified
-            if ((minRate || maxRate) && skills) {
-                const min = minRate ? parseInt(minRate) : 0;
-                const max = maxRate ? parseInt(maxRate) : 5000;
-                
-                const hasMatchingRate = skills.some(skill => {
-                    if (!skill.day_rate) return false;
-                    const rate = parseFloat(skill.day_rate.toString());
-                    return rate >= min && rate <= max;
-                });
-                
-                if (!hasMatchingRate) {
-                    return null;
-                }
-            }
-
-            // Filter by production type if specified
-            // Production type is typically part of the role name (e.g., "Director | Commercial")
-            if (productionType && roles) {
-                const prodType = productionType.toLowerCase().trim();
-                const hasMatchingProdType = roles.some(r => {
-                    const roleName = r.role_name.toLowerCase().trim();
-                    // Check for partial match - handles "commercial", "tv", "film", "social"
-                    return roleName.includes(prodType);
-                });
-                if (!hasMatchingProdType) {
-                    return null;
-                }
-            }
-
-            // Check availability if specified
-            // Note: This requires checking the crew_availability table
-            if (availability) {
-                const today = new Date().toISOString().split('T')[0];
-                const { data: availabilityData } = await supabase
-                    .from('crew_availability')
-                    .select('status, availability_date')
-                    .eq('user_id', profile.user_id)
-                    .gte('availability_date', today)
-                    .order('availability_date', { ascending: true })
-                    .limit(10);
-
-                if (availability === 'available') {
-                    // User should have at least one date marked as available
-                    const isAvailable = availabilityData && availabilityData.length > 0 && 
-                        availabilityData.some(record => record.status === 'available');
-                    if (!isAvailable) {
-                        return null;
-                    }
-                } else if (availability === 'unavailable') {
-                    // User should have no available dates (all records are 'na' or 'hold' or no records)
-                    const isUnavailable = !availabilityData || availabilityData.length === 0 || 
-                        !availabilityData.some(record => record.status === 'available');
-                    if (!isUnavailable) {
-                        return null;
-                    }
-                }
-            }
-
-            // Build display name with priority: alias_first_name + alias_surname (1st), first_name + surname (2nd)
-            const aliasName = `${profile.alias_first_name || ''} ${profile.alias_surname || ''}`.trim();
-            const realName = `${profile.first_name || ''} ${profile.surname || ''}`.trim();
-            const displayName = aliasName || realName || 'Anonymous';
-            
-            const profileLocation = profile.city && profile.country 
-            ? `${profile.city}, ${profile.country}` 
-            : profile.country || 'Not specified';
-
-            // Priority: profile_photo_url > Google metadata avatar > default (empty string)
-            const profileImage = profile.profile_photo_url || googleAvatarMap.get(profile.user_id) || '';
-
-            return {
-            id: profile.id,
-            userId: profile.user_id,
-            name: displayName,
-            banner: profile.banner_url || '',
-            image: profileImage,
-            bio: profile.bio || '',
-            location: profileLocation,
-            skills: roles?.map(r => r.role_name) || []
-            };
-        } catch (innerError) {
-            console.error(`Error processing profile ${profile.id}:`, innerError);
-            return null;
-        }
-      })
-    );
-    
-    return enrichedProfiles.filter(p => p !== null) as ProjectCardType[];
-  } catch (error) {
-    console.error("Unexpected error in getExploreData:", error);
-    return [];
-  }
-}
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+async function fetchProfiles(searchParams: any) {
+  try {
+    // Build query string with random sorting by default
+    const params = new URLSearchParams();
+    
+    // Add random seed based on session/time to get different results each load
+    const randomSeed = Math.random().toString(36).substring(7);
+    params.append('seed', randomSeed);
+    params.append('page', '1');
+    params.append('limit', '20');
+    
+    // Add any existing search params
+    if (searchParams.keyword) params.append('keyword', searchParams.keyword as string);
+    if (searchParams.role) params.append('role', searchParams.role as string);
+    if (searchParams.location) params.append('location', searchParams.location as string);
+    if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy as string);
+    if (searchParams.sortOrder) params.append('sortOrder', searchParams.sortOrder as string);
+
+    // Fetch from API
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/explore?${params.toString()}`, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch profiles:', response.statusText);
+      return { profiles: [], pagination: { currentPage: 1, totalPages: 0, totalProfiles: 0, hasNextPage: false } };
+    }
+
+    const data = await response.json();
+    return data.data || { profiles: [], pagination: { currentPage: 1, totalPages: 0, totalProfiles: 0, hasNextPage: false } };
+  } catch (error) {
+    console.error('Error fetching profiles:', error);
+    return { profiles: [], pagination: { currentPage: 1, totalPages: 0, totalProfiles: 0, hasNextPage: false } };
+  }
+}
+
 export default async function Page({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
-  const profiles = await getExploreData(resolvedSearchParams);
+  const initialData = await fetchProfiles(resolvedSearchParams);
   
   return (
     <div className="w-full">
-      <ExplorePage projectsCardData={profiles} />
+      <ExplorePage 
+        searchParams={resolvedSearchParams}
+        initialProfiles={initialData.profiles}
+        initialPagination={initialData.pagination}
+      />
     </div>
   );
 }

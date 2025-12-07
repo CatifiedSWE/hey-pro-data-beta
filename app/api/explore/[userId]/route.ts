@@ -223,7 +223,7 @@ export async function GET(
       dayRate: profile.day_rate,
       currency: profile.day_rate_currency || 'AED',
       experienceLevel: profile.experience_level,
-      availableForWork: profile.available_for_work,
+      availableForWork: profile.availability === "Available",
       visibleInExplore: profile.visible_in_explore,
       isProfileComplete: profile.is_profile_complete,
       profileCompletionPercentage: profile.profile_completion_percentage,
