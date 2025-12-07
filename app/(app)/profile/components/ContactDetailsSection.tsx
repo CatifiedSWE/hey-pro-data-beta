@@ -65,11 +65,6 @@ export default function ContactDetailsSection({ email, phone, countryCode, isVis
             countryCode={parsedPhone.countryCode}
             phoneNumber={parsedPhone.phoneNumber}
             email={email}
-            trigger={
-              <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
-                <Edit className="h-5 w-5" />
-              </Button>
-            }
           />
         </div>
       </div>
