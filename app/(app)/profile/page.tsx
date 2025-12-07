@@ -246,7 +246,7 @@ export default function Profile() {
                   style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                   <div className="flex-none ">
-                    <AboutSectionComponent title="About" about={profile?.bio || ''} onUpdate={refetch} />
+                    <AboutSectionComponent title="About" about={profile?.about || ''} onUpdate={refetch} />
                   </div>
                   
                   {/* Removed VisaSection, WorkStatusSection, RoleDialog from here as they are moved to ProfileEdit */}
