@@ -120,11 +120,13 @@ export default function Profile() {
   // Memoize section components to prevent unnecessary re-creation and unmounting
   // MUST be before conditional returns to maintain hook call order
   const sectionComponents = useMemo(() => ({
-    about: <AboutSection key="about" bio={profile?.bio || ''} onUpdate={refetch} />,
-    skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
-    credits: <CreditsSection key="credits" />,
-    // Recommendations removed from main sections as per design
-  }), [profile?.bio, skills, fetchSkills, refetch]);
+    about: <AboutSection key="about" bio={profile?.bio || ''} onUpdate={refetch} isVisible={visibility.about} onVisibilityToggle={() => toggleVisibility('about')} />,
+    skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} isVisible={visibility.skills} onVisibilityToggle={() => toggleVisibility('skills')} />,
+    credits: <CreditsSectionWrapper key="credits" isVisible={visibility.credits} onVisibilityToggle={() => toggleVisibility('credits')} />,
+    languages: <LanguagesSection key="languages" languages={(profile as ExtendedProfileData)?.language || []} isVisible={visibility.languages} onVisibilityToggle={() => toggleVisibility('languages')} />,
+    contact_details: <ContactDetailsSection key="contact_details" email={profile?.email} phone={profile?.phone} countryCode={profile?.country_code} isVisible={visibility.contact_details} onVisibilityToggle={() => toggleVisibility('contact_details')} />,
+    available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} isVisible={visibility.available_to_travel} onVisibilityToggle={() => toggleVisibility('available_to_travel')} />,
+  }), [profile?.bio, profile?.email, profile?.phone, profile?.country_code, skills, fetchSkills, refetch, visibility, toggleVisibility, (profile as ExtendedProfileData)?.language, (profile as ExtendedProfileData)?.AvailableCountriesForTravel]);
 
   // Non-hook data and functions
   const handlePhotoUpload = async (file: File, type: 'profile' | 'banner') => {
