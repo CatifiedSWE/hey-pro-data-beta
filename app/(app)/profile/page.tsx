@@ -409,6 +409,9 @@ function SortableItem({ id }: { id: SectionType }) {
     about: "About",
     skills: "Skills",
     credits: "Credits",
+    languages: "Languages",
+    contact_details: "Contact Details",
+    available_to_travel: "Available to Travel",
   }
 
   return (
