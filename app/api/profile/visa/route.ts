@@ -142,7 +142,9 @@ export async function PATCH(request: NextRequest) {
 
     // Map frontend fields to database columns
     const updateData: any = { user_id: user.id };
-    // Note: nationality and passport_expiry_date are not stored in current DB schema
+    // Store nationality and passport_expiry_date
+    if (nationality !== undefined) updateData.nationality = nationality;
+    if (passport_expiry_date !== undefined) updateData.passport_expiry_date = passport_expiry_date;
     if (visa_type !== undefined) updateData.visa_type = visa_type;
     // Map visa_issued_by -> issued_by (database column)
     if (visa_issued_by !== undefined) updateData.issued_by = visa_issued_by;
