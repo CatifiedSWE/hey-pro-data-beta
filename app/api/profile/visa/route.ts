@@ -175,8 +175,8 @@ export async function PATCH(request: NextRequest) {
       ...data,
       visa_issued_by: data.issued_by,
       visa_expiry_date: data.expiry_date,
-      nationality: null,
-      passport_expiry_date: null
+      nationality: data.nationality,
+      passport_expiry_date: data.passport_expiry_date
     };
 
     return NextResponse.json(
