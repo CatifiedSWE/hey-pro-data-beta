@@ -171,7 +171,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
         </div>
       </div>
       
-      <div className="flex sm:mt-10 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
+      <div className="flex sm:mt-4 -mt-10 flex-col gap-4 px-4 sm:px-[58px]">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-4">
             <h1 className="text-[22px] font-semibold leading-[33px] text-black">{displayName}</h1>
