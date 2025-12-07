@@ -591,9 +591,17 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 size="sm"
                                                 variant="secondary"
                                                 className="bg-white text-[#211536] hover:bg-white/90"
+                                                onClick={handleEditImage}
+                                            >
+                                                <Edit className="h-4 w-4 mr-2" /> Edit & Crop
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="secondary"
+                                                className="bg-white text-[#211536] hover:bg-white/90"
                                                 onClick={() => fileInputRef.current?.click()}
                                             >
-                                                <Upload className="h-4 w-4 mr-2" /> Replace image
+                                                <Upload className="h-4 w-4 mr-2" /> Replace
                                             </Button>
                                             <Button
                                                 size="sm"
@@ -607,7 +615,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 ) : (
                                     <div className="rounded-[20px] border border-dashed border-[#31A7AC] bg-white/80 px-6 py-8 text-center">
                                         <p className="text-sm text-[#211536] font-medium mb-2">Upload image (Max 5 MB)</p>
-                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB</p>
+                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB • Portrait 9:16 ratio recommended</p>
                                         <Button
                                             type="button"
                                             variant="outline"
