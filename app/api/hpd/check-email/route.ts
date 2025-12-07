@@ -11,33 +11,43 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
     
-    // Check in profiles or users table
-    // Assuming 'profiles' table has an email field or we check auth.users (admin only)
-    // Since we might not have admin access to check auth.users directly without service key,
-    // we'll check the public 'profiles' table if it exists and has emails.
-    // NOTE: In many setups, emails are private. 
-    // For this MVP, we will simulate a check or check a "waiting list" table if profiles isn't accessible.
+    // Check if email exists in auth.users (using service role key if available)
+    // We'll check both auth.users and user_profiles table
     
-    // Let's try to query a profiles table.
-    const { data, error } = await supabase
-      .from('profiles')
+    // First check onboarding_submissions to see if they're in waitlist
+    const { data: submissionData } = await supabase
+      .from('onboarding_submissions')
       .select('id')
-      .eq('email', email)
+      .eq('submitted_fields->>email', email)
+      .maybeSingle();
+    
+    // Also check user_profiles for registered users
+    const { data: profileData } = await supabase
+      .from('user_profiles')
+      .select('user_id, has_completed_onboarding')
+      .ilike('email', email)
       .maybeSingle();
 
-    const exists = !!data;
+    const exists = !!(submissionData || profileData);
+    const isRegistered = !!profileData; // They have an account
+    const hasCompletedOnboarding = profileData?.has_completed_onboarding || false;
 
     // Log the check
-    console.log(`[Lookup] Checking email ${email}: ${exists ? 'Found' : 'Not Found'}`);
+    console.log(`[Email Check] ${email}: exists=${exists}, registered=${isRegistered}, onboarding_complete=${hasCompletedOnboarding}`);
 
-    // If we want to simulate "sending activation link"
-    if (exists) {
-        // Trigger magic link logic here if needed
-    }
-
-    return NextResponse.json({ exists });
+    return NextResponse.json({ 
+      exists,
+      isRegistered,
+      hasCompletedOnboarding,
+      message: isRegistered 
+        ? 'This email is registered. Please login to continue.' 
+        : exists 
+          ? 'This email is in our waitlist.'
+          : 'Email available'
+    });
 
   } catch (err) {
+    console.error('[Email Check] Error:', err);
     return NextResponse.json({ error: 'Check failed' }, { status: 500 });
   }
 }
