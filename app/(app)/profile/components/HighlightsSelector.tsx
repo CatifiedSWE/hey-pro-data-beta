@@ -177,9 +177,9 @@ export function HighlightsSelector({
                 {/* 
                   Override default TabsList styles:
                   - sm:w-[680px] (default) -> sm:w-full (override) to prevent overflow/fixed width
-                  - flex-col (default) -> grid grid-cols-2 to force equal width side-by-side
+                  - flex-col (default) -> grid grid-cols-1 for single tab full width
                 */}
-                <TabsList className="grid w-full sm:w-full grid-cols-2 bg-gray-100 p-1 h-12">
+                <TabsList className="grid w-full sm:w-full grid-cols-1 bg-gray-100 p-1 h-12">
                 <TabsTrigger 
                     value="credits" 
                     className="data-[state=active]:bg-white data-[state=active]:text-[#FA6E80] data-[state=active]:shadow-sm h-10 text-sm md:text-base font-medium transition-all"
