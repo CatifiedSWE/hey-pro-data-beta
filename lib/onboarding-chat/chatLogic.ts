@@ -222,8 +222,8 @@ export const processNextStep = async (
                   type: 'bot',
                   text: 'Which one sounds like you?',
                   options: [
-                      { label: 'I'm crew/creative', value: 'JOIN_CREW', icon: 'Clapperboard' },
-                      { label: 'I'm a supplier/vendor', value: 'JOIN_SUPPLIER', icon: 'Truck' },
+                      { label: "I'm crew/creative", value: 'JOIN_CREW', icon: 'Clapperboard' },
+                      { label: "I'm a supplier/vendor", value: 'JOIN_SUPPLIER', icon: 'Truck' },
                       { label: 'Try different email', value: 'RETRY', icon: 'RefreshCcw' }
                   ],
                   inputType: 'options_only',
@@ -239,8 +239,8 @@ export const processNextStep = async (
               
               // Customize message based on auth type
               const welcomeMessage = checkResult.hasGoogleAuth 
-                  ? 'Welcome back! I've sent a secure login link to your email.'
-                  : 'Welcome back! I've sent a secure login link to your email.';
+                  ? "Welcome back! I've sent a secure login link to your email."
+                  : "Welcome back! I've sent a secure login link to your email.";
               
               nextMessages.push({
                   id: generateId(),
