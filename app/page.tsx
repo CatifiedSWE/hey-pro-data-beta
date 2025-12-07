@@ -1,55 +1,67 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { createServerClient } from '@supabase/ssr';
+'use client';
+
+import { useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LandingHero } from './components/landing/LandingHero';
+import { supabase } from '@/lib/supabase/client';
 
-export default async function HomePage() {
-  const cookieStore = await cookies();
-  
-  // Create Supabase server client
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  );
+function HomePageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
 
-  // Check authentication status
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (user) {
-    // User is authenticated, check onboarding status
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('has_completed_onboarding')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    
-    if (profile?.has_completed_onboarding) {
-      // User completed onboarding → redirect to profile
-      redirect('/profile');
-    } else {
-      // User hasn't completed onboarding → redirect to onboarding
-      redirect('/onboarding');
-    }
-  }
-  
-  // Not authenticated → show landing page
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      // If there's an OAuth code, redirect to the API callback handler
+      if (code) {
+        console.log('[Root Page] OAuth code detected, redirecting to callback handler...');
+        
+        // Check if there's a stored redirect destination
+        const storedRedirect = localStorage.getItem('auth_redirect_after_login');
+        const nextParam = storedRedirect ? `&next=${encodeURIComponent(storedRedirect)}` : '';
+        
+        // Clean up localStorage
+        if (storedRedirect) {
+          localStorage.removeItem('auth_redirect_after_login');
+        }
+        
+        // Redirect to server-side callback handler
+        window.location.href = `/api/auth/callback?code=${code}${nextParam}`;
+        return;
+      }
+
+      // No OAuth code - check if user is already authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // User is authenticated, check onboarding status
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('has_completed_onboarding')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (profile?.has_completed_onboarding) {
+          // User completed onboarding → redirect to profile
+          router.push('/profile');
+        } else {
+          // User hasn't completed onboarding → redirect to onboarding
+          router.push('/onboarding');
+        }
+      }
+    };
+
+    handleOAuthCallback();
+  }, [code, router]);
+
+  // Show landing page (will be briefly shown before redirects)
   return <LandingHero />;
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<LandingHero />}>
+      <HomePageContent />
+    </Suspense>
+  );
 }
