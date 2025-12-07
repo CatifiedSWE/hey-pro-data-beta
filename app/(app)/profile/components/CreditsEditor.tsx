@@ -460,7 +460,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 className="w-full justify-start h-[41px] rounded-[15px] border border-[#828282] bg-white px-5 text-sm font-normal text-[#211536]"
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4 text-[#9F9F9F]" />
-                                                {creditForm.releaseYear || "Select year"}
+                                                {creditForm.releaseYear || "Release year"}
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">
@@ -484,7 +484,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                             onCheckedChange={(checked) => handleCreditChange("isUnreleased", checked)}
                                             className="h-[20px] w-[20px] rounded-[3px] border-[#828282] text-[#211536] focus:ring-[#211536]"
                                         />
-                                        Yet to be released
+                                        Yet To Be Released
                                     </label>
                                 </div>
                             </div>
@@ -500,7 +500,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                     className="w-[200px] rounded-[15px] h-[38px] justify-between font-normal border border-[#828282]"
                                                 >
                                                     <span className="text-[#494949]">
-                                                        {startDate ? startDate.toLocaleDateString() : "Select date"}
+                                                        {startDate ? startDate.toLocaleDateString() : "Start date"}
                                                     </span>
 
                                                     <ChevronDownIcon className="h-4 w-4 text-[#9F9F9F]" />
@@ -530,7 +530,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                     className="w-[200px] justify-between rounded-[15px] h-[38px] font-normal border border-[#828282]"
                                                 >
                                                     <span className="text-[#494949]">
-                                                        {endDate ? endDate.toLocaleDateString() : "Select date"}
+                                                        {endDate ? endDate.toLocaleDateString() : "End date"}
                                                     </span>
                                                     <ChevronDownIcon className="h-4 w-4 text-[#9F9F9F]" />
                                                 </Button>
@@ -555,7 +555,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 <textarea
                                     value={creditForm.description}
                                     onChange={(e) => handleCreditChange("description", e.target.value)}
-                                    placeholder="Write about this project..."
+                                    placeholder="Description"
                                     className="w-full min-h-[104px] rounded-[20px] border border-[#828282] bg-white px-5 py-3 text-sm text-[#211536] placeholder:text-[#A3A3A3] focus-visible:outline-[#31A7AC]"
                                 />
                             </div>
