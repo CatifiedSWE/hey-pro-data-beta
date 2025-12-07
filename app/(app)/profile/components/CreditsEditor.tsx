@@ -349,8 +349,8 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                 onUpdate?.();
             } else {
                 // Show more detailed error message
-                const errorMsg = response.data?.error || response.message || `Failed to ${mode === 'edit' ? 'update' : 'add'} credit`;
-                console.error('API Error:', errorMsg, response.data);
+                const errorMsg = (response as any).data?.error || (response as any).message || `Failed to ${mode === 'edit' ? 'update' : 'add'} credit`;
+                console.error('API Error:', errorMsg, (response as any).data);
                 toast.error(errorMsg);
             }
         } catch (error) {
