@@ -25,40 +25,7 @@ const makeValues = (arr: string[]): FilterValue[] =>
 
 const filterOptions: FilterOption[] = [
     {
-        label: "Camera Operator",
-        value: makeValues([
-            "Camera Operator",
-            "Steadicam Operator",
-            "Gimbal Operator",
-            "Drone Operator"
-        ])
-    },
-    {
-        label: "Cinematographer",
-        value: makeValues([
-            "Cinematographer",
-            "Director of Photography (DP)",
-            "Camera Operator",
-            "1st AC (Focus Puller)",
-            "2nd AC (Clapper Loader)",
-            "Digital Imaging Technician (DIT)",
-            "Steadicam Operator",
-            "Gimbal Operator",
-            "Drone Operator",
-            "Camera Trainee"
-        ])
-    },
-    {
-        label: "Colorist",
-        value: makeValues([
-            "Colorist",
-            "Color Timer",
-            "Colorist (Color Grading)",
-            "Colorist (Color Correction)"
-        ])
-    },
-    {
-        label: "Director",
+        label: "Direction",
         value: makeValues([
             "Director",
             "Director | Commercial",
@@ -66,119 +33,246 @@ const filterOptions: FilterOption[] = [
             "Assistant Director | TV",
             "1st Assistant Director (1st AD)",
             "2nd Assistant Director (2nd AD)",
-            "3rd Assistant Director (3rd AD)"
+            "3rd Assistant Director (3rd AD)",
+            "Action Director"
         ])
     },
     {
-        label: "Editor",
+        label: "Production",
         value: makeValues([
-            "Editor",
-            "Assistant Editor",
-            "Colorist",
-            "VFX Artist",
-            "Motion Graphics Designer",
-            "Sound Editor",
-            "Sound Designer",
-            "Foley Artist",
-            "Re-Recording Mixer"
-        ])
-    },
-    {
-        label: "Gaffer",
-        value: makeValues([
-            "Gaffer",
-            "Key Gaffer",
-            "Best Boy Gaffer",
-            "Gimbal Gaffer",
-            "Drone Gaffer",
-            "3rd AC (Grip)",
-            "2nd AC (Grip)",
-            "1st AC (Grip)"
-        ])
-    },
-    {
-        label: "Location Scout",
-        value: makeValues([
-            "Location Scout",
-            "Location Assistant",
-            "Location Assistant (LA)",
-            "Location Assistant (LA) | Commercial",
-            "Location Assistant (LA) | TV"
-        ])
-    },
-    {
-        label: "Makeup Artist",
-        value: makeValues([
-            "Makeup Artist",
-            "Makeup Artist | Commercial",
-            "Makeup Artist | TV"
-        ])
-    },
-    {
-        label: "Other",
-        value: makeValues([
-            "Other",
-            "Other | Commercial",
-            "Other | TV",
-            "Other | Commercial | TV"
-        ])
-    },
-    {
-        label: "Producer",
-        value: makeValues([
-            "Producer",
-            "Executive Producer",
             "Line Producer",
+            "Producer",
+            "Producer | Creative",
+            "Producer | Executive",
+            "Producer | Senior",
+            "Associate Producer",
+            "Assistant Producer",
+            "Program Producer",
+            "Project Coordinator",
+            "Project Manager",
+            "Operation Manager",
+            "Production",
             "Production Manager",
             "Production Coordinator",
-            "Production Assistant"
+            "Production Consultant",
+            "Production Assistant",
+            "Production Runner",
+            "Show Runner",
+            "Show Caller",
+            "Stage Manager"
         ])
     },
     {
-        label: "Production Designer",
+        label: "Camera",
         value: makeValues([
-            "Production Designer",
+            "DOP",
+            "DOP | Assistant",
+            "DOP | Associate",
+            "Camera Operator",
+            "Camera Operator | Remote Head",
+            "Camera Operator | Steadicam",
+            "Camera Operator | Trinity 2",
+            "Camera Assistant",
+            "Camera Assistant | Junior",
+            "Camera Trainee",
+            "2nd AC",
+            "Drone",
+            "Aerial Filming",
+            "DIT",
+            "Data Wrangler",
+            "Qtake Assistant",
+            "Video Assist",
+            "Video Assist | Streaming",
+            "Video Assist | Utility",
+            "Video Streaming",
+            "Video Technician"
+        ])
+    },
+    {
+        label: "Lighting",
+        value: makeValues([
+            "Gaffer"
+        ])
+    },
+    {
+        label: "Grip",
+        value: makeValues([
+            "Grip"
+        ])
+    },
+    {
+        label: "Art",
+        value: makeValues([
             "Art Director",
-            "Set Designer",
-            "Set Decorator",
-            "Props Master",
+            "Art PA",
+            "Production Designer",
+            "Set Design | Production Design Assistant",
+            "Set Dresser"
+        ])
+    },
+    {
+        label: "Wardrobe",
+        value: makeValues([
             "Costume Designer",
-            "Makeup Artist",
+            "Wardrobe Stylist",
+            "Wardrobe Stylist | Avant-Garde",
+            "Wardrobe Supervisor",
+            "Wardrobe PA",
+            "Fashion Stylist",
+            "Fashion Stylist | Assistant",
+            "Fashion Assistant | Celebrity"
+        ])
+    },
+    {
+        label: "Hair",
+        value: makeValues([
             "Hair Stylist"
         ])
     },
     {
-        label: "Sound Designer",
+        label: "Makeup",
         value: makeValues([
-            "Sound Designer",
-            "Sound Mixer",
-            "Boom Operator",
-            "Location Sound Recordist"
+            "Makeup Artist",
+            "Makeup Artist | SFX",
+            "Makeup Artist | Body Painter",
+            "Makeup Artist | Face Painter",
+            "Image Consultant"
         ])
     },
     {
-        label: "Sound Engineer",
+        label: "Casting",
+        value: makeValues([
+            "Casting",
+            "Casting Director",
+            "Artist Liaison",
+            "Model Agent",
+            "Talent Manager"
+        ])
+    },
+    {
+        label: "Stunts",
+        value: makeValues([
+            "Fight Choreographer"
+        ])
+    },
+    {
+        label: "Post-Production",
+        value: makeValues([
+            "Editor",
+            "Editor | Offline",
+            "Editor | Senior",
+            "Colorist",
+            "Post Producer",
+            "Post Production Coordinator"
+        ])
+    },
+    {
+        label: "Animation",
+        value: makeValues([
+            "Animator",
+            "2D Animation",
+            "3D Animation",
+            "AI Video AD Creator"
+        ])
+    },
+    {
+        label: "VFX",
+        value: makeValues([
+            "VFX",
+            "VFX Artist",
+            "VFX Coordinator"
+        ])
+    },
+    {
+        label: "Design",
+        value: makeValues([
+            "Graphic Designer",
+            "Infographics",
+            "Storyboarding"
+        ])
+    },
+    {
+        label: "Sound",
         value: makeValues([
             "Sound Engineer",
-            "Sound Technician",
-            "Sound Engineer | Commercial",
-            "Sound Engineer | TV"
+            "Sound Mixer",
+            "Sound | Boom Pole Operator",
+            "Sound | Field Sound Mixer",
+            "Music Composer"
         ])
     },
     {
-        label: "VFX Artist",
+        label: "Locations",
         value: makeValues([
-            "VFX Artist",
-            "VFX Supervisor",
-            "VFX Assistant",
-            "VFX Assistant (VA)",
-            "VFX Assistant (VA) | Commercial",
-            "VFX Assistant (VA) | TV"
+            "Location Manager",
+            "Location Assistant",
+            "Location PA"
         ])
     },
     {
-        label: "Writer",
-        value: makeValues(["Writer", "Screenwriter", "Script Supervisor", "Story Editor"])
+        label: "SFX",
+        value: makeValues([
+            "SFX Selection"
+        ])
+    },
+    {
+        label: "Photography",
+        value: makeValues([
+            "Photographer",
+            "Photographer | Aerial",
+            "Photographer | BTS"
+        ])
+    },
+    {
+        label: "Videography",
+        value: makeValues([
+            "Videographer",
+            "Videographer | BTS"
+        ])
+    },
+    {
+        label: "Writing",
+        value: makeValues([
+            "Novelist",
+            "Screenwriter",
+            "Scriptwriter",
+            "Script Supervisor",
+            "Writer | Horror",
+            "Writer | Non-Fiction",
+            "Writer | Young Adult Fiction"
+        ])
+    },
+    {
+        label: "Media & Content",
+        value: makeValues([
+            "Content Creator",
+            "Media Consultant",
+            "Prompt Alchemist",
+            "Spreadsheet Whisperer"
+        ])
+    },
+    {
+        label: "Sustainability",
+        value: makeValues([
+            "Sustainable Film Advisor",
+            "Sustainable On Set Coordinator"
+        ])
+    },
+    {
+        label: "Transport & Logistics",
+        value: makeValues([
+            "Logistics Manager",
+            "Transport Event Materials"
+        ])
+    },
+    {
+        label: "Events",
+        value: makeValues([
+            "Event Manager",
+            "Event Organizer",
+            "Fashion Show Director",
+            "Fashion Backstage Director"
+        ])
     }
 ];
 
