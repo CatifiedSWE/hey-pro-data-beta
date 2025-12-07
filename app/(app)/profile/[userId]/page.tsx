@@ -121,50 +121,55 @@ export default function UserProfilePage() {
 
           {activeTab === "profile" ? (
             <div className="max-w-[600px]">
-              {/* Profile Sections - Only show if visible */}
-              {visibility.about && (
+              {/* Highlights Section - Shows on mobile above other sections */}
+              <div className="lg:hidden mb-8">
+                <ReadOnlyHighlights highlights={profile.highlights} />
+              </div>
+              
+              {/* About Section */}
+              {visibility.about && profile.bio && (
                 <>
                   <ReadOnlyAboutSection bio={profile.bio} />
                   <div className="my-8" />
                 </>
               )}
               
-              {/* Highlights Section - Shows on mobile above skills */}
-              <div className="lg:hidden mb-8">
-                <ReadOnlyHighlights highlights={profile.highlights} />
-              </div>
-              
-              {visibility.skills && (
+              {/* Skills Section */}
+              {visibility.skills && profile.skills && profile.skills.length > 0 && (
                 <>
                   <ReadOnlySkillsSection skills={profile.skills} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.credits && (
+              {/* Credits Section */}
+              {visibility.credits && profile.credits && profile.credits.length > 0 && (
                 <>
                   <ReadOnlyCreditsSection credits={profile.credits} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.languages && (
+              {/* Languages Section */}
+              {visibility.languages && profile.languages && profile.languages.length > 0 && (
                 <>
-                  <ReadOnlyLanguagesSection languages={profile.languages || []} />
+                  <ReadOnlyLanguagesSection languages={profile.languages} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.contact_details && (
+              {/* Contact Details Section */}
+              {visibility.contact_details && (profile.email || profile.phone) && (
                 <>
                   <ReadOnlyContactDetailsSection email={profile.email} phone={profile.phone} />
                   <div className="my-8" />
                 </>
               )}
               
-              {visibility.available_to_travel && (
+              {/* Available to Travel Section */}
+              {visibility.available_to_travel && profile.travelCountries && profile.travelCountries.length > 0 && (
                 <>
-                  <ReadOnlyAvailableToTravelSection travelCountries={profile.travelCountries || []} />
+                  <ReadOnlyAvailableToTravelSection travelCountries={profile.travelCountries} />
                 </>
               )}
             </div>
