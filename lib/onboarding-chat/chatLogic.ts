@@ -210,24 +210,88 @@ export const processNextStep = async (
           const checkResult = await checkResponse.json();
           
           if (!checkResult.exists) {
-              // User doesn't exist - show options
+              // User DOESN'T exist - route to waitlist (Phase 2)
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'We found you. Check your email for a secure access link.',
+                  text: 'You're not in the system yet. No worries - let me get your details and we'll review your application.',
                   isIntro: true
               });
-          } else {
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'We couldn’t find that email. Try another or join as new?',
+                  text: 'Which one sounds like you?',
                   options: [
-                      { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
-                      { label: 'Join as Crew', value: 'JOIN_CREW', icon: 'Clapperboard' },
-                      { label: 'Join as Supplier', value: 'JOIN_SUPPLIER', icon: 'Truck' }
+                      { label: 'I'm crew/creative', value: 'JOIN_CREW', icon: 'Clapperboard' },
+                      { label: 'I'm a supplier/vendor', value: 'JOIN_SUPPLIER', icon: 'Truck' },
+                      { label: 'Try different email', value: 'RETRY', icon: 'RefreshCcw' }
                   ],
-                  inputType: 'options_only'
+                  inputType: 'options_only',
+                  delay: 1000
+              });
+          } else if (checkResult.exists && checkResult.hasPassword) {
+              // User EXISTS and HAS password - send login link
+              await fetch('/api/auth/send-login-link', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email })
+              });
+              
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Welcome back! I've sent a secure login link to your email.',
+                  isIntro: true
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Check your inbox (and spam folder) and click the link to access your profile.',
+                  delay: 1000
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Need help?',
+                  options: [
+                      { label: 'Resend link', value: 'RESEND_LOGIN', icon: 'RefreshCcw' },
+                      { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                      { label: 'Done', value: 'DONE', icon: 'Check' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 2000
+              });
+          } else if (checkResult.exists && !checkResult.hasPassword) {
+              // User EXISTS but NO password - send password setup link
+              await fetch('/api/auth/send-password-setup-link', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email })
+              });
+              
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Great! We've sent a password setup link to your email.',
+                  isIntro: true
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Check your inbox (and spam folder) and click the link to set your password.',
+                  delay: 1000
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Need help?',
+                  options: [
+                      { label: 'Resend link', value: 'RESEND_SETUP', icon: 'RefreshCcw' },
+                      { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                      { label: 'Done', value: 'DONE', icon: 'Check' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 2000
               });
           }
       } else if (step === 2) {
@@ -239,6 +303,36 @@ export const processNextStep = async (
                   inputType: 'email'
               });
               nextStep = 1; // Reset to step 1 so next input is treated as email
+          } else if (selectionValue === 'RESEND_LOGIN') {
+              // Resend login link
+              await fetch('/api/auth/send-login-link', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: nextFormData.email })
+              });
+              
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Link resent! Check your email.',
+                  isIntro: true
+              });
+              nextStep = step; // Stay on current step
+          } else if (selectionValue === 'RESEND_SETUP') {
+              // Resend password setup link
+              await fetch('/api/auth/send-password-setup-link', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: nextFormData.email })
+              });
+              
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Setup link resent! Check your email.',
+                  isIntro: true
+              });
+              nextStep = step; // Stay on current step
           } else if (selectionValue === 'JOIN_CREW') {
               return {
                   currentFlow: 'CREW',
