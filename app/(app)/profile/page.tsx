@@ -120,13 +120,13 @@ export default function Profile() {
   // Memoize section components to prevent unnecessary re-creation and unmounting
   // MUST be before conditional returns to maintain hook call order
   const sectionComponents = useMemo(() => ({
-    about: <AboutSection key="about" bio={profile?.bio || ''} onUpdate={refetch} />,
+    about: <AboutSection key="about" about={profile?.about || ''} onUpdate={refetch} />,
     skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
     credits: <CreditsSectionWrapper key="credits" />,
-    languages: <LanguagesSection key="languages" languages={(profile as ExtendedProfileData)?.language || []} />,
+    languages: <LanguagesSection key="languages" />,
     contact_details: <ContactDetailsSection key="contact_details" email={profile?.email} phone={profile?.phone} countryCode={profile?.country_code} isVisible={visibility.contact_details} onVisibilityToggle={() => toggleVisibility('contact_details')} />,
     available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} />,
-  }), [profile?.bio, profile?.email, profile?.phone, profile?.country_code, skills, fetchSkills, refetch, visibility, toggleVisibility, (profile as ExtendedProfileData)?.language, (profile as ExtendedProfileData)?.AvailableCountriesForTravel]);
+  }), [profile?.about, profile?.email, profile?.phone, profile?.country_code, skills, fetchSkills, refetch, visibility, toggleVisibility]);
 
   // Non-hook data and functions
   const handlePhotoUpload = async (file: File, type: 'profile' | 'banner') => {
