@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // PHASE 1: Block old auth pages - redirect to onboarding (gated system)
-  const blockedAuthPages = ['/login', '/signup', '/otp', '/forget-password', '/reset-password'];
+  const blockedAuthPages = ['/forget-password', '/reset-password'];
   if (blockedAuthPages.some(page => pathname.startsWith(page))) {
     console.log(`[Middleware] Blocking old auth page: ${pathname}, redirecting to /onboarding`);
     return NextResponse.redirect(new URL('/onboarding', request.url));
