@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
-import { Eye, EyeOff, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AddLanguageSection from "./Language";
 import axios from "axios";
@@ -20,7 +20,7 @@ interface LanguagesSectionProps {
   onVisibilityToggle: () => void;
 }
 
-export default function LanguagesSection({ languages, isVisible, onVisibilityToggle }: LanguagesSectionProps) {
+export default function LanguagesSection({ languages }: Omit<LanguagesSectionProps, 'isVisible' | 'onVisibilityToggle'>) {
   const displayLanguages = languages || [];
   const isEmpty = displayLanguages.length === 0;
 
@@ -29,19 +29,6 @@ export default function LanguagesSection({ languages, isVisible, onVisibilityTog
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">Languages</h2>
         <div className="flex gap-1.5">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={onVisibilityToggle}
-            className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
-            title={isVisible ? "Hide from public" : "Show to public"}
-          >
-            {isVisible ? (
-              <Eye className="h-5 w-5 text-[#31A7AC]" />
-            ) : (
-              <EyeOff className="h-5 w-5 text-gray-400" />
-            )}
-          </Button>
           <AddLanguageSection
             languages={displayLanguages}
             trigger={

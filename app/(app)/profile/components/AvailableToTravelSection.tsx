@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react";
-import { Eye, EyeOff, Globe, Edit } from "lucide-react";
+import { Globe, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AvalableCountryForTravel from "./AvalableCountryForTravel";
 
@@ -11,7 +11,7 @@ interface AvailableToTravelSectionProps {
   onVisibilityToggle: () => void;
 }
 
-export default function AvailableToTravelSection({ travelCountries, isVisible, onVisibilityToggle }: AvailableToTravelSectionProps) {
+export default function AvailableToTravelSection({ travelCountries }: Omit<AvailableToTravelSectionProps, 'isVisible' | 'onVisibilityToggle'>) {
   const isEmpty = !travelCountries || travelCountries.length === 0;
 
   return (
@@ -19,19 +19,6 @@ export default function AvailableToTravelSection({ travelCountries, isVisible, o
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">Available to Travel</h2>
         <div className="flex gap-1.5">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={onVisibilityToggle}
-            className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
-            title={isVisible ? "Hide from public" : "Show to public"}
-          >
-            {isVisible ? (
-              <Eye className="h-5 w-5 text-[#31A7AC]" />
-            ) : (
-              <EyeOff className="h-5 w-5 text-gray-400" />
-            )}
-          </Button>
           <AvalableCountryForTravel
             availableCountries={travelCountries}
             trigger={

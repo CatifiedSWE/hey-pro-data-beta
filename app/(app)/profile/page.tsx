@@ -1,6 +1,6 @@
 "use client"
 
-import { Edit, List, GripVertical, ChevronLeft, ChevronRight, Plus, Eye, EyeOff } from "lucide-react";
+import { Edit, List, GripVertical, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 import {
   Dialog,
@@ -120,12 +120,12 @@ export default function Profile() {
   // Memoize section components to prevent unnecessary re-creation and unmounting
   // MUST be before conditional returns to maintain hook call order
   const sectionComponents = useMemo(() => ({
-    about: <AboutSection key="about" bio={profile?.bio || ''} onUpdate={refetch} isVisible={visibility.about} onVisibilityToggle={() => toggleVisibility('about')} />,
-    skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} isVisible={visibility.skills} onVisibilityToggle={() => toggleVisibility('skills')} />,
-    credits: <CreditsSectionWrapper key="credits" isVisible={visibility.credits} onVisibilityToggle={() => toggleVisibility('credits')} />,
-    languages: <LanguagesSection key="languages" languages={(profile as ExtendedProfileData)?.language || []} isVisible={visibility.languages} onVisibilityToggle={() => toggleVisibility('languages')} />,
+    about: <AboutSection key="about" bio={profile?.bio || ''} onUpdate={refetch} />,
+    skills: <SkillsSectionWrapper key="skills" skills={skills} onUpdate={fetchSkills} />,
+    credits: <CreditsSectionWrapper key="credits" />,
+    languages: <LanguagesSection key="languages" languages={(profile as ExtendedProfileData)?.language || []} />,
     contact_details: <ContactDetailsSection key="contact_details" email={profile?.email} phone={profile?.phone} countryCode={profile?.country_code} isVisible={visibility.contact_details} onVisibilityToggle={() => toggleVisibility('contact_details')} />,
-    available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} isVisible={visibility.available_to_travel} onVisibilityToggle={() => toggleVisibility('available_to_travel')} />,
+    available_to_travel: <AvailableToTravelSection key="available_to_travel" travelCountries={(profile as ExtendedProfileData)?.AvailableCountriesForTravel || []} />,
   }), [profile?.bio, profile?.email, profile?.phone, profile?.country_code, skills, fetchSkills, refetch, visibility, toggleVisibility, (profile as ExtendedProfileData)?.language, (profile as ExtendedProfileData)?.AvailableCountriesForTravel]);
 
   // Non-hook data and functions
@@ -428,25 +428,12 @@ function SortableItem({ id }: { id: SectionType }) {
   )
 }
 
-function AboutSection({ bio, onUpdate, isVisible, onVisibilityToggle }: { bio: string; onUpdate: () => void; isVisible: boolean; onVisibilityToggle: () => void }) {
+function AboutSection({ bio, onUpdate }: { bio: string; onUpdate: () => void }) {
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">About</h2>
         <div className="flex gap-1.5">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={onVisibilityToggle}
-            className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
-            title={isVisible ? "Hide from public" : "Show to public"}
-          >
-            {isVisible ? (
-              <Eye className="h-5 w-5 text-[#31A7AC]" />
-            ) : (
-              <EyeOff className="h-5 w-5 text-gray-400" />
-            )}
-          </Button>
           <AboutSectionComponent 
             title="About" 
             about={bio}
@@ -466,7 +453,7 @@ function AboutSection({ bio, onUpdate, isVisible, onVisibilityToggle }: { bio: s
   )
 }
 
-function SkillsSectionWrapper({ skills, onUpdate, isVisible, onVisibilityToggle }: { skills: any[]; onUpdate: () => void; isVisible: boolean; onVisibilityToggle: () => void }) {
+function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: () => void }) {
   // Transform skills data from API format to UI format
   const transformedSkills = skills && skills.length > 0 ? skills.map(skill => ({
     id: skill.id,
@@ -480,10 +467,10 @@ function SkillsSectionWrapper({ skills, onUpdate, isVisible, onVisibilityToggle 
     } : undefined
   })) : [];
 
-  return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} isVisible={isVisible} onVisibilityToggle={onVisibilityToggle} />;
+  return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} />;
 }
 
-function SkillsSection({ skills, onUpdate, isVisible, onVisibilityToggle }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; } }[]; onUpdate: () => void; isVisible: boolean; onVisibilityToggle: () => void }) {
+function SkillsSection({ skills, onUpdate }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; } }[]; onUpdate: () => void }) {
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
@@ -499,19 +486,6 @@ function SkillsSection({ skills, onUpdate, isVisible, onVisibilityToggle }: { sk
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">Skills</h2>
         <div className="flex gap-1.5">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={onVisibilityToggle}
-            className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
-            title={isVisible ? "Hide from public" : "Show to public"}
-          >
-            {isVisible ? (
-              <Eye className="h-5 w-5 text-[#31A7AC]" />
-            ) : (
-              <EyeOff className="h-5 w-5 text-gray-400" />
-            )}
-          </Button>
           <AddNewSkill
             onUpdate={onUpdate}
             trigger={
@@ -559,25 +533,6 @@ function SkillsSection({ skills, onUpdate, isVisible, onVisibilityToggle }: { sk
   )
 }
 
-function CreditsSectionWrapper({ isVisible, onVisibilityToggle }: { isVisible: boolean; onVisibilityToggle: () => void }) {
-  return (
-    <div className="relative">
-      <div className="absolute top-[29px] right-[29px] z-10">
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onVisibilityToggle}
-          className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
-          title={isVisible ? "Hide from public" : "Show to public"}
-        >
-          {isVisible ? (
-            <Eye className="h-5 w-5 text-[#31A7AC]" />
-          ) : (
-            <EyeOff className="h-5 w-5 text-gray-400" />
-          )}
-        </Button>
-      </div>
-      <CreditsSection />
-    </div>
-  );
+function CreditsSectionWrapper() {
+  return <CreditsSection />;
 }
