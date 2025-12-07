@@ -20,18 +20,21 @@ export function useSectionVisibility(userId?: string) {
   const fetchVisibility = useCallback(async () => {
     try {
       setLoading(true);
-      const url = userId 
-        ? `/api/profile/section-visibility?userId=${userId}`
-        : '/api/profile/section-visibility';
+      const route = userId 
+        ? `/profile/section-visibility?userId=${userId}`
+        : '/profile/section-visibility';
       
-      const response = await axios.get(url);
+      const response = await apiCalling({
+        method: 'get',
+        route
+      });
       
-      if (response.data.success) {
+      if (response.status && response.data?.data) {
         setVisibility(response.data.data);
       }
     } catch (err: any) {
       console.error('Error fetching section visibility:', err);
-      setError(err.response?.data?.error || 'Failed to load visibility settings');
+      setError('Failed to load visibility settings');
     } finally {
       setLoading(false);
     }
