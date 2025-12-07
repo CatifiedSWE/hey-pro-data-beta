@@ -425,24 +425,39 @@ function SortableItem({ id }: { id: SectionType }) {
   )
 }
 
-function AboutSection({ bio, onUpdate }: { bio: string; onUpdate: () => void }) {
+function AboutSection({ bio, onUpdate, isVisible, onVisibilityToggle }: { bio: string; onUpdate: () => void; isVisible: boolean; onVisibilityToggle: () => void }) {
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-[22px] font-semibold leading-[33px] text-[#000]">About</h2>
-        <AboutSectionComponent 
-          title="About" 
-          about={bio}
-          onUpdate={onUpdate}
-          trigger={
-            <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
-              <Edit className="h-5 w-5" />
-            </Button>
-          }
-        />
+        <div className="flex gap-1.5">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={onVisibilityToggle}
+            className="rounded-full border border-[#31A7AC]/30 bg-white hover:bg-white"
+            title={isVisible ? "Hide from public" : "Show to public"}
+          >
+            {isVisible ? (
+              <Eye className="h-5 w-5 text-[#31A7AC]" />
+            ) : (
+              <EyeOff className="h-5 w-5 text-gray-400" />
+            )}
+          </Button>
+          <AboutSectionComponent 
+            title="About" 
+            about={bio}
+            onUpdate={onUpdate}
+            trigger={
+              <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
+                <Edit className="h-5 w-5" />
+              </Button>
+            }
+          />
+        </div>
       </div>
       <div className="space-y-4 text-sm leading-[21px] text-[#181818] sm:text-base">
-        {bio}
+        {bio || <span className="text-gray-500 italic">Tell the world about yourself</span>}
       </div>
     </div>
   )
