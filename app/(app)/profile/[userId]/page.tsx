@@ -93,10 +93,10 @@ export default function UserProfilePage() {
         </Button>
         
         <ReadOnlyShortProfile profile={profile} initialSaved={isSaved} />
-        <div className="w-full bg-slate-200 h-px sm:h-[1px] mb-5" />
 
         <div className="space-y-2 mx-auto w-full">
-          <div className="flex flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8">
+          {/* Profile and Slate buttons - Hidden */}
+          <div className="flex flex-row gap-3 sm:gap-6 text-black mb-6 sm:mb-8" style={{ display: 'none' }}>
             <Button
               onClick={() => setActiveTab("profile")}
               className={`flex-1 min-h-[44px] text-sm sm:text-base font-semibold rounded-[12px] sm:rounded-[15px] ${
