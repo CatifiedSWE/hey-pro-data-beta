@@ -191,20 +191,30 @@ export default function ExplorePage({
         </div>
 
         {/* Profile Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-[10px] p-2 md:p-0 max-w-[615px] w-full justify-items-stretch auto-rows-max">
-          {profiles.length > 0 ? (
-            profiles.map((project) => (
-              <ProjectCard 
-                key={project.id || project.name} 
-                {...project} 
-                onClick={() => handleProfileClick(project.userId)}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-gray-500 mt-10">
-              <p>No profiles found matching your criteria.</p>
+        <div className="relative w-full max-w-[615px]">
+          {isLoading && page === 1 && (
+            <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-lg">
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-8 w-8 animate-spin text-[#FA6E80]" />
+                <span className="text-sm text-gray-600">Updating results...</span>
+              </div>
             </div>
           )}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-[10px] p-2 md:p-0 w-full justify-items-stretch auto-rows-max">
+            {profiles.length > 0 ? (
+              profiles.map((project) => (
+                <ProjectCard 
+                  key={project.id || project.name} 
+                  {...project} 
+                  onClick={() => handleProfileClick(project.userId)}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500 mt-10">
+                <p>No profiles found matching your criteria.</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Loading indicator for infinite scroll */}
