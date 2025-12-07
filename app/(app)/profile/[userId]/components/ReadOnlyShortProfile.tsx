@@ -200,6 +200,41 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
               </div>
             )}
           </div>
+          
+          {/* Visa Details and Work Status */}
+          {(profile?.visa || profile?.workIdentities) && (
+            <div className="flex flex-col gap-1 text-sm text-gray-600">
+              {profile?.visa && (profile.visa.nationality || profile.visa.visaType || profile.visa.issuedBy) && (
+                <div className="flex items-center gap-1">
+                  <span>
+                    {[profile.visa.nationality, profile.visa.visaType, profile.visa.issuedBy]
+                      .filter(Boolean)
+                      .join(' • ')}
+                  </span>
+                </div>
+              )}
+              
+              {profile?.workIdentities && (
+                <div className="flex items-center gap-1">
+                  {profile.workIdentities.freelance && <span>Freelance</span>}
+                  {profile.workIdentities.employee?.enabled && (
+                    <span>
+                      {profile.workIdentities.freelance ? ' • ' : ''}
+                      {profile.workIdentities.employee.designation || 'Employee'}
+                      {profile.workIdentities.employee.company && ` at ${profile.workIdentities.employee.company}`}
+                    </span>
+                  )}
+                  {profile.workIdentities.businessOwner?.enabled && (
+                    <span>
+                      {(profile.workIdentities.freelance || profile.workIdentities.employee?.enabled) ? ' • ' : ''}
+                      {profile.workIdentities.businessOwner.designation || 'Business Owner'}
+                      {profile.workIdentities.businessOwner.businessName && ` at ${profile.workIdentities.businessOwner.businessName}`}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2">
