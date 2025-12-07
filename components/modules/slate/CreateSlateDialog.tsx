@@ -217,12 +217,23 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
                                 ) : (
                                     <video src={mediaPreview} controls className="max-h-[400px] w-auto" />
                                 )}
-                                <button 
-                                    onClick={clearMedia}
-                                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
-                                >
-                                    <X className="h-5 w-5" />
-                                </button>
+                                <div className="absolute top-2 right-2 flex gap-2">
+                                    {mediaType === 'image' && (
+                                        <button 
+                                            onClick={handleEditImage}
+                                            className="p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                                            title="Edit & Crop"
+                                        >
+                                            <Edit className="h-5 w-5" />
+                                        </button>
+                                    )}
+                                    <button 
+                                        onClick={clearMedia}
+                                        className="p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                                    >
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-10">
