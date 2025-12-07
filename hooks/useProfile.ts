@@ -97,6 +97,7 @@ export interface TravelCountryData {
   id: string;
   user_id: string;
   country_name: string;
+  country_code: string;
   sort_order?: number;
   created_at?: string;
 }
