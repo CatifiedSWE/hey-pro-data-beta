@@ -268,36 +268,79 @@ export const processNextStep = async (
               });
           } else if (checkResult.exists && !checkResult.hasPassword) {
               // User EXISTS but NO authentication method at all - send password setup link
-              await fetch('/api/auth/send-password-setup-link', {
+              const setupResponse = await fetch('/api/auth/send-password-setup-link', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ email })
               });
               
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: "Great! We've sent a password setup link to your email.",
-                  isIntro: true
-              });
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Check your inbox (and spam folder) and click the link to set your password.',
-                  delay: 1000
-              });
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Need help?',
-                  options: [
-                      { label: 'Resend link', value: 'RESEND_SETUP', icon: 'RefreshCcw' },
-                      { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
-                      { label: 'Done', value: 'DONE', icon: 'Check' }
-                  ],
-                  inputType: 'options_only',
-                  delay: 2000
-              });
+              const setupResult = await setupResponse.json();
+              
+              // Check if user has already completed onboarding
+              if (!setupResult.success && setupResult.alreadyOnboarded) {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: "I can see you've already completed onboarding. Please use the sign-in page to access your account.",
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'What would you like to do?',
+                      options: [
+                          { label: 'Go to sign-in', value: 'SIGNIN', icon: 'LogIn' },
+                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 1000
+                  });
+              } else if (setupResult.success) {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: "Great! We've sent a password setup link to your email.",
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'Check your inbox (and spam folder) and click the link to set your password.',
+                      delay: 1000
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'Need help?',
+                      options: [
+                          { label: 'Resend link', value: 'RESEND_SETUP', icon: 'RefreshCcw' },
+                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 2000
+                  });
+              } else {
+                  // Error sending link
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: setupResult.error || "Sorry, there was an issue sending the password setup link. Please try again.",
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'What would you like to do?',
+                      options: [
+                          { label: 'Try again', value: 'RETRY', icon: 'RefreshCcw' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 1000
+                  });
+              }
           }
       } else if (step === 2) {
           if (selectionValue === 'RETRY') {
@@ -325,18 +368,36 @@ export const processNextStep = async (
               nextStep = step; // Stay on current step
           } else if (selectionValue === 'RESEND_SETUP') {
               // Resend password setup link
-              await fetch('/api/auth/send-password-setup-link', {
+              const resendResponse = await fetch('/api/auth/send-password-setup-link', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ email: nextFormData.email })
               });
               
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Setup link resent! Check your email.',
-                  isIntro: true
-              });
+              const resendResult = await resendResponse.json();
+              
+              if (resendResult.success) {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'Setup link resent! Check your email.',
+                      isIntro: true
+                  });
+              } else if (resendResult.alreadyOnboarded) {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: "You've already completed onboarding. Please use the sign-in page instead.",
+                      isIntro: true
+                  });
+              } else {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: resendResult.error || 'Failed to resend link. Please try again.',
+                      isIntro: true
+                  });
+              }
               nextStep = step; // Stay on current step
           } else if (selectionValue === 'JOIN_CREW') {
               return {
@@ -358,6 +419,17 @@ export const processNextStep = async (
                       { id: generateId(), type: 'bot', text: 'What’s the Company name?', inputType: 'text', delay: 1000 }
                   ]
               };
+          } else if (selectionValue === 'SIGNIN') {
+              // Redirect to login page
+              if (typeof window !== 'undefined') {
+                  window.location.href = '/login';
+              }
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Redirecting you to sign-in page...',
+                  isIntro: true
+              });
           } else if (selectionValue === 'DONE') {
               // End conversation
               nextMessages.push({

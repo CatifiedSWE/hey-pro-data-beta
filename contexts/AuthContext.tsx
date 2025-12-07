@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setLoading(true);
       await supabaseSignOut();
       setUser(null);
-      router.push('/login');
+      router.push('/onboarding');
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
