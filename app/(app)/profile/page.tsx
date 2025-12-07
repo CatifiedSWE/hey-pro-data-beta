@@ -78,12 +78,15 @@ export default function Profile() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  // Updated section order to match design (no separate recommendations section)
-  const [sectionOrder, setSectionOrder] = useState<SectionType[]>(["about", "skills", "credits"])
+  // Updated section order to include new sections
+  const [sectionOrder, setSectionOrder] = useState<SectionType[]>(["about", "skills", "credits", "languages", "contact_details", "available_to_travel"])
   const [isReorderDialogOpen, setIsReorderDialogOpen] = useState(false)
   
   // Use the profile hook for real data
   const { profile, links, recommendations, roles, skills, visa, loading, error, uploadPhoto, refetch, fetchLinks, fetchRecommendations, addRole, deleteRole, fetchSkills } = useProfile();
+  
+  // Use the section visibility hook
+  const { visibility, loading: visibilityLoading, toggleVisibility } = useSectionVisibility();
 
   // Drag and drop sensors - MUST be called before any conditional returns
   const sensors = useSensors(
