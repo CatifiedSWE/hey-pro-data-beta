@@ -428,7 +428,7 @@ function SortableItem({ id }: { id: SectionType }) {
   )
 }
 
-function AboutSection({ bio, onUpdate }: { bio: string; onUpdate: () => void }) {
+function AboutSection({ about, onUpdate }: { about: string; onUpdate: () => void }) {
   return (
     <div className="w-full rounded-[20px] bg-[#FAFAFA] px-6 py-7 shadow-[0_1px_10px_rgba(0,0,0,0.1)] sm:px-10 sm:py-9">
       <div className="mb-6 flex items-center justify-between">
@@ -436,7 +436,7 @@ function AboutSection({ bio, onUpdate }: { bio: string; onUpdate: () => void }) 
         <div className="flex gap-1.5">
           <AboutSectionComponent 
             title="About" 
-            about={bio}
+            about={about}
             onUpdate={onUpdate}
             trigger={
               <Button size="icon" variant="ghost" className="rounded-full border border-[#31A7AC]/30 bg-white text-[#31A7AC] hover:bg-white">
@@ -447,7 +447,7 @@ function AboutSection({ bio, onUpdate }: { bio: string; onUpdate: () => void }) 
         </div>
       </div>
       <div className="space-y-4 text-sm leading-[21px] text-[#181818] sm:text-base">
-        {bio || <span className="text-gray-500 italic">Tell the world about yourself</span>}
+        {about || <span className="text-gray-500 italic">Tell the world about yourself</span>}
       </div>
     </div>
   )
