@@ -79,6 +79,13 @@ export async function GET(
       .select('*')
       .eq('user_id', userId);
 
+    // Fetch visa information
+    const { data: visaInfo } = await supabase
+      .from('user_visa_info')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
     // Fetch credits with full details
     const { data: credits } = await supabase
       .from('user_credits')
