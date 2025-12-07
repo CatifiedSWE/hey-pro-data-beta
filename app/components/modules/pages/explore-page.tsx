@@ -226,7 +226,7 @@ export default function ExplorePage({
         </div>
 
         {/* Profile Grid */}
-        <div className="relative w-full max-w-[615px]">
+        <div className="relative w-full">
           {isLoading && page === 1 && (
             <div className="absolute inset-0 bg-white/70 z-10 flex items-center justify-center rounded-lg">
               <div className="flex flex-col items-center gap-2">
@@ -235,7 +235,10 @@ export default function ExplorePage({
               </div>
             </div>
           )}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-[10px] p-2 md:p-0 w-full justify-items-stretch auto-rows-max">
+          <div 
+            className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-[10px] p-2 md:p-0 w-full justify-items-stretch auto-rows-max"
+            data-testid="profiles-grid"
+          >
             {profiles.length > 0 ? (
               profiles.map((project) => (
                 <ProjectCard 
