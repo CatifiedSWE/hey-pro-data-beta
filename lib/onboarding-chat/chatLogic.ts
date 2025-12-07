@@ -284,8 +284,23 @@ export const processNextStep = async (
             });
         }
     } else if (step === 6) {
-        // Handle Confirmation
-        if (selectionValue === 'EDIT') {
+        // Handle Confirmation or Login redirect
+        if (selectionValue === 'GO_TO_LOGIN') {
+            // Redirect to login page
+            if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+            }
+            return currentState; // Return current state to prevent further processing
+        } else if (selectionValue === 'RETRY_EMAIL') {
+            // Go back to email input
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: 'No problem. What's your email?',
+                inputType: 'email'
+            });
+            nextStep = 5; // Go back to email step
+        } else if (selectionValue === 'EDIT') {
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
