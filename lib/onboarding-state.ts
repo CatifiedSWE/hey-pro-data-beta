@@ -57,7 +57,7 @@ export const FLOW_STEPS: Record<string, StepConfig> = {
   persona_selection: {
     id: 'persona_selection',
     type: 'question',
-    title: 'Hey, I’m HeyProData. Your space in production. Let’s put you on the map.',
+    title: 'Hey, I’m Oscar. Your space in production. Let’s put you on the map.',
     subtitle: 'Before we get into it, which one sounds like you today?',
     options: [
       { label: "I'm an existing member", value: 'existing', next: 'existing_start' },
@@ -298,7 +298,7 @@ export const FLOW_STEPS: Record<string, StepConfig> = {
   client_details: {
     id: 'client_details',
     type: 'form',
-    title: "Tell me what you need: project, roles, dates, anything useful.",
+    title: "Tell us about the project requirement",
     fields: [
       { name: 'project_details', label: 'Project Requirements', type: 'textarea', required: true },
     ],
@@ -374,7 +374,8 @@ export const FLOW_STEPS: Record<string, StepConfig> = {
   share_universal: {
     id: 'share_universal',
     type: 'share',
-    title: "Easy. Here’s a link you can share with anyone who works in production:",
+    title: "Share HeyProData?",
+    subtitle: "Select one to continue",
     nextStep: 'landing' // Or back
   }
 };
