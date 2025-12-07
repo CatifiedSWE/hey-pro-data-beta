@@ -80,7 +80,7 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
       if (isSaved) {
         await unsaveProfile(profile.userId || profile.user_id);
         setIsSaved(false);
-        toast.success('Profile removed from saved');
+        toast.success('Profile removed from your saved list');
       } else {
         await saveProfile(profile.userId || profile.user_id);
         setIsSaved(true);
