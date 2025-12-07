@@ -159,7 +159,18 @@ export async function GET(request: NextRequest) {
     );
 
     // Filter out null profiles (those that didn't match role filter)
-    const filteredProfiles = enrichedProfiles.filter(p => p !== null);
+    let filteredProfiles = enrichedProfiles.filter(p => p !== null);
+
+    // Apply randomization if seed is provided (for initial page loads)
+    if (seed && page === 1) {
+      // Simple shuffle algorithm using the seed for consistency
+      const shuffled = [...filteredProfiles];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      filteredProfiles = shuffled;
+    }
 
     // Use the database count for accurate pagination
     const totalProfiles = count || 0;
