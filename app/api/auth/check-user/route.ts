@@ -36,21 +36,21 @@ export async function POST(req: NextRequest) {
     }
 
     // User exists - now check if they have any authentication method
-    // Check auth.identities table to see what providers they have
-    const { data: identities, error: identitiesError } = await supabase
-      .from('identities')
-      .select('provider')
-      .eq('user_id', profileData.user_id);
+    // Check auth.users table to get provider information
+    const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(profileData.user_id);
 
-    if (identitiesError) {
-      console.error('[Check User] Error checking identities:', identitiesError);
+    if (authError) {
+      console.error('[Check User] Error fetching auth user:', authError);
     }
 
+    // Check identities from auth user data
+    const identities = authUser?.user?.identities || [];
+    
     // Check if user has 'email' provider (password auth)
-    const hasEmailProvider = identities?.some(identity => identity.provider === 'email');
+    const hasEmailProvider = identities.some((identity: any) => identity.provider === 'email');
     
     // Check if user has 'google' provider (Google OAuth)
-    const hasGoogleProvider = identities?.some(identity => identity.provider === 'google');
+    const hasGoogleProvider = identities.some((identity: any) => identity.provider === 'google');
     
     // User has authentication if they have email OR google provider
     const hasAuthentication = hasEmailProvider || hasGoogleProvider;
