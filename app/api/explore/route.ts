@@ -73,7 +73,15 @@ export async function GET(request: NextRequest) {
 
     // Apply sorting
     const ascending = sortOrder === 'asc';
-    query = query.order(sortBy, { ascending });
+    
+    // Check if random sorting is requested (for initial page loads)
+    const seed = searchParams.get('seed');
+    if (seed && page === 1) {
+      // For randomization on first page, we'll fetch more and shuffle
+      query = query.order('created_at', { ascending: false });
+    } else {
+      query = query.order(sortBy, { ascending });
+    }
 
     // Apply pagination
     query = query.range(offset, offset + limit - 1);
