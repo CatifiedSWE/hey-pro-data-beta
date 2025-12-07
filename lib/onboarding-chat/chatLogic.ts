@@ -296,7 +296,7 @@ export const processNextStep = async (
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: 'No problem. What's your email?',
+                text: "No problem. What's your email?",
                 inputType: 'email'
             });
             nextStep = 5; // Go back to email step
