@@ -66,6 +66,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/onboarding', request.url));
   }
 
+  // Block access to under-development routes - redirect to profile for ALL users
+  const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
+  if (isUnderDevelopmentRoute) {
+    console.log(`[Middleware] Blocking under-development page: ${pathname}, redirecting to /profile`);
+    return NextResponse.redirect(new URL('/profile', request.url));
+  }
+
   // Allow public routes without authentication check
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
   if (isPublicRoute) {
@@ -155,13 +162,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/profile', request.url));
     }
     // Otherwise, allow access to complete onboarding
-  }
-
-  // Block access to under-development routes - redirect to profile
-  const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
-  if (isUnderDevelopmentRoute) {
-    console.log(`[Middleware] Blocking under-development page: ${pathname}, redirecting to /profile`);
-    return NextResponse.redirect(new URL('/profile', request.url));
   }
 
   // Redirect authenticated users away from auth pages (login/signup)
