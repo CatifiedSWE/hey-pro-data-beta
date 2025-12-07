@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
       ...visaInfo,
       visa_issued_by: visaInfo.issued_by,
       visa_expiry_date: visaInfo.expiry_date,
-      nationality: null,
-      passport_expiry_date: null
+      nationality: visaInfo.nationality,
+      passport_expiry_date: visaInfo.passport_expiry_date
     } : null;
 
     return NextResponse.json(
