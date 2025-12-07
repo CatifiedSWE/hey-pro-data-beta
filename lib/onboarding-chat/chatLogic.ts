@@ -411,7 +411,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'No problem. What's your email?',
+                  text: "No problem. What's your email?",
                   inputType: 'email'
               });
               nextStep = 7; // Go back to email step
@@ -518,7 +518,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'No problem. What's your email?',
+                  text: "No problem. What's your email?",
                   inputType: 'email'
               });
               nextStep = 3; // Go back to email step
