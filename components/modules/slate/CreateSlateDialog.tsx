@@ -335,6 +335,16 @@ export default function CreateSlateDialog({ open, onOpenChange }: CreateSlateDia
                     </Button>
                 </div>
             </DialogContent>
+
+            {/* Image Cropper Dialog */}
+            <ImageCropper
+                open={cropperOpen}
+                onClose={() => setCropperOpen(false)}
+                imageSrc={imageToCrop}
+                onCropComplete={handleCropComplete}
+                aspectRatio={9 / 16}
+                allowSkip={true}
+            />
         </Dialog>
     );
 }
