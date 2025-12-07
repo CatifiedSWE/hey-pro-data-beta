@@ -41,7 +41,7 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
                     // Try to find the country in our countries list
                     const country = countries.find(c => 
                         c.name.toLowerCase() === tc.country_name.toLowerCase() ||
-                        c.code === tc.country_name
+                        c.code === tc.country_code
                     );
                     return country;
                 })
