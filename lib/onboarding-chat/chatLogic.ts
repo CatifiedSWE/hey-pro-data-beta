@@ -174,7 +174,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Got it. Enter your email and I'll send you a secure link to set your password.',
+                  text: "Got it. Enter your email and I'll send you a secure link to set your password.",
                   inputType: 'email'
               });
           } else if (selectionValue === 'SIGNIN') {
