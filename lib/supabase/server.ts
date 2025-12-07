@@ -26,7 +26,7 @@ export const validateAuthToken = async (authHeader: string | null): Promise<User
 
   try {
     // Create a client with the user's token
-    const supabase = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    const supabase = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_anon_key', {
       global: {
         headers: {
           Authorization: `Bearer ${token}`,
