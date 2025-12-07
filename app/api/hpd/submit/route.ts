@@ -14,75 +14,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const supabase = createServerClient();
+    // Generate a unique ID for this submission
+    const submissionId = crypto.randomUUID();
+    
+    // Log the submission details
+    console.log(`[Waitlist Submission] ID: ${submissionId}`);
+    console.log(`[Waitlist Submission] Type: ${user_type}`);
+    console.log(`[Waitlist Submission] Email: ${submitted_fields.email}`);
+    console.log(`[Waitlist Submission] Name: ${submitted_fields.firstName || submitted_fields.companyName || 'N/A'}`);
+    console.log(`[Waitlist Submission] Data:`, JSON.stringify(submitted_fields, null, 2));
 
-    // 2. Check if user is authenticated
-    const cookieStore = await cookies();
-    const supabaseSSR = createSSRClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // Ignore if called from Server Component
-            }
-          },
-        },
-      }
-    );
-
-    const { data: { user } } = await supabaseSSR.auth.getUser();
-
-    // 3. Insert into onboarding_submissions table
-    const { data, error } = await supabase
-      .from('onboarding_submissions')
-      .insert([
-        {
-          user_type,
-          source: source || 'Landing Guide',
-          submitted_fields,
-          session_id,
-          meta: meta || {},
-          created_at: new Date().toISOString()
-        }
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Database error:', error);
-      // Handle duplicates
-      if (error.code === '23505') { // Unique violation
-        return NextResponse.json({ error: 'Duplicate submission' }, { status: 409 });
-      }
-      return NextResponse.json({ error: 'Database error' }, { status: 500 });
-    }
-
-    // 4. If user is authenticated, mark onboarding as complete
-    let onboardingMarkedComplete = false;
-    if (user) {
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({ has_completed_onboarding: true })
-        .eq('user_id', user.id);
-
-      if (updateError) {
-        console.error('Error updating onboarding status:', updateError);
-      } else {
-        onboardingMarkedComplete = true;
-        console.log(`[Onboarding] Marked complete for user: ${user.id}`);
-      }
-    }
-
-    // 5. Send Acknowledgement Email to User (non-blocking)
+    // Send Acknowledgement Email to User (non-blocking)
     let emailSent = false;
     const userEmail = submitted_fields.email;
     
@@ -117,9 +59,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ 
       success: true,
       status: 'accepted', 
-      id: data.id,
-      isAuthenticated: !!user,
-      onboardingComplete: onboardingMarkedComplete,
+      id: submissionId,
+      isAuthenticated: false,
+      onboardingComplete: false,
       emailSent: emailSent
     });
   } catch (err) {
