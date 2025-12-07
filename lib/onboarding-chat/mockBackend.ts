@@ -1,6 +1,10 @@
 import { FormData, Persona } from './types';
 
-export const submitData = async (userType: Persona, formData: FormData): Promise<boolean> => {
+export const submitData = async (userType: Persona, formData: FormData): Promise<{
+  success: boolean;
+  isAuthenticated: boolean;
+  onboardingComplete: boolean;
+}> => {
   try {
     const response = await fetch('/api/hpd/submit', {
       method: 'POST',
@@ -12,10 +16,30 @@ export const submitData = async (userType: Persona, formData: FormData): Promise
       }),
     });
 
-    return response.ok;
+    if (response.ok) {
+      const data = await response.json();
+      
+      // If user is authenticated and completed onboarding, redirect to profile
+      if (data.isAuthenticated && data.onboardingComplete) {
+        // Small delay to let user see success message, then redirect
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/profile';
+          }
+        }, 2000);
+      }
+      
+      return {
+        success: true,
+        isAuthenticated: data.isAuthenticated || false,
+        onboardingComplete: data.onboardingComplete || false
+      };
+    }
+    
+    return { success: false, isAuthenticated: false, onboardingComplete: false };
   } catch (error) {
     console.error('Submit error:', error);
-    return false;
+    return { success: false, isAuthenticated: false, onboardingComplete: false };
   }
 };
 
