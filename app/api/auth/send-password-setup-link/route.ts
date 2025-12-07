@@ -18,8 +18,44 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Use Supabase's resetPasswordForEmail to send magic link
-    // This will redirect to /set-password page
+    // Check if user exists and their onboarding status
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('user_id, email, has_completed_onboarding')
+      .eq('email', normalizedEmail)
+      .single();
+
+    if (profileError && profileError.code !== 'PGRST116') {
+      console.error('[Send Password Setup] Profile lookup error:', profileError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to verify user status' },
+        { status: 500 }
+      );
+    }
+
+    // If user doesn't exist in profiles
+    if (!profileData) {
+      console.log('[Send Password Setup] User not found:', normalizedEmail);
+      return NextResponse.json(
+        { success: false, error: 'User not found. Please complete onboarding first.' },
+        { status: 404 }
+      );
+    }
+
+    // If user has already completed onboarding, they should use regular password reset
+    if (profileData.has_completed_onboarding) {
+      console.log('[Send Password Setup] User already completed onboarding:', normalizedEmail);
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'You have already completed onboarding. Please use the sign-in page to access your account.',
+          alreadyOnboarded: true
+        },
+        { status: 400 }
+      );
+    }
+
+    // User exists but hasn't completed onboarding - send password setup link
     const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
       redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/set-password`
     });
