@@ -108,11 +108,60 @@ export async function proxy(request: NextRequest) {
   // Get the session from cookies - OAuth callback API route sets these properly
   const { data: { session } } = await supabase.auth.getSession();
   const isAuthenticated = !!session;
+  const userId = session?.user?.id;
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
+  // Special handling for landing page (/)
+  if (pathname === '/' && isAuthenticated && userId) {
+    // Check onboarding status
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('has_completed_onboarding')
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    if (profile?.has_completed_onboarding) {
+      // Completed onboarding → redirect to profile
+      return NextResponse.redirect(new URL('/profile', request.url));
+    } else {
+      // Not completed onboarding → redirect to onboarding
+      return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+  }
+
+  // Special handling for onboarding page
+  if (pathname.startsWith('/onboarding') && isAuthenticated && userId) {
+    // Check if user already completed onboarding
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('has_completed_onboarding')
+      .eq('user_id', userId)
+      .maybeSingle();
+    
+    if (profile?.has_completed_onboarding) {
+      // Already completed → redirect to profile
+      return NextResponse.redirect(new URL('/profile', request.url));
+    }
+    // Otherwise, allow access to complete onboarding
+  }
+
   // Redirect authenticated users away from auth pages (login/signup)
   if (isAuthenticated && isAuthRoute) {
+    // Check onboarding status before redirecting
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('has_completed_onboarding')
+        .eq('user_id', userId)
+        .maybeSingle();
+      
+      if (profile?.has_completed_onboarding) {
+        return NextResponse.redirect(new URL('/profile', request.url));
+      } else {
+        return NextResponse.redirect(new URL('/onboarding', request.url));
+      }
+    }
     return NextResponse.redirect(new URL('/slate', request.url));
   }
 
