@@ -14,10 +14,34 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
     
-    // Check if email exists in auth.users (using service role key if available)
-    // We'll check both auth.users and user_profiles table
+    // STEP 1: Check auth.users table first (single source of truth)
+    // This ensures consistency with /api/auth/check-user flow
+    const { data: authUsersData, error: authListError } = await supabase.auth.admin.listUsers();
     
-    // First check onboarding_submissions to see if they're in waitlist
+    if (authListError) {
+      console.error('[HPD Email Check] Error listing auth users:', authListError);
+      return NextResponse.json(
+        { error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // Find user by email in auth.users
+    const authUser = authUsersData.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+    
+    if (authUser) {
+      // User exists in auth.users - they are registered
+      console.log(`[HPD Email Check] ${normalizedEmail}: Found in auth.users - registered user`);
+      return NextResponse.json({
+        exists: true,
+        isRegistered: true,
+        hasCompletedOnboarding: true,
+        message: 'This email is registered. Please login to continue.'
+      });
+    }
+
+    // STEP 2: If not in auth.users, continue with existing logic
+    // Check onboarding_submissions to see if they're in waitlist
     // Using eq for exact match on JSONB field (email is already normalized)
     const { data: submissionData, error: submissionError } = await supabase
       .from('onboarding_submissions')
