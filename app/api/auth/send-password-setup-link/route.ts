@@ -18,24 +18,35 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Check if user exists and their onboarding status
+    // Check if user exists and their onboarding status - using case-insensitive comparison
     const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select('user_id, email, has_completed_onboarding')
-      .eq('email', normalizedEmail)
+      .ilike('email', normalizedEmail)
       .single();
 
-    if (profileError && profileError.code !== 'PGRST116') {
-      console.error('[Send Password Setup] Profile lookup error:', profileError);
-      return NextResponse.json(
-        { success: false, error: 'Failed to verify user status' },
-        { status: 500 }
-      );
+    // Distinguish between "user not found" (PGRST116) and actual database errors
+    if (profileError) {
+      if (profileError.code === 'PGRST116') {
+        // User not found - this is legitimate
+        console.log('[Send Password Setup] User not found:', normalizedEmail);
+        return NextResponse.json(
+          { success: false, error: 'User not found. Please complete onboarding first.' },
+          { status: 404 }
+        );
+      } else {
+        // Real database error
+        console.error('[Send Password Setup] Database error:', profileError);
+        return NextResponse.json(
+          { success: false, error: 'Database error. Please try again.' },
+          { status: 500 }
+        );
+      }
     }
 
-    // If user doesn't exist in profiles
+    // If user doesn't exist in profiles (redundant check but kept for safety)
     if (!profileData) {
-      console.log('[Send Password Setup] User not found:', normalizedEmail);
+      console.log('[Send Password Setup] User not found (null data):', normalizedEmail);
       return NextResponse.json(
         { success: false, error: 'User not found. Please complete onboarding first.' },
         { status: 404 }
