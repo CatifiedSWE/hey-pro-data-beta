@@ -183,12 +183,12 @@ export default function SetPasswordPage() {
     }
   };
 
-  // Loading state while checking token
-  if (validToken === null) {
+  // Loading state while initializing session
+  if (!sessionInitialized || validToken === null) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-['Outfit']">
         <div className="w-16 h-16 border-8 border-slate-200 border-t-[#ff5168] rounded-full animate-spin"></div>
-        <p className="mt-4 text-slate-500 font-semibold">Verifying link...</p>
+        <p className="mt-4 text-slate-500 font-semibold">Verifying recovery link...</p>
       </div>
     );
   }
