@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ArrowLeft, Edit2, Paperclip } from 'lucide-react';
 import { INITIAL_STATE, processNextStep } from '@/lib/onboarding-chat/chatLogic';
 import { ChatState } from '@/lib/onboarding-chat/types';
-import { Mascot } from '@/app/components/onboarding-chat/Mascot';
 import { OptionCard } from '@/app/components/onboarding-chat/OptionCard';
 import { ShareCard } from '@/app/components/onboarding-chat/ShareCard';
 import { GoogleAuthButton } from '@/app/components/onboarding-chat/GoogleAuthButton';
@@ -130,7 +129,20 @@ export default function OnboardingPage() {
     if (isProcessing) return false;
     if (currentMessage.inputType === 'options_only') return !!selectedOption;
     if (currentMessage.inputType === 'file') return !!fileInput;
-    if (needsInput) return textInput.trim().length > 0;
+    if (needsInput) {
+        if (textInput.trim().length === 0) return false;
+        
+        if (currentMessage.inputType === 'email') {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(textInput);
+        }
+        
+        if (currentMessage.inputType === 'url') {
+            // Basic URL validation - at least has a dot
+             return textInput.includes('.') && textInput.length > 3;
+        }
+        
+        return true;
+    }
     return true;
   };
 
@@ -151,7 +163,7 @@ export default function OnboardingPage() {
 
         <div className="z-10 flex flex-col items-center max-w-lg w-full text-center">
           <div className="mb-12 animate-pop">
-            <Mascot emotion="excited" />
+            {/* Mascot Removed */}
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tight drop-shadow-sm">
             {currentMessage.text}
@@ -199,17 +211,15 @@ export default function OnboardingPage() {
 
       {/* Body */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="max-w-6xl mx-auto px-6 py-8 md:py-16 min-h-[calc(100vh-100px)] flex flex-col justify-center">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center justify-center mb-12 animate-fade-in">
-            <Mascot emotion={isProcessing ? 'thinking' : 'normal'} />
+        <div className="max-w-6xl mx-auto px-6 py-4 md:py-8 min-h-[calc(100vh-100px)] flex flex-col justify-center">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center justify-center mb-8 animate-fade-in">
+            {/* Mascot Removed */}
             
             <div className="text-center md:text-left max-w-2xl">
               <h2 className="text-2xl md:text-4xl font-black text-slate-800 leading-tight mb-3">
                 {currentMessage.text}
               </h2>
-              {isOptions && (
-                <p className="text-slate-400 font-bold text-sm uppercase tracking-widest mt-4">Select one to continue</p>
-              )}
+              {/* Removed 'Select one to continue' */}
             </div>
           </div>
 
