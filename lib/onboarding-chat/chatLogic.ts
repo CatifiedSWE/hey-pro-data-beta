@@ -735,15 +735,20 @@ export const processNextStep = async (
     } else if (step === 7) {
          if (selectionValue === 'RESTART') {
              window.location.reload();
-         } else {
-             // Share flow
-             nextMessages.push({
-                 id: generateId(),
-                 type: 'bot',
-                 text: 'Easy. Here’s a link you can share with anyone who works in production:',
-                 inputType: 'share_card'
-             });
-         }
+         } else if (selectionValue === 'SUBMIT_PROJECT') {
+             // Redirect to CLIENT flow
+             return {
+                 currentFlow: 'CLIENT',
+                 step: 0,
+                 messages: [
+                     ...currentState.messages,
+                     { id: generateId(), type: 'bot', text: 'Amazing! Let's get the basics down so we can share it with the right people.', isIntro: true },
+                     { id: generateId(), type: 'bot', text: 'Who do you need?', inputType: 'textarea', delay: 1000 }
+                 ]
+             };
+         } else if (selectionValue === 'DONE') {
+             // Go back to first page
+             window.location.href = '/';
     }
   }
 
