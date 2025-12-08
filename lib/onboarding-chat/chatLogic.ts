@@ -716,6 +716,10 @@ export const processNextStep = async (
                     type: 'bot',
                     text: 'What would you like to do?',
                     options: [
+                        { label: 'Submit a project', value: 'SUBMIT_PROJECT', icon: 'Send' },
+                        { label: 'Done for now', value: 'DONE', icon: 'Check' },
+                        { label: 'Share HeyProData', value: 'SHARE', icon: 'Share2' }
+                    ],
                     inputType: 'options_only',
                     delay: 1000
                 });
