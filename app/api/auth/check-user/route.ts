@@ -18,15 +18,25 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Check if user exists in user_profiles
-    const { data: profileData } = await supabase
+    // Check if user exists in user_profiles - using case-insensitive comparison
+    const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select('user_id, email, has_completed_onboarding')
-      .eq('email', normalizedEmail)
+      .ilike('email', normalizedEmail)
       .maybeSingle();
 
+    // Check for database errors FIRST before treating as "user not found"
+    if (profileError) {
+      console.error('[Check User] Database query error:', profileError);
+      return NextResponse.json(
+        { error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
+
     if (!profileData) {
-      // User doesn't exist
+      // User doesn't exist (legitimate not found, not a database error)
+      console.log('[Check User] User not found:', normalizedEmail);
       return NextResponse.json({
         exists: false,
         hasPassword: false,
