@@ -66,11 +66,11 @@ export async function POST(req: NextRequest) {
     const { data: authUserDetails, error: authError } = await supabase.auth.admin.getUserById(authUser.id);
 
     if (authError) {
-      console.error('[Check User] Error fetching auth user:', authError);
+      console.error('[Check User] Error fetching auth user details:', authError);
     }
 
     // Check identities from auth user data
-    const identities = authUser?.user?.identities || [];
+    const identities = authUserDetails?.user?.identities || authUser.identities || [];
     
     // Check if user has 'email' provider (password auth)
     const hasEmailProvider = identities.some((identity: any) => identity.provider === 'email');
@@ -84,15 +84,18 @@ export async function POST(req: NextRequest) {
     // Only need password setup if user exists but has NO authentication method at all
     const needsPasswordSetup = !hasAuthentication;
 
-    console.log(`[Check User] ${normalizedEmail}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuth=${hasAuthentication}, needsSetup=${needsPasswordSetup}`);
+    // Check onboarding status
+    const hasCompletedOnboarding = profileData?.has_completed_onboarding || false;
+
+    console.log(`[Check User] ${normalizedEmail}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuth=${hasAuthentication}, needsSetup=${needsPasswordSetup}, hasProfile=${!!profileData}, onboardingComplete=${hasCompletedOnboarding}`);
 
     return NextResponse.json({
       exists: true,
       hasPassword: hasAuthentication, // True if they have ANY auth method (email or google)
       hasGoogleAuth: hasGoogleProvider,
       needsPasswordSetup: needsPasswordSetup,
-      userId: profileData.user_id,
-      hasCompletedOnboarding: profileData.has_completed_onboarding
+      userId: authUser.id,
+      hasCompletedOnboarding: hasCompletedOnboarding
     });
 
   } catch (err) {
