@@ -41,21 +41,15 @@ export const LandingHero: React.FC = () => {
         </div>
 
         {/* Hero Heading */}
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05] mb-8 drop-shadow-2xl">
-          <div className="text-white">HeyProData.</div>
-          <div className="text-white">For people who make things happen</div>
-          <div className="mt-2">
-            <span>in </span>
-            <span className="bg-gradient-to-r from-[#25c9d0] via-slate-400 to-[#ff5168] bg-clip-text text-transparent pb-2">
-              film, media and events.
-            </span>
-          </div>
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05] mb-8 drop-shadow-2xl text-white">
+          Your space in production
         </h1>
 
         {/* Subtext */}
-        <p className="text-slate-300 text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto mb-16 font-light leading-relaxed">
-          MENA's crew infrastructure - showing who's here, what they do and how to connect.
-        </p>
+        <div className="text-slate-300 text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto mb-16 font-light leading-relaxed flex flex-col gap-2">
+          <p>MENA's crew infrastructure</p>
+          <p>Showing who's here, what they do and how to connect.</p>
+        </div>
 
         {/* CTA Button */}
         <button 
