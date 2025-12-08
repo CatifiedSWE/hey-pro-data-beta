@@ -14,47 +14,85 @@ export default function SetPasswordPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [validToken, setValidToken] = useState<boolean | null>(null);
+  const [sessionInitialized, setSessionInitialized] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // Check if we have a valid session from the magic link
-    const checkSession = async () => {
-      // First, try to get the hash from URL which contains the access token
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const accessToken = hashParams.get('access_token');
-      const refreshToken = hashParams.get('refresh_token');
-      const type = hashParams.get('type');
+    // CRITICAL: Initialize session from recovery tokens BEFORE showing any UI
+    const initializeRecoverySession = async () => {
+      try {
+        console.log('[Set Password] Checking for recovery tokens in URL...');
+        
+        // Extract tokens from URL hash (Supabase redirect format)
+        // URL format: https://heyprodata.com/set-password#access_token=xxx&refresh_token=yyy&type=recovery
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
 
-      // If we have tokens in the URL (from password reset email), set the session
-      if (accessToken && type === 'recovery') {
-        console.log('[Set Password] Recovery tokens found in URL, setting session...');
-        const { data, error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || ''
+        console.log('[Set Password] Hash parameters:', {
+          hasAccessToken: !!accessToken,
+          hasRefreshToken: !!refreshToken,
+          type: type
         });
 
-        if (sessionError || !data.session) {
-          console.error('[Set Password] Failed to set session:', sessionError);
+        // CRITICAL: Check if this is a valid recovery flow
+        if (type !== 'recovery') {
+          console.error('[Set Password] Invalid token type. Expected "recovery", got:', type);
           setValidToken(false);
           setError('Invalid or expired link. Please request a new password setup link.');
+          setSessionInitialized(true);
           return;
         }
 
-        console.log('[Set Password] Session established successfully');
-        setValidToken(true);
-      } else {
-        // No tokens in URL, check if we already have a session
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          setValidToken(true);
-        } else {
+        // CRITICAL: Both tokens must be present for recovery
+        if (!accessToken || !refreshToken) {
+          console.error('[Set Password] Missing tokens in recovery URL');
           setValidToken(false);
           setError('Invalid or expired link. Please request a new password setup link.');
+          setSessionInitialized(true);
+          return;
         }
+
+        // CRITICAL: Set the session using recovery tokens BEFORE proceeding
+        console.log('[Set Password] Setting session with recovery tokens...');
+        const { data, error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
+
+        if (sessionError) {
+          console.error('[Set Password] Failed to set session:', sessionError);
+          setValidToken(false);
+          setError('Invalid or expired link. Please request a new password setup link.');
+          setSessionInitialized(true);
+          return;
+        }
+
+        if (!data.session) {
+          console.error('[Set Password] Session not established despite no error');
+          setValidToken(false);
+          setError('Invalid or expired link. Please request a new password setup link.');
+          setSessionInitialized(true);
+          return;
+        }
+
+        console.log('[Set Password] ✅ Recovery session established successfully');
+        console.log('[Set Password] User ID:', data.session.user.id);
+        console.log('[Set Password] Session expires at:', new Date(data.session.expires_at! * 1000).toISOString());
+        
+        setValidToken(true);
+        setSessionInitialized(true);
+
+      } catch (err) {
+        console.error('[Set Password] Exception during session initialization:', err);
+        setValidToken(false);
+        setError('An error occurred. Please request a new password setup link.');
+        setSessionInitialized(true);
       }
     };
 
-    checkSession();
+    initializeRecoverySession();
   }, []);
 
   const validatePassword = (pwd: string): string | null => {
