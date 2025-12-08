@@ -98,8 +98,10 @@ export async function POST(req: NextRequest) {
     }
 
     // STEP 4: Send password setup link via email
+    // Remove trailing slash from base URL to avoid double slashes
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
     const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/set-password`
+      redirectTo: `${baseUrl}/set-password`
     });
 
     if (error) {

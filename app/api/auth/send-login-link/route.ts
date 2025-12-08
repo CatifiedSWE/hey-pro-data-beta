@@ -19,10 +19,12 @@ export async function POST(req: NextRequest) {
     const supabase = createServerClient();
 
     // Send magic link for login
+    // Remove trailing slash from base URL to avoid double slashes
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/profile`,
+        emailRedirectTo: `${baseUrl}/profile`,
         shouldCreateUser: false // Don't create new user if doesn't exist
       }
     });
