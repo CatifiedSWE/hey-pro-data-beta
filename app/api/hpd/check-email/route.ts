@@ -19,19 +19,37 @@ export async function POST(req: NextRequest) {
     
     // First check onboarding_submissions to see if they're in waitlist
     // Using eq for exact match on JSONB field (email is already normalized)
-    const { data: submissionData } = await supabase
+    const { data: submissionData, error: submissionError } = await supabase
       .from('onboarding_submissions')
       .select('id')
       .eq('submitted_fields->>email', normalizedEmail)
       .maybeSingle();
     
+    // Check for database errors
+    if (submissionError) {
+      console.error('[Email Check] Submission query error:', submissionError);
+      return NextResponse.json(
+        { error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
+    
     // Also check user_profiles for registered users
-    // Using eq for exact match (email is already normalized)
-    const { data: profileData } = await supabase
+    // Using case-insensitive match for email
+    const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select('user_id, has_completed_onboarding')
-      .eq('email', normalizedEmail)
+      .ilike('email', normalizedEmail)
       .maybeSingle();
+
+    // Check for database errors
+    if (profileError) {
+      console.error('[Email Check] Profile query error:', profileError);
+      return NextResponse.json(
+        { error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
 
     const exists = !!(submissionData || profileData);
     const isRegistered = !!profileData; // They have an account
