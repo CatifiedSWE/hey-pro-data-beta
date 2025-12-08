@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const { data: profileData } = await supabase
       .from('user_profiles')
       .select('user_id, email, has_completed_onboarding')
-      .eq('email', normalizedEmail)
+      .ilike('email', normalizedEmail)
       .maybeSingle();
 
     if (!profileData) {
