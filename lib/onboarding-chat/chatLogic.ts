@@ -708,7 +708,7 @@ export const processNextStep = async (
                 nextMessages.push({
                     id: generateId(),
                     type: 'bot',
-                    text: 'All set. You’re in the system.',
+                    text: 'All set. You'''re in the system. We'''re onboarding in batches - we'''ll email you when your turn opens up.',
                     isIntro: true
                 });
                 nextMessages.push({
