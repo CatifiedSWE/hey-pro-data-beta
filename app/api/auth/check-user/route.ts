@@ -18,25 +18,24 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Check if user exists in user_profiles - using case-insensitive comparison
-    const { data: profileData, error: profileError } = await supabase
-      .from('user_profiles')
-      .select('user_id, email, has_completed_onboarding')
-      .ilike('email', normalizedEmail)
-      .maybeSingle();
-
-    // Check for database errors FIRST before treating as "user not found"
-    if (profileError) {
-      console.error('[Check User] Database query error:', profileError);
+    // STEP 1: Check auth.users table first (this is where OAuth users are created)
+    // List all users and find by email since admin.listUsers doesn't have email filter
+    const { data: authUsersData, error: authListError } = await supabase.auth.admin.listUsers();
+    
+    if (authListError) {
+      console.error('[Check User] Error listing auth users:', authListError);
       return NextResponse.json(
         { error: 'Database error. Please try again.' },
         { status: 500 }
       );
     }
 
-    if (!profileData) {
-      // User doesn't exist (legitimate not found, not a database error)
-      console.log('[Check User] User not found:', normalizedEmail);
+    // Find user by email in auth.users
+    const authUser = authUsersData.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+    
+    if (!authUser) {
+      // User doesn't exist in auth.users at all
+      console.log('[Check User] User not found in auth.users:', normalizedEmail);
       return NextResponse.json({
         exists: false,
         hasPassword: false,
@@ -45,9 +44,26 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // User exists - now check if they have any authentication method
-    // Check auth.users table to get provider information
-    const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(profileData.user_id);
+    console.log('[Check User] User found in auth.users:', authUser.id, authUser.email);
+
+    // STEP 2: Check if user has a profile in user_profiles table
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('user_id, email, has_completed_onboarding')
+      .eq('user_id', authUser.id)
+      .maybeSingle();
+
+    // Check for database errors
+    if (profileError) {
+      console.error('[Check User] Database query error on user_profiles:', profileError);
+      return NextResponse.json(
+        { error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // STEP 3: Get authentication provider information
+    const { data: authUserDetails, error: authError } = await supabase.auth.admin.getUserById(authUser.id);
 
     if (authError) {
       console.error('[Check User] Error fetching auth user:', authError);
