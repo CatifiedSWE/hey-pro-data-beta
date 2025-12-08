@@ -104,11 +104,15 @@ export async function POST(req: NextRequest) {
     // Use resetPasswordForEmail() - despite the name, it works for both:
     // - Users resetting an existing password
     // - Users setting a password for the first time (recovery flow)
-    // Remove trailing slash from base URL to avoid double slashes
+    
+    // CRITICAL FIX: Remove trailing slash from base URL to avoid double slashes
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const redirectUrl = `${baseUrl}/set-password`;
+    
+    console.log('[Send Password Setup] Sending email with redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-      redirectTo: `${baseUrl}/set-password`
+      redirectTo: redirectUrl
     });
 
     if (error) {

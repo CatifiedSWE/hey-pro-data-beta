@@ -18,13 +18,17 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // Send magic link for login
-    // Remove trailing slash from base URL to avoid double slashes
+    // CRITICAL FIX: Remove trailing slash from base URL to avoid double slashes
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const redirectUrl = `${baseUrl}/profile`;
+    
+    console.log('[Send Login Link] Sending OTP with redirect URL:', redirectUrl);
+    
+    // Send magic link for login
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
       options: {
-        emailRedirectTo: `${baseUrl}/profile`,
+        emailRedirectTo: redirectUrl,
         shouldCreateUser: false // Don't create new user if doesn't exist
       }
     });
