@@ -5,7 +5,7 @@ import { SocialIcons } from './SocialIcons';
 
 export const ShareCard: React.FC = () => {
   const [copied, setCopied] = useState(false);
-  const link = "https://heyprodata.com/";
+  const link = "https://heyprodata.com";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(link);
