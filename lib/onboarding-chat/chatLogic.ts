@@ -17,7 +17,7 @@ export const INITIAL_STATE: ChatState = {
     {
       id: 'init-2',
       type: 'bot',
-      text: 'Before we get into it, which one sounds like you today?',
+      text: 'Before we get into it, which one sounds like you?',
       delay: 1500,
       options: [
         { label: 'I’m an existing member', value: 'EXISTING', icon: 'UserCheck' },
@@ -217,7 +217,7 @@ export const processNextStep = async (
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
-                      text: "You're not in the system yet. No worries - let me get your details and we'll review your application.",
+                      text: "I can’t find that email. Want to try another one, or jump in and reserve your spot?",
                       isIntro: true
                   });
                   nextMessages.push({
@@ -225,9 +225,8 @@ export const processNextStep = async (
                       type: 'bot',
                       text: 'Which one sounds like you?',
                       options: [
-                          { label: "I'm crew/creative", value: 'JOIN_CREW', icon: 'Clapperboard' },
-                          { label: "I'm a supplier/vendor", value: 'JOIN_SUPPLIER', icon: 'Truck' },
-                          { label: 'Try different email', value: 'RETRY', icon: 'RefreshCcw' }
+                          { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
+                          { label: 'Reserve my spot', value: 'JOIN_CREW', icon: 'Clapperboard' }
                       ],
                       inputType: 'options_only',
                       delay: 1000
@@ -335,7 +334,7 @@ export const processNextStep = async (
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
-                      text: "You're not in the system yet. No worries - let me get your details and we'll review your application.",
+                      text: "I can’t find that email. Want to try another one, or jump in and reserve your spot?",
                       isIntro: true
                   });
                   nextMessages.push({
@@ -343,9 +342,8 @@ export const processNextStep = async (
                       type: 'bot',
                       text: 'Which one sounds like you?',
                       options: [
-                          { label: "I'm crew/creative", value: 'JOIN_CREW', icon: 'Clapperboard' },
-                          { label: "I'm a supplier/vendor", value: 'JOIN_SUPPLIER', icon: 'Truck' },
-                          { label: 'Try different email', value: 'RETRY', icon: 'RefreshCcw' }
+                           { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
+                          { label: 'Reserve my spot', value: 'JOIN_CREW', icon: 'Clapperboard' }
                       ],
                       inputType: 'options_only',
                       delay: 1000
@@ -605,7 +603,7 @@ export const processNextStep = async (
     } else if (step === 3) {
         nextFormData.country = input as string;
         OnboardingStorage.save({ country: input as string });
-        nextMessages.push({ id: generateId(), type: 'bot', text: 'Work link / Portfolio? (Optional but encouraged)', inputType: 'url' });
+        nextMessages.push({ id: generateId(), type: 'bot', text: 'Work link/Portfolio', inputType: 'url' });
     } else if (step === 4) {
         nextFormData.workLink = input as string;
         if (input) {
@@ -636,7 +634,7 @@ export const processNextStep = async (
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: `Please confirm:\n${nextFormData.firstName} ${nextFormData.surname}\n${nextFormData.role}\n${nextFormData.country}\n${nextFormData.email}`,
+                text: `Here’s what I’ve got. All good?\n\nName: ${nextFormData.firstName} ${nextFormData.surname}\nPrimary role: ${nextFormData.role}\nCountry: ${nextFormData.country}\nWork link: ${nextFormData.workLink}`,
                 options: [
                     { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
                     { label: 'Edit something', value: 'EDIT', icon: 'Edit2' }
@@ -677,10 +675,32 @@ export const processNextStep = async (
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: 'To keep things simple, please refresh the page to start over with correct details.',
-                options: [{ label: 'Restart', value: 'RESTART', icon: 'RotateCcw' }],
+                text: 'What needs fixing?',
+                options: [
+                    { label: 'Name', value: 'EDIT_NAME', icon: 'User' },
+                    { label: 'Role', value: 'EDIT_ROLE', icon: 'Briefcase' },
+                    { label: 'Country', value: 'EDIT_COUNTRY', icon: 'Globe' },
+                    { label: 'Work Link', value: 'EDIT_LINK', icon: 'Link' },
+                    { label: 'Email', value: 'EDIT_EMAIL', icon: 'Mail' }
+                ],
                 inputType: 'options_only'
             });
+            nextStep = 6; // Stay on this logic step
+        } else if (selectionValue === 'EDIT_NAME') {
+            nextMessages.push({ id: generateId(), type: 'bot', text: 'Let’s update your name. First Name?', inputType: 'text' });
+            nextStep = 0; // Go back to First Name
+        } else if (selectionValue === 'EDIT_ROLE') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'What is your Primary role?', inputType: 'text' });
+             nextStep = 2;
+        } else if (selectionValue === 'EDIT_COUNTRY') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'Which Country?', inputType: 'text' });
+             nextStep = 3;
+        } else if (selectionValue === 'EDIT_LINK') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'Update Work link/Portfolio', inputType: 'url' });
+             nextStep = 4;
+        } else if (selectionValue === 'EDIT_EMAIL') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'Correct email address?', inputType: 'email' });
+             nextStep = 5;
         } else {
             // Default to SUBMIT behavior if 'Looks good' or undefined
             const result = await submitData('CREW', nextFormData);
