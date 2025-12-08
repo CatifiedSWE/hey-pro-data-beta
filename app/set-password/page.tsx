@@ -131,6 +131,14 @@ export default function SetPasswordPage() {
     setLoading(true);
 
     try {
+      // Verify session is still valid before updating password
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Session expired. Please request a new password setup link.');
+      }
+
+      console.log('[Set Password] Updating password for user:', session.user.id);
+
       // Update the user's password
       const { data: userData, error: updateError } = await supabase.auth.updateUser({
         password: password
@@ -140,20 +148,24 @@ export default function SetPasswordPage() {
         throw updateError;
       }
 
-      // Mark onboarding as complete in user_profiles table
-      if (userData?.user?.id) {
-        console.log('[Set Password] Marking onboarding as complete for user:', userData.user.id);
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .update({ has_completed_onboarding: true })
-          .eq('user_id', userData.user.id);
+      if (!userData?.user) {
+        throw new Error('Failed to update password. Please try again.');
+      }
 
-        if (profileError) {
-          console.error('[Set Password] Failed to update onboarding status:', profileError);
-          // Don't fail the whole operation if this fails
-        } else {
-          console.log('[Set Password] Onboarding marked as complete');
-        }
+      console.log('[Set Password] ✅ Password updated successfully');
+
+      // Mark onboarding as complete in user_profiles table
+      console.log('[Set Password] Marking onboarding as complete for user:', userData.user.id);
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .update({ has_completed_onboarding: true })
+        .eq('user_id', userData.user.id);
+
+      if (profileError) {
+        console.error('[Set Password] Failed to update onboarding status:', profileError);
+        // Don't fail the whole operation if this fails
+      } else {
+        console.log('[Set Password] ✅ Onboarding marked as complete');
       }
 
       setSuccess(true);
@@ -164,7 +176,7 @@ export default function SetPasswordPage() {
       }, 2000);
 
     } catch (err: any) {
-      console.error('Password setup error:', err);
+      console.error('[Set Password] Error:', err);
       setError(err.message || 'Failed to set password. Please try again.');
     } finally {
       setLoading(false);
