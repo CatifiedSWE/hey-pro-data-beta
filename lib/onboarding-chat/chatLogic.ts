@@ -714,7 +714,7 @@ export const processNextStep = async (
                 nextMessages.push({
                     id: generateId(),
                     type: 'bot',
-                    text: 'Share HeyProData?',
+                    text: 'What would you like to do?',
                     options: [{ label: 'Share', value: 'SHARE', icon: 'Share2' }],
                     inputType: 'options_only',
                     delay: 1000
