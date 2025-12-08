@@ -749,6 +749,15 @@ export const processNextStep = async (
          } else if (selectionValue === 'DONE') {
              // Go back to first page
              window.location.href = '/';
+         } else if (selectionValue === 'SHARE') {
+             // Share flow - now opens on same screen
+             nextMessages.push({
+                 id: generateId(),
+                 type: 'bot',
+                 text: 'Easy. Here's a link you can share with professionals working in production:',
+                 inputType: 'share_card'
+             });
+         }
     }
   }
 
