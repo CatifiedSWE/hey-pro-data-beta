@@ -1,5 +1,6 @@
-import { ChatState, Message, Option, Persona, FormData } from './types';
+import { ChatState, Message, Option, Persona, OnboardingFormData } from './types';
 import { submitData, checkEmail } from './mockBackend';
+import { OnboardingStorage } from '../onboarding-storage';
 
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -16,7 +17,7 @@ export const INITIAL_STATE: ChatState = {
     {
       id: 'init-2',
       type: 'bot',
-      text: 'Before we get into it, which one sounds like you today?',
+      text: 'Before we get into it, which one sounds like you?',
       delay: 1500,
       options: [
         { label: 'I’m an existing member', value: 'EXISTING', icon: 'UserCheck' },
@@ -165,7 +166,7 @@ export const processNextStep = async (
     };
   }
 
-  // --- EXISTING MEMBER FLOW (PHASE 1: Gated System with 3 Options) ---
+  // --- EXISTING MEMBER FLOW (PHASE 1: Gated System with 2 Options) ---
   if (currentFlow === 'EXISTING') {
       if (step === 0) {
           // User selected which action they want - store it
@@ -209,140 +210,257 @@ export const processNextStep = async (
           
           const checkResult = await checkResponse.json();
           
-          if (!checkResult.exists) {
-              // User DOESN'T exist - route to waitlist (Phase 2)
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: "You're not in the system yet. No worries - let me get your details and we'll review your application.",
-                  isIntro: true
-              });
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Which one sounds like you?',
-                  options: [
-                      { label: "I'm crew/creative", value: 'JOIN_CREW', icon: 'Clapperboard' },
-                      { label: "I'm a supplier/vendor", value: 'JOIN_SUPPLIER', icon: 'Truck' },
-                      { label: 'Try different email', value: 'RETRY', icon: 'RefreshCcw' }
-                  ],
-                  inputType: 'options_only',
-                  delay: 1000
-              });
-          } else if (checkResult.exists && checkResult.hasPassword) {
-              // User EXISTS and HAS authentication (password OR Google) - send login link
-              await fetch('/api/auth/send-login-link', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email })
-              });
-              
-              // Customize message based on auth type
-              const welcomeMessage = checkResult.hasGoogleAuth 
-                  ? "Welcome back! I've sent a secure login link to your email."
-                  : "Welcome back! I've sent a secure login link to your email.";
-              
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: welcomeMessage,
-                  isIntro: true
-              });
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Check your inbox (and spam folder) and click the link to access your profile.',
-                  delay: 1000
-              });
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Need help?',
-                  options: [
-                      { label: 'Resend link', value: 'RESEND_LOGIN', icon: 'RefreshCcw' },
-                      { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
-                      { label: 'Done', value: 'DONE', icon: 'Check' }
-                  ],
-                  inputType: 'options_only',
-                  delay: 2000
-              });
-          } else if (checkResult.exists && !checkResult.hasPassword) {
-              // User EXISTS but NO authentication method at all - send password setup link
-              const setupResponse = await fetch('/api/auth/send-password-setup-link', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email })
-              });
-              
-              const setupResult = await setupResponse.json();
-              
-              // Check if user has already completed onboarding
-              if (!setupResult.success && setupResult.alreadyOnboarded) {
+          // --- ACTIVATION LINK PATH ---
+          if (action === 'ACTIVATION') {
+              if (!checkResult.exists) {
+                  // User DOESN'T exist - route to waitlist
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
-                      text: "I can see you've already completed onboarding. Please use the sign-in page to access your account.",
+                      text: "I can’t find that email. Want to try another one, or jump in and reserve your spot?",
                       isIntro: true
                   });
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
-                      text: 'What would you like to do?',
+                      text: 'Which one sounds like you?',
                       options: [
-                          { label: 'Go to sign-in', value: 'SIGNIN', icon: 'LogIn' },
-                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
-                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                          { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
+                          { label: 'Reserve my spot', value: 'JOIN_CREW', icon: 'Clapperboard' }
                       ],
                       inputType: 'options_only',
                       delay: 1000
                   });
-              } else if (setupResult.success) {
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: "Great! We've sent a password setup link to your email.",
-                      isIntro: true
+              } else if (checkResult.exists && checkResult.hasCompletedOnboarding) {
+                  // User exists AND has completed onboarding
+                  if (checkResult.hasGoogleAuth) {
+                      // User signed up with Google - show Google button directly
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: "You already have an account with Google. Let's sign you in:",
+                          isIntro: true
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Click below to continue with Google:',
+                          inputType: 'google_auth',
+                          delay: 1000
+                      });
+                  } else {
+                      // User has email/password - tell them to use sign in
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: "It seems you already exist in our system and have completed onboarding. Please use the 'Sign in to profile' option instead.",
+                          isIntro: true
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'What would you like to do?',
+                          options: [
+                              { label: 'Sign in to profile', value: 'SWITCH_TO_SIGNIN', icon: 'LogIn' },
+                              { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                              { label: 'Done', value: 'DONE', icon: 'Check' }
+                          ],
+                          inputType: 'options_only',
+                          delay: 1000
+                      });
+                  }
+              } else if (checkResult.exists && !checkResult.hasCompletedOnboarding) {
+                  // User exists but hasn't completed onboarding - send password setup link
+                  const setupResponse = await fetch('/api/auth/send-password-setup-link', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email })
                   });
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: 'Check your inbox (and spam folder) and click the link to set your password.',
-                      delay: 1000
-                  });
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: 'Need help?',
-                      options: [
-                          { label: 'Resend link', value: 'RESEND_SETUP', icon: 'RefreshCcw' },
-                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
-                          { label: 'Done', value: 'DONE', icon: 'Check' }
-                      ],
-                      inputType: 'options_only',
-                      delay: 2000
-                  });
-              } else {
-                  // Error sending link
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: setupResult.error || "Sorry, there was an issue sending the password setup link. Please try again.",
-                      isIntro: true
-                  });
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: 'What would you like to do?',
-                      options: [
-                          { label: 'Try again', value: 'RETRY', icon: 'RefreshCcw' },
-                          { label: 'Done', value: 'DONE', icon: 'Check' }
-                      ],
-                      inputType: 'options_only',
-                      delay: 1000
-                  });
+                  
+                  const setupResult = await setupResponse.json();
+                  
+                  if (setupResult.success) {
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: "Great! We've sent a password setup link to your email.",
+                          isIntro: true
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Check your inbox (and spam folder) and click the link to set your password.',
+                          delay: 1000
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Need help?',
+                          options: [
+                              { label: 'Resend link', value: 'RESEND_SETUP', icon: 'RefreshCcw' },
+                              { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                              { label: 'Done', value: 'DONE', icon: 'Check' }
+                          ],
+                          inputType: 'options_only',
+                          delay: 2000
+                      });
+                  } else {
+                      // Error sending link
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: setupResult.error || "Sorry, there was an issue sending the password setup link. Please try again.",
+                          isIntro: true
+                      });
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'What would you like to do?',
+                          options: [
+                              { label: 'Try again', value: 'RETRY', icon: 'RefreshCcw' },
+                              { label: 'Done', value: 'DONE', icon: 'Check' }
+                          ],
+                          inputType: 'options_only',
+                          delay: 1000
+                      });
+                  }
               }
           }
+          
+          // --- SIGN IN TO PROFILE PATH ---
+          else if (action === 'SIGNIN') {
+              if (!checkResult.exists) {
+                  // User DOESN'T exist - route to waitlist
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: "I can’t find that email. Want to try another one, or jump in and reserve your spot?",
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'Which one sounds like you?',
+                      options: [
+                           { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
+                          { label: 'Reserve my spot', value: 'JOIN_CREW', icon: 'Clapperboard' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 1000
+                  });
+              } else if (checkResult.exists && !checkResult.hasCompletedOnboarding) {
+                  // User exists but hasn't completed onboarding
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: "I can see you're in the system, but you haven't completed your onboarding yet. Please use the 'Access activation link' option to set up your password first.",
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'What would you like to do?',
+                      options: [
+                          { label: 'Access activation link', value: 'SWITCH_TO_ACTIVATION', icon: 'Link' },
+                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 1000
+                  });
+              } else if (checkResult.exists && checkResult.hasCompletedOnboarding) {
+                  // User exists AND has completed onboarding
+                  // Check what provider they use
+                  if (checkResult.hasGoogleAuth) {
+                      // User signed up with Google - show Google button
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Welcome back! You signed up with Google. Click below to continue:',
+                          inputType: 'google_auth'
+                      });
+                  } else {
+                      // User has email/password - ask for password
+                      nextMessages.push({
+                          id: generateId(),
+                          type: 'bot',
+                          text: 'Welcome back! Please enter your password to continue.',
+                          inputType: 'password'
+                      });
+                  }
+              }
+          }
+          
+          // --- BATCH CHECK PATH (keeping for now, but ignoring) ---
+          else if (action === 'BATCH') {
+              // This is ignored for now as per user request
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "This feature is coming soon. Please use one of the other options.",
+                  isIntro: true
+              });
+          }
       } else if (step === 2) {
+          const action = nextFormData.action;
+          
+          // Handle password input for SIGNIN flow
+          if (action === 'SIGNIN' && !selectionValue) {
+              const password = input as string;
+              const email = nextFormData.email;
+              
+              // Verify password
+              const verifyResponse = await fetch('/api/auth/verify-password', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password })
+              });
+              
+              const verifyResult = await verifyResponse.json();
+              
+              if (verifyResult.success) {
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'Perfect! Signing you in...',
+                      isIntro: true
+                  });
+                  
+                  // Redirect to profile after a short delay
+                  setTimeout(() => {
+                      if (typeof window !== 'undefined') {
+                          window.location.href = '/profile';
+                      }
+                  }, 1500);
+              } else {
+                  // Password incorrect - allow retry
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: verifyResult.error || 'Incorrect password. Please try again.',
+                      isIntro: true
+                  });
+                  nextMessages.push({
+                      id: generateId(),
+                      type: 'bot',
+                      text: 'What would you like to do?',
+                      options: [
+                          { label: 'Try again', value: 'RETRY_PASSWORD', icon: 'RefreshCcw' },
+                          { label: 'Try different email', value: 'RETRY_EMAIL', icon: 'Mail' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
+                      ],
+                      inputType: 'options_only',
+                      delay: 1000
+                  });
+                  nextStep = 3; // Move to step 3 for retry handling
+              }
+              return {
+                  formData: nextFormData,
+                  step: nextStep,
+                  messages: [...currentState.messages, ...nextMessages]
+              };
+          }
+          
           if (selectionValue === 'RETRY') {
               nextMessages.push({
                   id: generateId(),
@@ -351,21 +469,25 @@ export const processNextStep = async (
                   inputType: 'email'
               });
               nextStep = 1; // Reset to step 1 so next input is treated as email
-          } else if (selectionValue === 'RESEND_LOGIN') {
-              // Resend login link
-              await fetch('/api/auth/send-login-link', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email: nextFormData.email })
-              });
-              
+          } else if (selectionValue === 'SWITCH_TO_SIGNIN') {
+              // User wants to switch to sign in
+              nextFormData.action = 'SIGNIN';
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Link resent! Check your email.',
-                  isIntro: true
+                  text: 'Welcome back! Please enter your password to continue.',
+                  inputType: 'password'
               });
-              nextStep = step; // Stay on current step
+          } else if (selectionValue === 'SWITCH_TO_ACTIVATION') {
+              // User wants to switch to activation
+              nextFormData.action = 'ACTIVATION';
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "Got it. Enter your email and I'll send you a secure link to set your password.",
+                  inputType: 'email'
+              });
+              nextStep = 1; // Go back to email input
           } else if (selectionValue === 'RESEND_SETUP') {
               // Resend password setup link
               const resendResponse = await fetch('/api/auth/send-password-setup-link', {
@@ -419,19 +541,34 @@ export const processNextStep = async (
                       { id: generateId(), type: 'bot', text: 'What’s the Company name?', inputType: 'text', delay: 1000 }
                   ]
               };
-          } else if (selectionValue === 'SIGNIN') {
-              // Redirect to login page
-              if (typeof window !== 'undefined') {
-                  window.location.href = '/login';
-              }
+          } else if (selectionValue === 'DONE') {
+              // End conversation
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Redirecting you to sign-in page...',
+                  text: 'All set. See you soon!',
                   isIntro: true
               });
+          }
+      } else if (step === 3) {
+          // Handle retry options after failed password attempt
+          if (selectionValue === 'RETRY_PASSWORD') {
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Please enter your password to continue.',
+                  inputType: 'password'
+              });
+              nextStep = 2; // Go back to password input
+          } else if (selectionValue === 'RETRY_EMAIL') {
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'What is your email address?',
+                  inputType: 'email'
+              });
+              nextStep = 1; // Go back to email input
           } else if (selectionValue === 'DONE') {
-              // End conversation
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
@@ -444,25 +581,38 @@ export const processNextStep = async (
 
   // --- CREW FLOW ---
   if (currentFlow === 'CREW') {
+    // Save category at start of flow
+    if (step === 0 && !OnboardingStorage.getCategory()) {
+        OnboardingStorage.save({ category: 'crew' });
+    }
+    
     // 0: Initial prompt already sent
     if (step === 0) {
         // Just received First Name
         nextFormData.firstName = input as string;
+        OnboardingStorage.save({ first_name: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Surname?', inputType: 'text' });
     } else if (step === 1) {
         nextFormData.surname = input as string;
+        OnboardingStorage.save({ last_name: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Primary role in production?', inputType: 'text' });
     } else if (step === 2) {
         nextFormData.role = input as string;
+        OnboardingStorage.save({ role: input as string });
         nextMessages.push({ id: generateId(), type: 'bot', text: 'Country?', inputType: 'text' });
     } else if (step === 3) {
         nextFormData.country = input as string;
-        nextMessages.push({ id: generateId(), type: 'bot', text: 'Work link / Portfolio? (Optional but encouraged)', inputType: 'url' });
+        OnboardingStorage.save({ country: input as string });
+        nextMessages.push({ id: generateId(), type: 'bot', text: 'Work link/Portfolio', inputType: 'url' });
     } else if (step === 4) {
         nextFormData.workLink = input as string;
+        if (input) {
+            OnboardingStorage.save({ website: input as string });
+        }
         nextMessages.push({ id: generateId(), type: 'bot', text: 'And finally, your email?', inputType: 'email' });
     } else if (step === 5) {
         nextFormData.email = input as string;
+        OnboardingStorage.save({ email: input as string });
         
         // Check if email exists (registered user)
         const emailCheckResult = await checkEmail(nextFormData.email);
@@ -484,7 +634,7 @@ export const processNextStep = async (
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: `Please confirm:\n${nextFormData.firstName} ${nextFormData.surname}\n${nextFormData.role}\n${nextFormData.country}\n${nextFormData.email}`,
+                text: `Here’s what I’ve got. All good?\n\nName: ${nextFormData.firstName} ${nextFormData.surname}\nPrimary role: ${nextFormData.role}\nCountry: ${nextFormData.country}\nWork link: ${nextFormData.workLink}`,
                 options: [
                     { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
                     { label: 'Edit something', value: 'EDIT', icon: 'Edit2' }
@@ -493,13 +643,25 @@ export const processNextStep = async (
             });
         }
     } else if (step === 6) {
-        // Handle Confirmation or Login redirect
+        // Handle Confirmation or Email retry
         if (selectionValue === 'GO_TO_LOGIN') {
-            // Redirect to login page
-            if (typeof window !== 'undefined') {
-                window.location.href = '/login';
-            }
-            return currentState; // Return current state to prevent further processing
+            // Instead of redirecting to login, prompt them to use "I am an existing user" flow
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: "To sign in, please refresh the page and select 'I'm an existing member' → 'Sign in to profile'.",
+                isIntro: true
+            });
+            nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: 'Need help?',
+                options: [
+                    { label: 'Restart now', value: 'RESTART', icon: 'RotateCcw' }
+                ],
+                inputType: 'options_only',
+                delay: 1000
+            });
         } else if (selectionValue === 'RETRY_EMAIL') {
             // Go back to email input
             nextMessages.push({
@@ -513,10 +675,32 @@ export const processNextStep = async (
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: 'To keep things simple, please refresh the page to start over with correct details.',
-                options: [{ label: 'Restart', value: 'RESTART', icon: 'RotateCcw' }],
+                text: 'What needs fixing?',
+                options: [
+                    { label: 'Name', value: 'EDIT_NAME', icon: 'User' },
+                    { label: 'Role', value: 'EDIT_ROLE', icon: 'Briefcase' },
+                    { label: 'Country', value: 'EDIT_COUNTRY', icon: 'Globe' },
+                    { label: 'Work Link', value: 'EDIT_LINK', icon: 'Link' },
+                    { label: 'Email', value: 'EDIT_EMAIL', icon: 'Mail' }
+                ],
                 inputType: 'options_only'
             });
+            nextStep = 6; // Stay on this logic step
+        } else if (selectionValue === 'EDIT_NAME') {
+            nextMessages.push({ id: generateId(), type: 'bot', text: 'Let’s update your name. First Name?', inputType: 'text' });
+            nextStep = 0; // Go back to First Name
+        } else if (selectionValue === 'EDIT_ROLE') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'What is your Primary role?', inputType: 'text' });
+             nextStep = 2;
+        } else if (selectionValue === 'EDIT_COUNTRY') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'Which Country?', inputType: 'text' });
+             nextStep = 3;
+        } else if (selectionValue === 'EDIT_LINK') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'Update Work link/Portfolio', inputType: 'url' });
+             nextStep = 4;
+        } else if (selectionValue === 'EDIT_EMAIL') {
+             nextMessages.push({ id: generateId(), type: 'bot', text: 'Correct email address?', inputType: 'email' });
+             nextStep = 5;
         } else {
             // Default to SUBMIT behavior if 'Looks good' or undefined
             const result = await submitData('CREW', nextFormData);
@@ -566,29 +750,71 @@ export const processNextStep = async (
 
   // --- SUPPLIER FLOW ---
   if (currentFlow === 'SUPPLIER') {
+      // Save category at start of flow
+      if (step === 0 && !OnboardingStorage.getCategory()) {
+          OnboardingStorage.save({ category: 'vendor' });
+      }
+      
       if (step === 0) {
           nextFormData.companyName = input as string;
+          OnboardingStorage.save({ company_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Primary service?', inputType: 'text' });
       } else if (step === 1) {
           nextFormData.primaryService = input as string;
+          OnboardingStorage.save({ primary_service: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Company website/link? (Optional)', inputType: 'url' });
       } else if (step === 2) {
           nextFormData.companyLink = input as string;
+          if (input) {
+              OnboardingStorage.save({ company_link: input as string });
+          }
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Please upload your Trade License.', inputType: 'file' });
       } else if (step === 3) {
-          nextFormData.tradeLicense = input as File;
+          // Handle file upload
+          const file = input as File;
+          nextFormData.tradeLicense = file;
+          
+          // Upload file to Supabase Storage and get URL
+          try {
+              const uploadFormData = new FormData();
+              uploadFormData.append('file', file);
+              
+              const uploadResponse = await fetch('/api/onboarding/upload-file', {
+                  method: 'POST',
+                  body: uploadFormData
+              });
+              
+              const uploadResult = await uploadResponse.json();
+              
+              if (uploadResult.success) {
+                  nextFormData.tradeLicenseUrl = uploadResult.url;
+                  OnboardingStorage.save({ trade_license_url: uploadResult.url });
+                  console.log('[Upload] Trade license uploaded:', uploadResult.url);
+              } else {
+                  console.error('[Upload] Failed to upload file:', uploadResult.error);
+                  // Continue anyway - file upload is optional for now
+              }
+          } catch (uploadError) {
+              console.error('[Upload] Error uploading file:', uploadError);
+              // Continue anyway
+          }
+          
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Got it. Now, who is the contact person? First Name?', inputType: 'text' });
       } else if (step === 4) {
           nextFormData.firstName = input as string;
+          OnboardingStorage.save({ first_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Surname?', inputType: 'text' });
       } else if (step === 5) {
           nextFormData.surname = input as string;
+          OnboardingStorage.save({ last_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Your role in the company?', inputType: 'text' });
       } else if (step === 6) {
           nextFormData.role = input as string;
+          OnboardingStorage.save({ role: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Email address?', inputType: 'email' });
       } else if (step === 7) {
           nextFormData.email = input as string;
+          OnboardingStorage.save({ email: input as string });
           
           // Check if email exists (registered user)
           const emailCheckResult = await checkEmail(nextFormData.email);
@@ -610,12 +836,25 @@ export const processNextStep = async (
               nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone number?', inputType: 'phone' });
           }
       } else if (step === 8) {
-          // Handle login redirect or retry email or phone input
+          // Handle email retry or phone input
           if (selectionValue === 'GO_TO_LOGIN') {
-              if (typeof window !== 'undefined') {
-                  window.location.href = '/login';
-              }
-              return currentState;
+              // Instead of redirecting to login, prompt them to use "I am an existing user" flow
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "To sign in, please refresh the page and select 'I'm an existing member' → 'Sign in to profile'.",
+                  isIntro: true
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Need help?',
+                  options: [
+                      { label: 'Restart now', value: 'RESTART', icon: 'RotateCcw' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 1000
+              });
           } else if (selectionValue === 'RETRY_EMAIL') {
               nextMessages.push({
                   id: generateId(),
@@ -627,6 +866,7 @@ export const processNextStep = async (
           } else {
               // Normal flow - phone input received
               nextFormData.phone = input as string;
+              OnboardingStorage.save({ phone: input as string });
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
@@ -685,17 +925,28 @@ export const processNextStep = async (
 
   // --- CLIENT FLOW ---
   if (currentFlow === 'CLIENT') {
+      // Save category at start of flow
+      if (step === 0 && !OnboardingStorage.getCategory()) {
+          OnboardingStorage.save({ category: 'agency' });
+      }
+      
       if (step === 0) {
           nextFormData.projectDetails = input as string;
+          OnboardingStorage.save({ project_details: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Your Name?', inputType: 'text' });
       } else if (step === 1) {
           nextFormData.firstName = input as string;
+          OnboardingStorage.save({ contact_name: input as string });
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Company?', inputType: 'text' });
       } else if (step === 2) {
           nextFormData.projectCompanyName = input as string;
+          if (input) {
+              OnboardingStorage.save({ company_name: input as string });
+          }
           nextMessages.push({ id: generateId(), type: 'bot', text: 'Email?', inputType: 'email' });
       } else if (step === 3) {
           nextFormData.email = input as string;
+          OnboardingStorage.save({ email: input as string });
           
           // Check if email exists (registered user)
           const emailCheckResult = await checkEmail(nextFormData.email);
@@ -717,12 +968,25 @@ export const processNextStep = async (
               nextMessages.push({ id: generateId(), type: 'bot', text: 'Phone?', inputType: 'phone' });
           }
       } else if (step === 4) {
-          // Handle login redirect or retry email
+          // Handle email retry or phone input
           if (selectionValue === 'GO_TO_LOGIN') {
-              if (typeof window !== 'undefined') {
-                  window.location.href = '/login';
-              }
-              return currentState;
+              // Instead of redirecting to login, prompt them to use "I am an existing user" flow
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: "To sign in, please refresh the page and select 'I'm an existing member' → 'Sign in to profile'.",
+                  isIntro: true
+              });
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Need help?',
+                  options: [
+                      { label: 'Restart now', value: 'RESTART', icon: 'RotateCcw' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 1000
+              });
           } else if (selectionValue === 'RETRY_EMAIL') {
               nextMessages.push({
                   id: generateId(),
@@ -734,6 +998,9 @@ export const processNextStep = async (
           } else {
               // Normal flow - phone input received
               nextFormData.phone = input as string;
+              if (input) {
+                  OnboardingStorage.save({ phone: input as string });
+              }
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
