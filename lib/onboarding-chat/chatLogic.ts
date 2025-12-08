@@ -714,11 +714,6 @@ export const processNextStep = async (
                 nextMessages.push({
                     id: generateId(),
                     type: 'bot',
-                    text: 'We’re onboarding in batches so things stay clean and organised - we’ll email you when your turn opens up.'
-                });
-                nextMessages.push({
-                    id: generateId(),
-                    type: 'bot',
                     text: 'Share HeyProData?',
                     options: [{ label: 'Share', value: 'SHARE', icon: 'Share2' }],
                     inputType: 'options_only',
