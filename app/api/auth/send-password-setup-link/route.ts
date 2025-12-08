@@ -6,7 +6,7 @@ import { createServerClient } from '@/lib/supabase/server';
  * Used for:
  * - Migrated users who exist in auth but haven't set a password
  * - Users who started onboarding but haven't completed it
- * Uses Supabase's admin.generateLink() with type 'recovery' for first-time password setup
+ * Uses Supabase's resetPasswordForEmail() which handles both password reset AND first-time password setup
  */
 export async function POST(req: NextRequest) {
   try {
@@ -100,32 +100,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // STEP 4: Generate and send password setup link
-    // Use admin.generateLink() for first-time password setup (not resetPasswordForEmail which is for existing passwords)
+    // STEP 4: Send password setup link via email
+    // Use resetPasswordForEmail() - despite the name, it works for both:
+    // - Users resetting an existing password
+    // - Users setting a password for the first time (recovery flow)
     // Remove trailing slash from base URL to avoid double slashes
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
     
-    const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-      type: 'recovery',
-      email: normalizedEmail,
-      options: {
-        redirectTo: `${baseUrl}/set-password`
-      }
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo: `${baseUrl}/set-password`
     });
 
-    if (linkError || !linkData) {
-      console.error('[Send Password Setup] Error generating link:', linkError);
+    if (error) {
+      console.error('[Send Password Setup] Error sending email:', error);
       return NextResponse.json(
-        { success: false, error: linkError?.message || 'Failed to generate link' },
+        { success: false, error: error.message },
         { status: 400 }
       );
     }
-
-    console.log('[Send Password Setup] Link generated successfully');
-
-    // STEP 5: The link is automatically sent via email by Supabase
-    // linkData.properties.action_link contains the full URL with token
-    // User will receive email with the link
 
     console.log(`[Send Password Setup] ✅ Link sent to ${normalizedEmail} (reason: ${reason})`);
 
