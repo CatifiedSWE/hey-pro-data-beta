@@ -7,27 +7,50 @@ When migrated users try to set up their password through the onboarding flow, th
 
 ### Error Logs
 ```
-POST /api/auth/check-user 200 in 260ms (compile: 4ms, proxy.ts: 11ms, render: 245ms)
+[Check User] booktubebuzz@gmail.com: exists=true, hasEmail=true, hasGoogle=false, hasAuth=true, needsSetup=false, hasProfile=true, onboardingComplete=false
+POST /api/auth/check-user 200 in 1959ms
+
 [Send Password Setup] User not found: booktubebuzz@gmail.com
-POST /api/auth/send-password-setup-link 404 in 94ms
+POST /api/auth/send-password-setup-link 404 in 591ms
 ```
+
+**Critical Finding**: User EXISTS in both `auth.users` AND `user_profiles`, but send-password-setup-link still returns 404!
 
 ### The Root Cause
 
-**Data Location Mismatch:**
+**Query Method Mismatch:**
 
-1. **check-user API** (`/app/app/api/auth/check-user/route.ts`, lines 23-34)
-   - Queries: `auth.users` table via `supabase.auth.admin.listUsers()`
-   - Result: ✅ Finds migrated users (returns 200 OK)
+1. **check-user API** (`/app/app/api/auth/check-user/route.ts`, lines 23-54) ✅ WORKS
+   ```typescript
+   // Step 1: Get user from auth.users
+   const authUser = authUsersData.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+   
+   // Step 2: Query profile by USER_ID
+   const { data: profileData } = await supabase
+     .from('user_profiles')
+     .select('user_id, email, has_completed_onboarding')
+     .eq('user_id', authUser.id)  // ← Uses USER_ID matching
+     .maybeSingle();
+   ```
 
-2. **send-password-setup-link API** (`/app/app/api/auth/send-password-setup-link/route.ts`, lines 22-26)
-   - Queries: `user_profiles` table via `supabase.from('user_profiles')`
-   - Result: ❌ Doesn't find migrated users (returns 404)
+2. **send-password-setup-link API** (`/app/app/api/auth/send-password-setup-link/route.ts`, lines 22-26) ❌ FAILS
+   ```typescript
+   // Directly queries by EMAIL string
+   const { data: profileData, error: profileError } = await supabase
+     .from('user_profiles')
+     .select('user_id, email, has_completed_onboarding')
+     .ilike('email', normalizedEmail)  // ← Uses EMAIL string matching
+     .single();
+   ```
 
 **Why This Happens:**
-- Migrated users exist in Supabase's `auth.users` table (authentication system)
-- But they DON'T have corresponding records in the `user_profiles` table (application data)
-- The system treats missing profile as "user doesn't exist" when it should treat it as "needs onboarding"
+- The `.ilike('email', normalizedEmail)` query fails to match the email in the database
+- Possible reasons:
+  - Email formatting differences in database (extra spaces, different case handling)
+  - Database collation settings
+  - Special characters or encoding issues
+- Using `.eq('user_id', authUser.id)` is more reliable than string matching
+- check-user succeeds because it uses user_id, send-password-setup-link fails because it uses email string
 
 ### Current Flow (Broken)
 ```
@@ -251,18 +274,21 @@ Step 3: Send password setup link
 ## ✅ Success Criteria
 
 ### Definition of Done
-- [ ] Migrated users can request and receive password setup links
-- [ ] Users with incomplete onboarding can still receive links
-- [ ] Completed onboarding users are properly redirected to sign-in
-- [ ] All error messages are clear and actionable
-- [ ] Logs clearly indicate which case was handled (migrated vs incomplete)
+- [x] Fix query method to use user_id instead of email string matching
+- [x] Handle migrated users (exist in auth but not in profiles)
+- [x] Handle incomplete onboarding users (exist in both tables)
+- [x] Properly redirect completed onboarding users to sign-in
+- [x] Add clear logging with reason field for debugging
+- [ ] Test with actual user: booktubebuzz@gmail.com
 
 ### Testing Checklist
-- [ ] Test with email: booktubebuzz@gmail.com (migrated user from logs)
+- [ ] Test with email: booktubebuzz@gmail.com (user from logs)
+- [ ] Verify logs show: "User found in auth.users" and "Incomplete onboarding"
+- [ ] Verify logs show: "✅ Link sent to booktubebuzz@gmail.com (reason: incomplete_onboarding)"
 - [ ] Verify email is received with magic link
 - [ ] Click magic link and verify redirect to /set-password
 - [ ] Set password and verify redirect to profile
-- [ ] Check logs for correct "reason" field
+- [ ] Check final success response includes reason field
 
 ---
 
@@ -304,6 +330,49 @@ Step 3: Send password setup link
 
 ---
 
-**Document Version**: 1.0  
+---
+
+## 🚀 Implementation Status
+
+### Changes Completed ✅
+
+**File Modified**: `/app/app/api/auth/send-password-setup-link/route.ts`
+
+**Key Changes**:
+1. ✅ Added Step 1: Check auth.users table first (lines 21-43)
+2. ✅ Added Step 2: Query user_profiles by user_id instead of email (lines 47-62)
+3. ✅ Added Step 3: Determine if password link should be sent with reasons (lines 64-98)
+   - Case A: Migrated user (no profile) → `reason: 'migrated_user_no_profile'`
+   - Case B: Incomplete onboarding → `reason: 'incomplete_onboarding'`
+   - Case C: Already onboarded → Redirect to sign-in
+4. ✅ Added Step 4: Send email with enhanced logging (lines 100-119)
+5. ✅ Return reason in success response for debugging
+
+**What Changed**:
+```diff
+- // Old: Query by email string (unreliable)
+- .ilike('email', normalizedEmail)
+- .single()
+
++ // New: Query by user_id (reliable)
++ const authUser = authUsersData.users.find(...)
++ .eq('user_id', authUser.id)
++ .maybeSingle()
+```
+
+**Benefits**:
+- ✅ More reliable user lookup (user_id vs email string)
+- ✅ Handles migrated users explicitly
+- ✅ Better error messages
+- ✅ Enhanced logging with reason codes
+- ✅ Consistent with check-user API approach
+
+### Ready for Testing
+The fix is now implemented and ready to test with the user `booktubebuzz@gmail.com` who was experiencing the issue.
+
+---
+
+**Document Version**: 1.1  
 **Created**: January 2025  
-**Status**: Ready for Implementation
+**Updated**: January 2025  
+**Status**: ✅ Implementation Complete - Ready for Testing
