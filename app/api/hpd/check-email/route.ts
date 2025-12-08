@@ -18,19 +18,19 @@ export async function POST(req: NextRequest) {
     // We'll check both auth.users and user_profiles table
     
     // First check onboarding_submissions to see if they're in waitlist
-    // Using ilike for case-insensitive comparison on JSONB field
+    // Using eq for exact match on JSONB field (email is already normalized)
     const { data: submissionData } = await supabase
       .from('onboarding_submissions')
       .select('id')
-      .ilike('submitted_fields->>email', normalizedEmail)
+      .eq('submitted_fields->>email', normalizedEmail)
       .maybeSingle();
     
     // Also check user_profiles for registered users
-    // Using ilike for case-insensitive comparison
+    // Using eq for exact match (email is already normalized)
     const { data: profileData } = await supabase
       .from('user_profiles')
       .select('user_id, has_completed_onboarding')
-      .ilike('email', normalizedEmail)
+      .eq('email', normalizedEmail)
       .maybeSingle();
 
     const exists = !!(submissionData || profileData);
