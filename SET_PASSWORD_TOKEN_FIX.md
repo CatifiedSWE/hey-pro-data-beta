@@ -8,11 +8,14 @@ https://heyprodata.com//set-password
 
 ## Root Cause Analysis
 
-### Primary Issue: Supabase Email Template Configuration
+### Primary Issue: Wrong Supabase Method
+The code was using `resetPasswordForEmail()` which is designed for users who are **resetting** an existing password, not for users who are **setting** their password for the first time. This is conceptually incorrect for the onboarding flow.
+
+### Secondary Issue: Supabase Email Template Configuration
 The Supabase email template was using a hardcoded URL instead of the dynamic `{{ .ConfirmationURL }}` variable, which prevented tokens from being included in the email link.
 
-### Secondary Issue: Double Slash in Redirect URL
-Even after fixing the email template, the `NEXT_PUBLIC_APP_URL` environment variable had a trailing slash (`https://heyprodata.com/`), which when concatenated with `/set-password`, resulted in:
+### Tertiary Issue: Double Slash in Redirect URL
+The `NEXT_PUBLIC_APP_URL` environment variable had a trailing slash (`https://heyprodata.com/`), which when concatenated with `/set-password`, resulted in:
 ```
 https://heyprodata.com//set-password
 ```
@@ -21,7 +24,16 @@ This double slash caused routing issues and prevented the token from being prope
 
 ## Solution Implemented
 
-### 1. Supabase Email Template Fix ✅
+### 1. Use Correct Supabase Method ✅
+**Changed From:** `resetPasswordForEmail()` - meant for password resets
+**Changed To:** `admin.generateLink()` with type 'recovery' - meant for first-time password setup
+
+**Why This Matters:**
+- `resetPasswordForEmail()` is for users who forgot their existing password
+- `admin.generateLink()` generates proper authentication links for new users setting password for the first time
+- This is the semantically correct method for onboarding flows
+
+### 2. Supabase Email Template Fix ✅
 **Action Required by User:**
 Update the Supabase email template to use:
 ```
@@ -34,11 +46,12 @@ Update the Supabase email template to use:
 https://kvidydsfnnrathhpuxye.supabase.co/auth/v1/verify?token=xxx&type=recovery&redirect_to=https://heyprodata.com//set-password
 ```
 
-### 2. Code-Level Fix ✅
+### 3. Code-Level Fix ✅
 **Files Modified:**
 
 #### `/app/app/api/auth/send-password-setup-link/route.ts`
 **Changes:**
+- Replaced `resetPasswordForEmail()` with `admin.generateLink()`
 - Added logic to remove trailing slash from `NEXT_PUBLIC_APP_URL`
 - Ensures clean URL construction without double slashes
 
@@ -53,8 +66,13 @@ const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
 ```typescript
 // Remove trailing slash from base URL to avoid double slashes
 const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
-const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-  redirectTo: `${baseUrl}/set-password`
+
+const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+  type: 'recovery',
+  email: normalizedEmail,
+  options: {
+    redirectTo: `${baseUrl}/set-password`
+  }
 });
 ```
 
@@ -168,14 +186,21 @@ https://heyprodata.com/profile
 ## Summary
 
 **Issue:** Missing tokens in set-password links
-**Root Cause:** 
-1. Supabase email template not using `{{ .ConfirmationURL }}`
-2. Double slash in redirect URL due to trailing slash in env variable
 
-**Fix:** 
-1. ✅ Updated Supabase email template
-2. ✅ Added code to strip trailing slashes from base URL
-3. ✅ Applied fix to both password setup and login link APIs
+**Root Causes:** 
+1. Using wrong Supabase method (`resetPasswordForEmail` instead of `admin.generateLink`)
+2. Supabase email template not using `{{ .ConfirmationURL }}`
+3. Double slash in redirect URL due to trailing slash in env variable
+
+**Fixes Applied:** 
+1. ✅ Changed to `admin.generateLink()` with type 'recovery' for first-time password setup
+2. ✅ Updated Supabase email template (user action)
+3. ✅ Added code to strip trailing slashes from base URL
+4. ✅ Applied fix to both password setup and login link APIs
+
+**Key Difference:**
+- **Before:** `resetPasswordForEmail()` - for resetting existing passwords
+- **After:** `admin.generateLink()` - for setting passwords for the first time
 
 **Status:** ✅ FIXED - Ready for testing
 
