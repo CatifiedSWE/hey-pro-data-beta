@@ -18,15 +18,25 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // First check if user exists and has completed onboarding
+    // First check if user exists and has completed onboarding - using case-insensitive comparison
     const { data: profileData, error: profileError } = await supabase
       .from('user_profiles')
       .select('user_id, email, has_completed_onboarding')
-      .eq('email', normalizedEmail)
+      .ilike('email', normalizedEmail)
       .maybeSingle();
 
-    if (profileError || !profileData) {
-      console.error('[Verify Password] Profile lookup error:', profileError);
+    // Check for database errors FIRST
+    if (profileError) {
+      console.error('[Verify Password] Database error:', profileError);
+      return NextResponse.json(
+        { success: false, error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // Now check if user exists
+    if (!profileData) {
+      console.log('[Verify Password] User not found:', normalizedEmail);
       return NextResponse.json(
         { success: false, error: 'User not found' },
         { status: 404 }
