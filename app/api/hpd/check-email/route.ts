@@ -16,18 +16,43 @@ export async function POST(req: NextRequest) {
     
     // STEP 1: Check auth.users table first (single source of truth)
     // This ensures consistency with /api/auth/check-user flow
-    const { data: authUsersData, error: authListError } = await supabase.auth.admin.listUsers();
+    // Fetch ALL users with pagination to ensure we don't miss any
+    let allUsers: any[] = [];
+    let page = 1;
+    const perPage = 1000; // Maximum allowed by Supabase
     
-    if (authListError) {
-      console.error('[HPD Email Check] Error listing auth users:', authListError);
-      return NextResponse.json(
-        { error: 'Database error. Please try again.' },
-        { status: 500 }
-      );
+    while (true) {
+      const { data: authUsersData, error: authListError } = await supabase.auth.admin.listUsers({
+        page,
+        perPage
+      });
+      
+      if (authListError) {
+        console.error('[HPD Email Check] Error listing auth users:', authListError);
+        return NextResponse.json(
+          { error: 'Database error. Please try again.' },
+          { status: 500 }
+        );
+      }
+      
+      if (!authUsersData.users || authUsersData.users.length === 0) {
+        break; // No more users to fetch
+      }
+      
+      allUsers = allUsers.concat(authUsersData.users);
+      
+      // If we got less than perPage users, we've reached the end
+      if (authUsersData.users.length < perPage) {
+        break;
+      }
+      
+      page++;
     }
+    
+    console.log(`[HPD Email Check] Fetched ${allUsers.length} total auth users`);
 
     // Find user by email in auth.users
-    const authUser = authUsersData.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+    const authUser = allUsers.find(u => u.email?.toLowerCase() === normalizedEmail);
     
     if (authUser) {
       // User exists in auth.users - they are registered
