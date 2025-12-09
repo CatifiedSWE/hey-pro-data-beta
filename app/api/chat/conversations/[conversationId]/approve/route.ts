@@ -65,11 +65,25 @@ export async function POST(
       );
     }
 
-    // Determine who the recipient is (the one who should approve)
-    // The initiator is the one with lower UUID (user1_id)
-    const initiatorId = conversation.user1_id < conversation.user2_id 
-      ? conversation.user1_id 
-      : conversation.user2_id;
+    // Determine who the initiator is by checking the first message
+    // The initiator is the person who sent the first message
+    const { data: firstMessage } = await supabase
+      .from('messages')
+      .select('sender_id')
+      .eq('conversation_id', conversationId)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (!firstMessage) {
+      return NextResponse.json(
+        errorResponse('No messages found in this conversation'),
+        { status: 400 }
+      );
+    }
+
+    const initiatorId = firstMessage.sender_id;
     const recipientId = conversation.user1_id === initiatorId 
       ? conversation.user2_id 
       : conversation.user1_id;
