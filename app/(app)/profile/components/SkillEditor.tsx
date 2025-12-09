@@ -342,9 +342,6 @@ export default function SkillEditor({
                                             <h1 className="text-[22px] font-normal leading-[33px] text-black">
                                                 Edit Skill
                                             </h1>
-                                            <p className="mt-1 max-w-[484px] text-xs leading-[18px] text-[#181818]">
-                                                Select a skill to edit. You can edit one skill at a time.
-                                            </p>
                                         </div>
                                         <div className="flex gap-2">
                                             <Button
@@ -360,7 +357,6 @@ export default function SkillEditor({
 
                                     {/* Skill Selector */}
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Select Skill to Edit:</label>
                                         <select
                                             value={selectedSkillId}
                                             onChange={(e) => handleSkillSelect(e.target.value)}
