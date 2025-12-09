@@ -394,27 +394,7 @@ export const processNextStep = async (
                       inputType: 'options_only',
                       delay: 1000
                   });
-              } else if (checkResult.exists && !checkResult.hasCompletedOnboarding) {
-                  // User exists but hasn't completed onboarding
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: "I can see you're in the system, but you haven't completed your onboarding yet. Please use the 'Access activation link' option to set up your password first.",
-                      isIntro: true
-                  });
-                  nextMessages.push({
-                      id: generateId(),
-                      type: 'bot',
-                      text: 'What would you like to do?',
-                      options: [
-                          { label: 'Access activation link', value: 'SWITCH_TO_ACTIVATION', icon: 'Link' },
-                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
-                          { label: 'Done', value: 'DONE', icon: 'Check' }
-                      ],
-                      inputType: 'options_only',
-                      delay: 1000
-                  });
-              } else if (checkResult.exists && checkResult.hasCompletedOnboarding) {
+              } else {
                   // User exists AND has completed onboarding
                   // Check what provider they use
                   if (checkResult.hasGoogleAuth) {
