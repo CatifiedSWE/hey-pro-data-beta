@@ -67,7 +67,7 @@ export async function POST(
 
     // Determine who the initiator is by checking the first message
     // The initiator is the person who sent the first message
-    const { data: firstMessage } = await supabase
+    const { data: firstMessage, error: messageError } = await supabase
       .from('messages')
       .select('sender_id')
       .eq('conversation_id', conversationId)
@@ -75,6 +75,14 @@ export async function POST(
       .order('created_at', { ascending: true })
       .limit(1)
       .single();
+
+    if (messageError) {
+      console.error('Error fetching first message:', messageError);
+      return NextResponse.json(
+        errorResponse('Failed to fetch conversation messages', messageError.message),
+        { status: 500 }
+      );
+    }
 
     if (!firstMessage) {
       return NextResponse.json(
