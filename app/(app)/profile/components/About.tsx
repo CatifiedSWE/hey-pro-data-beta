@@ -83,14 +83,14 @@ export default function AboutSectionComponent({ icon, title, about: initialAbout
                     <DialogHeader className="flex flex-col items-start justify-start ">
                         <DialogTitle>Edit {finalTitle}</DialogTitle>
                         <div className="text-start text-[12px] font-[400]">
-                            You can write about your years of experience, industry, or skills. People also talk about their achievements or previous job experiences.
+                            Let people see how you show up and what you bring to the production world
                         </div>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-3">
                             <Textarea
                                 id="about-textarea"
-                                placeholder="Type your message here."
+                                placeholder="Go on, tell us..."
                                 value={about}
                                 onChange={(e) => {
                                     setAbout(e.target.value);
