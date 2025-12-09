@@ -149,9 +149,24 @@ export default function AddNewSkill({ trigger, onUpdate }: AddNewSkillProps) {
         try {
             // Add all new skills
             for (const skill of skills) {
+                // Parse rate if it exists to extract currency and amount
+                let dayRate = undefined;
+                let dayRateCurrency = undefined;
+                if (skill.rate) {
+                    // Try to extract currency and number from rate string (e.g., "AED 1000 per day")
+                    const rateMatch = skill.rate.match(/([A-Z]{3})\s*([\d,]+)/);
+                    if (rateMatch) {
+                        dayRateCurrency = rateMatch[1];
+                        dayRate = parseFloat(rateMatch[2].replace(/,/g, ''));
+                    }
+                }
+
                 const skillData = {
                     skill_name: `${skill.department} - ${skill.role}`,
                     description: skill.description || undefined,
+                    day_rate: dayRate,
+                    day_rate_currency: dayRateCurrency,
+                    is_public: skill.isPublic ?? true,
                     sort_order: skills.indexOf(skill),
                 };
                 
