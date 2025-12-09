@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./style.css";
-import Header from "@/components/header";
 
 export const metadata: Metadata = {
     title: "Chat - HeyProData",
@@ -12,12 +11,5 @@ export default function ChatLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <>
-            <Header />
-            <div className="mt-20">
-                {children}
-            </div>
-        </>
-    );
+    return <>{children}</>;
 }
