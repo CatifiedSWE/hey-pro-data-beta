@@ -86,10 +86,19 @@ export default function VisaSection({
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Validate that if "Other" is selected, custom visa name is provided
+        if (visaType === "Other" && !customVisaName.trim()) {
+            toast.error("Please enter a visa name for 'Other' type");
+            return;
+        }
+
+        // Determine the final visa type value to save
+        const finalVisaType = visaType === "Other" ? customVisaName.trim() : visaType;
+
         const hasChanges = [
             nationality !== (initialNationality || ""),
             passportExpiryDate?.getTime() !== (initialPassportExpDate ? new Date(initialPassportExpDate).getTime() : undefined),
-            visaType !== (initialVisaType || ""),
+            finalVisaType !== (initialVisaType || ""),
             issuedBy !== (initialVisaIssueBy || ""),
             visaExpiryDate?.getTime() !== (initialVisaExpDateString ? new Date(initialVisaExpDateString).getTime() : undefined),
         ].some(Boolean);
@@ -103,7 +112,7 @@ export default function VisaSection({
         console.log("Passport & visa details:", {
             nationality,
             passportExpDate: passportExpiryDate ? formatDate(passportExpiryDate) : "",
-            visaType,
+            visaType: finalVisaType,
             issuedBy,
             visaExpDate: visaExpiryDate ? formatDate(visaExpiryDate) : "",
         });
