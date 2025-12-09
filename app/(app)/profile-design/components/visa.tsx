@@ -71,6 +71,7 @@ export default function VisaSection({
     const resetForm = () => {
         setNationality(initialNationality || "");
         setVisaType(initialVisaType || "");
+        setCustomVisaName("");
         setIssuedBy(initialVisaIssueBy || "");
 
         const passportDate = initialPassportExpDate ? new Date(initialPassportExpDate) : undefined;
