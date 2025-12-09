@@ -361,6 +361,8 @@ function SkillItem({
   role, 
   description, 
   experience,
+  rate,
+  isPublic,
   onEdit 
 }: { 
   id: string;
@@ -368,6 +370,8 @@ function SkillItem({
   role: string; 
   description?: string; 
   experience?: { value: string; title: string; description: string; };
+  rate?: string;
+  isPublic?: boolean;
   onEdit?: () => void;
 }) {
   return (
@@ -391,7 +395,13 @@ function SkillItem({
           <div className="flex flex-wrap items-center justify-start gap-x-1 px-4 bg-[#FFFFFF] h-[31px] w-[233px] rounded-[5px]">
             <h4 className="text-sm font-[600] text-[#000]">{experience.title}</h4>
             <p className="text-[10px] leading-relaxed text-[#444444]">{experience.description}</p>
-
+          </div>
+        </div>
+      )}
+      {rate && isPublic && (
+        <div className="ml-10">
+          <div className="inline-flex items-center px-4 py-1.5 bg-[#E7FAFC] rounded-[5px]">
+            <p className="text-sm font-[600] text-[#31A7AC]">{rate}</p>
           </div>
         </div>
       )}
