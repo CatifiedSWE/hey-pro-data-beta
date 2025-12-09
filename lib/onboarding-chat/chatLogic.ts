@@ -161,36 +161,83 @@ export const processNextStep = async (
     };
   }
 
-  // --- EXISTING MEMBER FLOW (PHASE 1: Gated System with 2 Options) ---
+  // --- EXISTING MEMBER FLOW (RESTRUCTURED: Email-First with Filtered Options) ---
   if (currentFlow === 'EXISTING') {
       if (step === 0) {
-          // User selected which action they want - store it
-          if (selectionValue === 'ACTIVATION') {
-              nextFormData.action = 'ACTIVATION';
+          // Step 0: Email received - check user status and show FILTERED options
+          const email = input as string;
+          nextFormData.email = email;
+          
+          // Call check-user API
+          const checkResponse = await fetch('/api/auth/check-user', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+          });
+          
+          const checkResult = await checkResponse.json();
+          
+          if (!checkResult.exists) {
+              // User DOESN'T exist - route to waitlist
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: "Got it. Enter your email and I'll send you a secure link to set your password.",
-                  inputType: 'email'
+                  text: "I can't find that email. Want to try another one, or jump in and reserve your spot?",
+                  isIntro: true
               });
-          } else if (selectionValue === 'SIGNIN') {
-              nextFormData.action = 'SIGNIN';
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: "Perfect. What's your email address?",
-                  inputType: 'email'
+                  text: 'Which one sounds like you?',
+                  options: [
+                      { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
+                      { label: 'Reserve my spot', value: 'JOIN_CREW', icon: 'Clapperboard' }
+                  ],
+                  inputType: 'options_only',
+                  delay: 1000
               });
-          } else if (selectionValue === 'BATCH') {
-              nextFormData.action = 'BATCH';
+          } else {
+              // User EXISTS - show FILTERED options based on authentication state
+              const filteredOptions = [];
+              
+              // Show appropriate options based on authentication status
+              if (checkResult.needsPasswordSetup) {
+                  // Migrated user - ONLY show activation link
+                  filteredOptions.push({ label: 'Access activation link', value: 'ACTIVATION', icon: 'Link' });
+              } else if (checkResult.hasGoogleAuth) {
+                  // Google OAuth user - ONLY show Google sign in
+                  filteredOptions.push({ label: 'Sign in with Google', value: 'GOOGLE_SIGNIN', icon: 'LogIn' });
+              } else if (checkResult.hasPassword) {
+                  // Email/password user - ONLY show password sign in
+                  filteredOptions.push({ label: 'Sign in to profile', value: 'SIGNIN', icon: 'LogIn' });
+              }
+              
+              // Always add batch check option (for now)
+              filteredOptions.push({ label: 'Check placement in next batch', value: 'BATCH', icon: 'ListOrdered' });
+              
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Enter your email to check your placement status.',
-                  inputType: 'email'
+                  text: 'Got it. What do you want to do?',
+                  options: filteredOptions,
+                  inputType: 'options_only'
               });
           }
       } else if (step === 1) {
+          // Step 1: User selected which action they want - handle accordingly
+          const email = nextFormData.email;
+          
+          if (selectionValue === 'ACTIVATION') {
+              nextFormData.action = 'ACTIVATION';
+              
+              // Call check-user again to get latest status
+              const checkResponse = await fetch('/api/auth/check-user', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email })
+              });
+              
+              const checkResult = await checkResponse.json();
           // Email received - check user status
           const email = input as string;
           nextFormData.email = email;
