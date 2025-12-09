@@ -237,16 +237,16 @@ export async function POST(
       ? 'direct_message' 
       : 'conversation_request';
     
-    // Get sender's name for notification
+    // Get sender's name for notification (prioritize alias names)
     const { data: senderProfile } = await supabase
       .from('user_profiles')
-      .select('first_name, surname')
+      .select('first_name, surname, alias_first_name, alias_surname')
       .eq('user_id', user.id)
       .single();
     
-    const senderName = senderProfile 
-      ? `${senderProfile.first_name || ''} ${senderProfile.surname || ''}`.trim() || 'Someone'
-      : 'Someone';
+    const senderFirstName = senderProfile?.alias_first_name || senderProfile?.first_name || '';
+    const senderSurname = senderProfile?.alias_surname || senderProfile?.surname || '';
+    const senderName = `${senderFirstName} ${senderSurname}`.trim() || 'Someone';
     
     const notificationMessage = conversation.is_approved
       ? `${senderName}: ${content.substring(0, 100)}`
