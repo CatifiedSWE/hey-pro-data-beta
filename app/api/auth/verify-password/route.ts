@@ -18,44 +18,8 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServerClient();
 
-    // First check if user exists and has completed onboarding - using case-insensitive comparison
-    const { data: profileData, error: profileError } = await supabase
-      .from('user_profiles')
-      .select('user_id, email, has_completed_onboarding')
-      .ilike('email', normalizedEmail)
-      .maybeSingle();
-
-    // Check for database errors FIRST
-    if (profileError) {
-      console.error('[Verify Password] Database error:', profileError);
-      return NextResponse.json(
-        { success: false, error: 'Database error. Please try again.' },
-        { status: 500 }
-      );
-    }
-
-    // Now check if user exists
-    if (!profileData) {
-      console.log('[Verify Password] User not found:', normalizedEmail);
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check if user has completed onboarding
-    if (!profileData.has_completed_onboarding) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Please complete your onboarding first by using the activation link option.',
-          needsOnboarding: true
-        },
-        { status: 400 }
-      );
-    }
-
-    // Attempt to sign in with email and password
+    // FIXED: Attempt authentication FIRST before checking profile
+    // This ensures we get proper error messages for incorrect passwords
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,
       password: password
@@ -64,11 +28,20 @@ export async function POST(req: NextRequest) {
     if (authError) {
       console.error('[Verify Password] Sign in error:', authError);
       
-      // Provide user-friendly error messages
-      if (authError.message.includes('Invalid login credentials')) {
+      // Provide user-friendly error messages based on the auth error
+      if (authError.message.includes('Invalid login credentials') || 
+          authError.message.includes('Email not confirmed')) {
         return NextResponse.json(
-          { success: false, error: 'Incorrect password. Please try again.' },
+          { success: false, error: 'Incorrect email or password. Please try again.' },
           { status: 401 }
+        );
+      }
+      
+      // User doesn't exist in auth system
+      if (authError.message.includes('User not found')) {
+        return NextResponse.json(
+          { success: false, error: 'User not found. Please check your email address.' },
+          { status: 404 }
         );
       }
       
@@ -82,6 +55,47 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Failed to create session' },
         { status: 500 }
+      );
+    }
+
+    // AFTER successful authentication, check profile and onboarding status
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('user_id, email, has_completed_onboarding')
+      .eq('user_id', authData.user.id)
+      .maybeSingle();
+
+    // Check for database errors
+    if (profileError) {
+      console.error('[Verify Password] Database error:', profileError);
+      return NextResponse.json(
+        { success: false, error: 'Database error. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // Check if user has a profile
+    if (!profileData) {
+      console.log('[Verify Password] User authenticated but no profile found:', normalizedEmail);
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Your account exists but profile is missing. Please contact support.',
+          needsProfile: true
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check if user has completed onboarding
+    if (!profileData.has_completed_onboarding) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Please complete your onboarding first by using the activation link option.',
+          needsOnboarding: true
+        },
+        { status: 400 }
       );
     }
 
