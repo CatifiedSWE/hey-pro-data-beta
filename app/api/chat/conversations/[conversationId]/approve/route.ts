@@ -126,9 +126,9 @@ export async function POST(
       });
 
     return NextResponse.json(
-      successResponse('Conversation approved successfully', {
+      successResponse({
         conversation: updatedConversation,
-      }),
+      }, 'Conversation approved successfully'),
       { status: 200 }
     );
 
