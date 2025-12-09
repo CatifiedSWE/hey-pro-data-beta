@@ -645,7 +645,13 @@ function VisaTab({ visa, onUpdate, refetch, onSuccess }: { visa: VisaData | null
 
                 <div className="flex flex-col gap-3">
                     <label className="text-base font-medium">Visa Details</label>
-                    <Select value={visaType} onValueChange={setVisaType}>
+                    <Select value={visaType} onValueChange={(value) => {
+                        setVisaType(value);
+                        // Clear custom visa name when switching away from "Other"
+                        if (value !== "Other") {
+                            setCustomVisaName("");
+                        }
+                    }}>
                         <SelectTrigger className="h-[48px] w-full rounded-[16px] border border-transparent bg-[#31A7AC] px-[21px] text-sm font-semibold text-white shadow-none focus:ring-2 focus:ring-[#31A7AC]/40 focus:ring-offset-0">
                             <SelectValue placeholder="Select Visa Type" />
                         </SelectTrigger>
@@ -659,6 +665,14 @@ function VisaTab({ visa, onUpdate, refetch, onSuccess }: { visa: VisaData | null
                             </SelectGroup>
                         </SelectContent>
                     </Select>
+                    {visaType === "Other" && (
+                        <Input
+                            placeholder="Enter visa name"
+                            className="h-[48px] rounded-[15px] border border-[#31A7AC] px-5 text-sm focus-visible:border-[#31A7AC] focus-visible:ring-[#31A7AC]/20"
+                            value={customVisaName}
+                            onChange={(e) => setCustomVisaName(e.target.value)}
+                        />
+                    )}
                     <Input
                         placeholder="Visa issued by"
                         className="h-[48px] rounded-[15px] border border-[#31A7AC] px-5 text-sm focus-visible:border-[#31A7AC] focus-visible:ring-[#31A7AC]/20"
