@@ -374,7 +374,7 @@ export const processNextStep = async (
               });
               
               const checkResult = await checkResponse.json();
-              if (!checkResult.exists) {
+              if (!checkResult.hasCompletedOnboarding) {
                   // User DOESN'T exist - route to waitlist
                   nextMessages.push({
                       id: generateId(),
