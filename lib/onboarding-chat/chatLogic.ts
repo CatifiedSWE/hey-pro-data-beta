@@ -126,7 +126,7 @@ export const processNextStep = async (
         nextMessages.push({
             id: generateId(),
             type: 'bot',
-            text: 'Who do you need? (Tell us about the project requirement)',
+            text: 'Who do you need?',
             inputType: 'textarea',
             delay: 1000
         });
@@ -708,20 +708,14 @@ export const processNextStep = async (
                 nextMessages.push({
                     id: generateId(),
                     type: 'bot',
-                    text: 'All set. You're in the system. We're onboarding in batches - we'll email you when your turn opens up.',
-                    isIntro: true
-                });
-                nextMessages.push({
-                    id: generateId(),
-                    type: 'bot',
-                    text: 'What would you like to do?',
+                    text: "All set. You're in the system. We're onboarding in batches - we'll email you when your turn opens up.",
+                    isIntro: true,
                     options: [
-                        { label: 'Submit a project', value: 'SUBMIT_PROJECT', icon: 'Send' },
+                        { label: 'Submit a project', value: 'SUBMIT_PROJECT', icon: 'Briefcase' },
                         { label: 'Done for now', value: 'DONE', icon: 'Check' },
                         { label: 'Share HeyProData', value: 'SHARE', icon: 'Share2' }
                     ],
-                    inputType: 'options_only',
-                    delay: 1000
+                    inputType: 'options_only'
                 });
             } else {
                  nextMessages.push({
@@ -742,7 +736,7 @@ export const processNextStep = async (
                  step: 0,
                  messages: [
                      ...currentState.messages,
-                     { id: generateId(), type: 'bot', text: 'Amazing! Let's get the basics down so we can share it with the right people.', isIntro: true },
+                     { id: generateId(), type: 'bot', text: 'Amazing! Let’s get the basics down so we can share it with the right people.', isIntro: true },
                      { id: generateId(), type: 'bot', text: 'Who do you need?', inputType: 'textarea', delay: 1000 }
                  ]
              };
@@ -754,7 +748,7 @@ export const processNextStep = async (
              nextMessages.push({
                  id: generateId(),
                  type: 'bot',
-                 text: 'Easy. Here's a link you can share with professionals working in production:',
+                 text: "Easy. Here's a link you can share with professionals working in production:",
                  inputType: 'share_card'
              });
          }
@@ -775,13 +769,13 @@ export const processNextStep = async (
       } else if (step === 1) {
           nextFormData.primaryService = input as string;
           OnboardingStorage.save({ primary_service: input as string });
-          nextMessages.push({ id: generateId(), type: 'bot', text: 'Company website/link? (Optional)', inputType: 'url' });
+          nextMessages.push({ id: generateId(), type: 'bot', text: 'Company website/link?', inputType: 'url' });
       } else if (step === 2) {
           nextFormData.companyLink = input as string;
           if (input) {
               OnboardingStorage.save({ company_link: input as string });
           }
-          nextMessages.push({ id: generateId(), type: 'bot', text: 'Please upload your Trade License.', inputType: 'file' });
+          nextMessages.push({ id: generateId(), type: 'bot', text: 'Please upload your Trade License (PDF only).', inputType: 'file' });
       } else if (step === 3) {
           // Handle file upload
           const file = input as File;
@@ -812,7 +806,7 @@ export const processNextStep = async (
               // Continue anyway
           }
           
-          nextMessages.push({ id: generateId(), type: 'bot', text: 'Got it. Now, who is the contact person? First Name?', inputType: 'text' });
+          nextMessages.push({ id: generateId(), type: 'bot', text: 'Who is the contact person? First Name?', inputType: 'text' });
       } else if (step === 4) {
           nextFormData.firstName = input as string;
           OnboardingStorage.save({ first_name: input as string });
@@ -883,7 +877,7 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: `Summary:\n${nextFormData.companyName} (${nextFormData.primaryService})\nContact: ${nextFormData.firstName} ${nextFormData.surname}\n${nextFormData.email}`,
+                  text: `Here’s what I have for your company. All good?\n\nCompany: ${nextFormData.companyName}\nService: ${nextFormData.primaryService}\nLink: ${nextFormData.companyLink}\nContact: ${nextFormData.firstName} ${nextFormData.surname}\nRole: ${nextFormData.role}\nPhone: ${nextFormData.phone}`,
                   options: [
                     { label: 'Looks good', value: 'SUBMIT', icon: 'Check' },
                     { label: 'Edit something', value: 'EDIT', icon: 'Edit2' }
@@ -905,31 +899,37 @@ export const processNextStep = async (
             nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: 'Got it. You’re in the queue.',
-                isIntro: true
+                text: "Got it. Thanks for your interest in HeyProData. We’ll be in touch as soon as supplier access opens.",
+                isIntro: true,
+                options: [
+                    { label: 'Submit a project', value: 'SUBMIT_PROJECT', icon: 'Briefcase' },
+                    { label: 'Done for now', value: 'DONE', icon: 'Check' },
+                    { label: 'Share HeyProData', value: 'SHARE', icon: 'Share2' }
+                ],
+                inputType: 'options_only'
             });
-            nextMessages.push({
-                id: generateId(),
-                type: 'bot',
-                text: 'We’re bringing suppliers in batch by batch so it stays tight and useful - we’ll email you when your batch opens.'
-            });
-             nextMessages.push({
-                    id: generateId(),
-                    type: 'bot',
-                    text: 'Share HeyProData?',
-                    options: [{ label: 'Share', value: 'SHARE', icon: 'Share2' }],
-                    inputType: 'options_only',
-                    delay: 1000
-                });
           }
       } else if (step === 10) {
            if (selectionValue === 'RESTART') {
                window.location.reload();
-           } else {
+           } else if (selectionValue === 'SUBMIT_PROJECT') {
+               // Redirect to CLIENT flow
+               return {
+                   currentFlow: 'CLIENT',
+                   step: 0,
+                   messages: [
+                       ...currentState.messages,
+                       { id: generateId(), type: 'bot', text: 'Amazing! Let’s get the basics down so we can share it with the right people.', isIntro: true },
+                       { id: generateId(), type: 'bot', text: 'Who do you need?', inputType: 'textarea', delay: 1000 }
+                   ]
+               };
+           } else if (selectionValue === 'DONE') {
+               window.location.href = '/';
+           } else if (selectionValue === 'SHARE') {
                nextMessages.push({
                  id: generateId(),
                  type: 'bot',
-                 text: 'Easy. Here’s a link you can share with anyone who works in production:',
+                 text: 'Easy. Here’s a link you can share with professionals working in production:',
                  inputType: 'share_card'
              });
            }
@@ -1014,6 +1014,15 @@ export const processNextStep = async (
               if (input) {
                   OnboardingStorage.save({ phone: input as string });
               }
+              
+              // Show summary first
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: `Project Summary:\n${nextFormData.projectDetails}\n\nContact: ${nextFormData.firstName} from ${nextFormData.projectCompanyName}\n${nextFormData.email} / ${nextFormData.phone}`,
+                  delay: 500
+              });
+              
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
@@ -1021,7 +1030,8 @@ export const processNextStep = async (
                   options: [
                     { label: 'Send Brief', value: 'SUBMIT', icon: 'Send' }
                   ],
-                  inputType: 'options_only'
+                  inputType: 'options_only',
+                  delay: 1000
               });
           }
       } else if (step === 5) {
@@ -1029,23 +1039,22 @@ export const processNextStep = async (
           nextMessages.push({
               id: generateId(),
               type: 'bot',
-              text: 'Thanks. Your brief is in.',
+              text: 'Thanks. Your brief is in. We’ll share this with the network and you’ll hear from the right people directly.',
               isIntro: true
-          });
-           nextMessages.push({
-              id: generateId(),
-              type: 'bot',
-              text: 'We’ll share this with the network and you’ll hear from the right people directly.'
           });
           nextMessages.push({
               id: generateId(),
               type: 'bot',
               text: 'Want a copy via email?',
-              options: [{ label: 'Yes, please', value: 'SHARE', icon: 'Check' }, {label: 'No thanks', value: 'NO', icon: 'X'}],
+              options: [{ label: 'Yes, please', value: 'EMAIL_COPY', icon: 'Check' }, {label: 'No thanks', value: 'NO_COPY', icon: 'X'}],
               inputType: 'options_only'
           });
       } else if (step === 6) {
-          // Just showing share link for all paths in this demo
+          // Handle copy request logic here if needed (e.g. call API)
+          if (selectionValue === 'EMAIL_COPY') {
+              // Assuming API call logic would go here
+          }
+          
           nextMessages.push({
               id: generateId(),
               type: 'bot',
@@ -1058,7 +1067,7 @@ export const processNextStep = async (
           nextMessages.push({
              id: generateId(),
              type: 'bot',
-             text: 'Easy. Here’s a link you can share with anyone who works in production:',
+             text: "Easy. Here's a link you can share with professionals working in production:",
              inputType: 'share_card'
          });
       }
@@ -1082,7 +1091,7 @@ export const processNextStep = async (
                   messages: [
                       ...currentState.messages,
                       { id: generateId(), type: 'bot', text: 'Amazing! Let’s get the basics down so we can share it with the right people.', isIntro: true},
-                      { id: generateId(), type: 'bot', text: 'Who do you need? (Tell us about the project requirement)', inputType: 'textarea', delay: 500 }
+                      { id: generateId(), type: 'bot', text: 'Who do you need?', inputType: 'textarea', delay: 500 }
                   ]
               };
           } else if (selectionValue === 'VISION') {
@@ -1108,7 +1117,7 @@ export const processNextStep = async (
                nextMessages.push({
                 id: generateId(),
                 type: 'bot',
-                text: 'Easy. Here’s a link you can share with anyone who works in production:',
+                text: "Easy. Here's a link you can share with professionals working in production:",
                 inputType: 'share_card'
             });
           }
