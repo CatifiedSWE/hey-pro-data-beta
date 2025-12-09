@@ -149,14 +149,14 @@ Implementing a chat approval system where User A can send only one message to Us
 
 ## Success Criteria
 - [x] Database schema includes approval fields
-- [ ] User A can initiate conversation from any profile page
-- [ ] User A can send exactly one message to User B
-- [ ] User A cannot send additional messages until approval
-- [ ] User B sees approval UI with first message preview
-- [ ] User B can approve conversation with one click
-- [ ] After approval, both users can chat without restrictions
-- [ ] All existing conversations continue working without issues
-- [ ] No breaking changes to existing chat functionality
+- [x] User A can initiate conversation from any profile page
+- [x] User A can send exactly one message to User B
+- [x] User A cannot send additional messages until approval
+- [x] User B sees approval UI with first message preview
+- [x] User B can approve conversation with one click
+- [x] After approval, both users can chat without restrictions
+- [x] All existing conversations continue working without issues
+- [x] No breaking changes to existing chat functionality
 
 ---
 
