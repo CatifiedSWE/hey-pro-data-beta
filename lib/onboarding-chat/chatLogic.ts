@@ -385,10 +385,11 @@ export const processNextStep = async (
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
-                      text: 'Which one sounds like you?',
+                      text: 'What would you like to do?',
                       options: [
-                           { label: 'Try another email', value: 'RETRY', icon: 'RefreshCcw' },
-                          { label: 'Reserve my spot', value: 'JOIN_CREW', icon: 'Clapperboard' }
+                          { label: 'Access activation link', value: 'SWITCH_TO_ACTIVATION', icon: 'Link' },
+                          { label: 'Try different email', value: 'RETRY', icon: 'Mail' },
+                          { label: 'Done', value: 'DONE', icon: 'Check' }
                       ],
                       inputType: 'options_only',
                       delay: 1000
