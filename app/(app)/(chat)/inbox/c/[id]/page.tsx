@@ -9,6 +9,8 @@ import Link from "next/link";
 import { getConversationMessages, sendConversationMessage, type Message } from "@/lib/api/chat";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import ApprovalBanner from "../../components/ApprovalBanner";
+import axios from "@/lib/axios";
 
 type paramsType = { id: string };
 
@@ -31,6 +33,44 @@ export default function MessageInbox({ params }: { params: paramsType }) {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
     const [otherUser, setOtherUser] = useState<any>(null);
+    
+    // ⭐ NEW: Approval state
+    const [conversationData, setConversationData] = useState<any>(null);
+    const [isApproved, setIsApproved] = useState(true);
+    const [isInitiator, setIsInitiator] = useState(false);
+    const [canSendMessage, setCanSendMessage] = useState(true);
+
+    // ⭐ NEW: Fetch conversation details (approval status)
+    const fetchConversationDetails = useCallback(async () => {
+        try {
+            const response = await axios.get(`/chat/conversations`);
+            const conversations = response.data.data.conversations || [];
+            const currentConv = conversations.find((c: any) => c.id === id);
+            
+            if (currentConv) {
+                setConversationData(currentConv);
+                setIsApproved(currentConv.isApproved);
+                setOtherUser(currentConv.user);
+                
+                // Determine if current user is the initiator
+                // The initiator sent the first message
+                if (messages.length > 0) {
+                    const firstMessage = messages[0];
+                    const userIsInitiator = firstMessage.sender_id === user?.id;
+                    setIsInitiator(userIsInitiator);
+                    
+                    // Can only send if approved OR (not approved AND user hasn't sent a message yet)
+                    if (!currentConv.isApproved && userIsInitiator) {
+                        setCanSendMessage(false);
+                    } else {
+                        setCanSendMessage(true);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching conversation details:', err);
+        }
+    }, [id, user, messages]);
 
     // Fetch messages
     const fetchMessages = useCallback(async (pageNum: number = 1, append: boolean = false) => {
@@ -66,6 +106,13 @@ export default function MessageInbox({ params }: { params: paramsType }) {
     useEffect(() => {
         fetchMessages(1, false);
     }, [fetchMessages]);
+
+    // ⭐ Fetch conversation details after messages are loaded
+    useEffect(() => {
+        if (messages.length >= 0 && user) {
+            fetchConversationDetails();
+        }
+    }, [messages.length, user, fetchConversationDetails]);
 
     // Poll for new messages every 3 seconds
     useEffect(() => {
@@ -114,7 +161,7 @@ export default function MessageInbox({ params }: { params: paramsType }) {
     }, [hasMore, loadingMore, page, fetchMessages]);
 
     const handleSend = async () => {
-        if (message.trim().length === 0 || sending) return;
+        if (message.trim().length === 0 || sending || !canSendMessage) return;
         
         const optimisticMessage: Message = {
             id: `temp-${Date.now()}`,
@@ -140,10 +187,26 @@ export default function MessageInbox({ params }: { params: paramsType }) {
             console.error('Error sending message:', err);
             // Remove optimistic message on error
             setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
-            toast.error('Failed to send message. Please try again.');
+            
+            // Check if it's an approval error
+            const errorData = err?.response?.data;
+            if (errorData?.details === 'APPROVAL_REQUIRED') {
+                toast.error(errorData.error);
+                setCanSendMessage(false);
+            } else {
+                toast.error('Failed to send message. Please try again.');
+            }
         } finally {
             setSending(false);
         }
+    };
+
+    // ⭐ Handle approval success
+    const handleApprovalSuccess = () => {
+        setIsApproved(true);
+        setCanSendMessage(true);
+        fetchConversationDetails();
+        toast.success('Conversation approved! You can now chat freely.');
     };
 
     if (loading) {
@@ -169,7 +232,7 @@ export default function MessageInbox({ params }: { params: paramsType }) {
     }
 
     return (
-        <div className="w-full  flex flex-col bg-white overflow-hidden relative sm:h-[calc(100vh-80px)] h-[calc(100vh-80px)]">
+        <div className="w-full flex flex-col bg-white overflow-hidden relative sm:h-[calc(100vh-80px)] h-[calc(100vh-80px)]">
 
             {/* Header - Fixed Height */}
             <div className="shrink-0 w-full flex flex-row justify-between items-center px-4 sm:px-6 bg-[#F8F8F8] border-b border-gray-100 h-[80px] z-10 relative">
@@ -212,6 +275,19 @@ export default function MessageInbox({ params }: { params: paramsType }) {
                 {loadingMore && (
                     <div className="flex justify-center mb-4">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#31A7AC]"></div>
+                    </div>
+                )}
+                
+                {/* ⭐ NEW: Approval Banner */}
+                {!isApproved && messages.length > 0 && (
+                    <div className="mx-auto w-full max-w-3xl mb-4">
+                        <ApprovalBanner
+                            conversationId={id}
+                            isInitiator={isInitiator}
+                            isApproved={isApproved}
+                            otherUserName={otherUser?.name || "User"}
+                            onApprovalSuccess={handleApprovalSuccess}
+                        />
                     </div>
                 )}
                 
@@ -277,12 +353,12 @@ export default function MessageInbox({ params }: { params: paramsType }) {
             <div className="shrink-0 w-full bg-white px-4 pb-4 pt-2 z-10 relative">
                 <div className="mx-auto w-full max-w-3xl bg-[#F0F0F0] border border-[#FA596E] rounded-full flex items-center gap-2 p-1 pl-4 h-[56px] shadow-sm">
                     <Input
-                        placeholder="Message ..."
+                        placeholder={canSendMessage ? "Message ..." : "Waiting for approval..."}
                         className="border-none shadow-none text-[15px] font-normal flex-1 focus-visible:ring-0 px-0 bg-transparent placeholder:text-gray-500"
                         value={message}
                         onChange={e => setMessage(e.target.value)}
                         onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
-                        disabled={sending}
+                        disabled={sending || !canSendMessage}
                     />
                     <div className="flex items-center gap-1 pr-1 shrink-0">
                         <Button
@@ -296,7 +372,7 @@ export default function MessageInbox({ params }: { params: paramsType }) {
                             className="h-10 w-10 rounded-full flex items-center justify-center bg-[#FA596E] hover:bg-[#fa4059] transition-colors p-0 disabled:opacity-50"
                             type="button"
                             onClick={handleSend}
-                            disabled={sending || message.trim().length === 0}
+                            disabled={sending || message.trim().length === 0 || !canSendMessage}
                         >
                             <Send className="text-white h-5 w-5 ml-0.5" />
                         </Button>
