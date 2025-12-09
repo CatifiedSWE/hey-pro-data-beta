@@ -521,21 +521,36 @@ function VisaTab({ visa, onUpdate, refetch, onSuccess }: { visa: VisaData | null
     
     const [nationality, setNationality] = useState("");
     const [visaType, setVisaType] = useState("");
+    const [customVisaName, setCustomVisaName] = useState("");
     const [issuedBy, setIssuedBy] = useState("");
     const [passportExpiryDate, setPassportExpiryDate] = useState<Date | undefined>(undefined);
     const [visaExpiryDate, setVisaExpiryDate] = useState<Date | undefined>(undefined);
 
+    const visaTypes = ["Employment Visa", "Family Visa", "Investor Visa", "Partner Visa", "Resident Visa", "Sponsor Visa", "Tourist Visa", "UAE Golden Visa", "Other"];
+
     useEffect(() => {
         if (visa) {
             setNationality(visa.nationality || "");
-            setVisaType(visa.visa_type || "");
+            const savedVisaType = visa.visa_type || "";
+            
+            // Check if saved visa type is in the predefined list
+            if (visaTypes.includes(savedVisaType)) {
+                setVisaType(savedVisaType);
+                setCustomVisaName("");
+            } else if (savedVisaType) {
+                // If not in list, treat it as "Other" with custom name
+                setVisaType("Other");
+                setCustomVisaName(savedVisaType);
+            } else {
+                setVisaType("");
+                setCustomVisaName("");
+            }
+            
             setIssuedBy(visa.visa_issued_by || "");
             setPassportExpiryDate(visa.passport_expiry_date ? new Date(visa.passport_expiry_date) : undefined);
             setVisaExpiryDate(visa.visa_expiry_date ? new Date(visa.visa_expiry_date) : undefined);
         }
     }, [visa]);
-
-    const visaTypes = ["H1B", "L1", "O1", "TN", "E3", "F1", "J1", "B1/B2", "Work Visa", "Tourist Visa", "Resident Visa"];
 
     const handleSubmit = async () => {
         setSaving(true);
