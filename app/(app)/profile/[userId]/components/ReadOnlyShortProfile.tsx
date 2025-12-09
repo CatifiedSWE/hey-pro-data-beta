@@ -17,9 +17,11 @@ interface ReadOnlyShortProfileProps {
 }
 
 export default function ReadOnlyShortProfile({ profile, initialSaved = false }: ReadOnlyShortProfileProps) {
+  const router = useRouter();
   const filterScrollRef = useRef<HTMLDivElement>(null)
   const [isSaved, setIsSaved] = useState(initialSaved);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [messageLoading, setMessageLoading] = useState(false);
   
   const displayName = profile?.name || 'User Profile';
   // Use country code instead of full name for shorter display
