@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     if (!memberships || memberships.length === 0) {
       return NextResponse.json(
-        successResponse('No groups found', { groups: [] })
+        successResponse({ groups: [] }, 'No groups found')
       );
     }
 
@@ -118,9 +118,9 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.json(
-      successResponse('Groups retrieved successfully', {
+      successResponse({
         groups: enrichedGroups,
-      })
+      }, 'Groups retrieved successfully')
     );
 
   } catch (error: any) {
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      successResponse('Group created successfully', group),
+      successResponse(group, 'Group created successfully'),
       { status: 201 }
     );
 

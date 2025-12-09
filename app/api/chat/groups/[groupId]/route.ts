@@ -78,7 +78,7 @@ export async function GET(
     }));
 
     return NextResponse.json(
-      successResponse('Group retrieved successfully', {
+      successResponse({
         id: group.id,
         name: group.name,
         description: group.description,
@@ -87,7 +87,7 @@ export async function GET(
         createdAt: group.created_at,
         members: enrichedMembers,
         userRole: membership.role,
-      })
+      }, 'Group retrieved successfully')
     );
 
   } catch (error: any) {
@@ -186,7 +186,7 @@ export async function PATCH(
     }
 
     return NextResponse.json(
-      successResponse('Group updated successfully', updatedGroup)
+      successResponse(updatedGroup, 'Group updated successfully')
     );
 
   } catch (error: any) {
@@ -250,7 +250,7 @@ export async function DELETE(
     }
 
     return NextResponse.json(
-      successResponse('Group deleted successfully', null)
+      successResponse(null, 'Group deleted successfully')
     );
 
   } catch (error: any) {

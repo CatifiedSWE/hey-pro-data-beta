@@ -64,7 +64,7 @@ export async function GET(
     const sortedMessages = (messages || []).reverse();
 
     return NextResponse.json(
-      successResponse('Messages retrieved successfully', {
+      successResponse({
         messages: sortedMessages,
         pagination: {
           page,
@@ -72,7 +72,7 @@ export async function GET(
           total: count || 0,
           hasMore: count ? offset + limit < count : false,
         },
-      })
+      }, 'Messages retrieved successfully')
     );
 
   } catch (error: any) {
@@ -97,6 +97,7 @@ export async function POST(
       return NextResponse.json(
         errorResponse('Authentication required'),
         { status: 401 }
+      );
       );
     }
 
@@ -192,7 +193,7 @@ export async function POST(
     }
 
     return NextResponse.json(
-      successResponse('Message sent successfully', message),
+      successResponse(message, 'Message sent successfully'),
       { status: 201 }
     );
 
