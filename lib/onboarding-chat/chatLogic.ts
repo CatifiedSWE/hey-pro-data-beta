@@ -78,7 +78,7 @@ export const processNextStep = async (
         nextMessages.push({
           id: generateId(),
           type: 'bot',
-          text: 'Nice. Existing member it is. What's your email address?',
+          text: "Nice. Existing member it is. What's your email address?",
           inputType: 'email'
         });
         break;
