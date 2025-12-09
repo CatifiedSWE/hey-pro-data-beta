@@ -151,6 +151,45 @@ export async function POST(
       );
     }
 
+    // ⭐ APPROVAL LOGIC: Check if conversation is approved
+    if (!conversation.is_approved) {
+      // Determine who initiated the conversation (user with lower UUID is user1)
+      const initiatorId = conversation.user1_id < conversation.user2_id 
+        ? conversation.user1_id 
+        : conversation.user2_id;
+      
+      // Check if current user is the initiator
+      const isInitiator = user.id === initiatorId;
+
+      if (isInitiator) {
+        // Check if initiator has already sent a message
+        const { count: messageCount, error: countError } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('conversation_id', conversationId)
+          .eq('sender_id', user.id)
+          .is('deleted_at', null);
+
+        if (countError) {
+          return NextResponse.json(
+            errorResponse('Failed to check message count', countError.message),
+            { status: 500 }
+          );
+        }
+
+        // Block if initiator already sent a message
+        if (messageCount && messageCount >= 1) {
+          return NextResponse.json(
+            errorResponse(
+              'Conversation pending approval. You can send more messages after the recipient approves.',
+              'APPROVAL_REQUIRED'
+            ),
+            { status: 403 }
+          );
+        }
+      }
+    }
+
     // Insert message
     const { data: message, error: messageError } = await supabase
       .from('messages')
