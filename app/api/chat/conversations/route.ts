@@ -39,12 +39,15 @@ export async function GET(request: NextRequest) {
       (conversations || []).map(async (conv) => {
         const otherUserId = conv.user1_id === user.id ? conv.user2_id : conv.user1_id;
         
-        // Fetch other user's profile
+        // Fetch other user's profile with both regular and alias names
         const { data: otherUser } = await supabase
           .from('user_profiles')
-          .select('user_id, first_name, surname, profile_photo_url')
+          .select('user_id, first_name, surname, alias_first_name, alias_surname, profile_photo_url')
           .eq('user_id', otherUserId)
           .single();
+
+        // Get other user's auth metadata for Google profile picture
+        const { data: { user: otherAuthUser } } = await supabase.auth.admin.getUserById(otherUserId);
 
         // Get last message
         const { data: lastMessage } = await supabase
@@ -65,12 +68,23 @@ export async function GET(request: NextRequest) {
           .neq('status', 'read')
           .is('deleted_at', null);
 
+        // Prioritize alias names over regular names
+        const firstName = otherUser?.alias_first_name || otherUser?.first_name || '';
+        const surname = otherUser?.alias_surname || otherUser?.surname || '';
+        const displayName = `${firstName} ${surname}`.trim() || 'Unknown User';
+
+        // Prioritize profile_photo_url, then Google OAuth avatar
+        let avatarUrl = otherUser?.profile_photo_url || null;
+        if (!avatarUrl && otherAuthUser?.user_metadata) {
+          avatarUrl = otherAuthUser.user_metadata.avatar_url || otherAuthUser.user_metadata.picture || null;
+        }
+
         return {
           id: conv.id,
           user: {
             id: otherUserId,
-            name: otherUser ? `${otherUser.first_name || ''} ${otherUser.surname || ''}`.trim() : 'Unknown User',
-            avatar: otherUser?.profile_photo_url || null,
+            name: displayName,
+            avatar: avatarUrl,
           },
           lastMessage: lastMessage ? {
             content: lastMessage.content,
