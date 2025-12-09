@@ -106,18 +106,34 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
       
       if (!participantId) {
         toast.error('Unable to start conversation: User ID not found');
+        setMessageLoading(false);
         return;
       }
 
+      console.log('[Chat] Starting conversation with participant:', participantId);
+
       // Start or get existing conversation
       const result = await startConversation(participantId);
+      
+      console.log('[Chat] Conversation result:', result);
+      
+      // Check if result has an id
+      if (!result || !result.id) {
+        console.error('[Chat] Invalid conversation result:', result);
+        toast.error('Failed to create conversation: Invalid response from server');
+        setMessageLoading(false);
+        return;
+      }
+
+      console.log('[Chat] Navigating to conversation:', result.id);
       
       // Navigate to the conversation page
       router.push(`/inbox/c/${result.id}`);
       toast.success('Opening conversation...');
     } catch (error: any) {
-      console.error('Failed to start conversation:', error);
-      const errorMessage = error?.response?.data?.error || 'Failed to start conversation';
+      console.error('[Chat] Failed to start conversation:', error);
+      console.error('[Chat] Error response:', error?.response?.data);
+      const errorMessage = error?.response?.data?.error || error?.message || 'Failed to start conversation';
       toast.error(errorMessage);
     } finally {
       setMessageLoading(false);
