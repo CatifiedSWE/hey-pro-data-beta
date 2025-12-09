@@ -474,12 +474,12 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     </div>
                                 )}
                                 
-                                <div className="space-y-1 rounded-[5.71px]  border border-[#017A7C]/30 px-4 py-2 justify-center items-center flex ">
+                                <div className="rounded-[5.71px] border border-[#017A7C]/30 pl-4 py-2 justify-between items-center flex">
                                     <label className="text-sm font-[400] w-full">Availability</label>
                                     <select 
                                         value={filterForm.availability} 
                                         onChange={(e) => handleFilterChange("availability", e.target.value)}
-                                        className="bg-transparent outline-none text-sm text-right"
+                                        className="bg-transparent outline-none text-sm text-right pr-4 cursor-pointer"
                                     >
                                         <option value="">Any</option>
                                         <option value="available">Available</option>
