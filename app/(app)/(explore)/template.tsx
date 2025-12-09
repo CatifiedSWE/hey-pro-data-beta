@@ -714,7 +714,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                             
                             return (
                                 <details key={opt.label} className="group  rounded-[10px]  border-[1px] border-[#989898]/10  bg-white" open={hasActiveRole}>
-                                    <summary className={`cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-3 py-2 text-sm font-[400] ${hasActiveRole ? 'bg-[#FA6E80] text-white rounded-t-[10px]' : ''}`}>
+                                    <summary className={`cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-4 py-3 text-sm font-[400] w-full ${hasActiveRole ? 'bg-[#FA6E80] text-white rounded-t-[10px]' : ''}`}>
                                         <span>{opt.label}</span>
                                         <span className="flex items-center gap-2">
                                             {hasActiveRole && (
