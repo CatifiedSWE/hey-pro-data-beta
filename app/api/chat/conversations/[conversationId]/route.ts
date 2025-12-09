@@ -57,7 +57,7 @@ export async function GET(
       .single();
 
     return NextResponse.json(
-      successResponse('Conversation retrieved successfully', {
+      successResponse({
         id: conversation.id,
         participant: {
           id: otherUserId,
@@ -66,7 +66,7 @@ export async function GET(
         },
         createdAt: conversation.created_at,
         lastMessageAt: conversation.last_message_at,
-      })
+      }, 'Conversation retrieved successfully')
     );
 
   } catch (error: any) {
