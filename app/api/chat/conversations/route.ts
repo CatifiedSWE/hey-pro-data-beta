@@ -27,6 +27,9 @@ export async function GET(request: NextRequest) {
         id,
         user1_id,
         user2_id,
+        is_approved,
+        approved_at,
+        approved_by,
         last_message_at,
         created_at
       `)
