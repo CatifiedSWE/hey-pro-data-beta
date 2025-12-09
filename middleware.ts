@@ -60,11 +60,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // PHASE 1: Block old auth pages - redirect to onboarding (gated system)
-  const blockedAuthPages = ['/forget-password', '/reset-password'];
-  if (blockedAuthPages.some(page => pathname.startsWith(page))) {
-    console.log(`[Middleware] Blocking old auth page: ${pathname}, redirecting to /onboarding`);
-    return NextResponse.redirect(new URL('/onboarding', request.url));
-  }
+  // const blockedAuthPages = ['/forget-password', '/reset-password'];
+  // if (blockedAuthPages.some(page => pathname.startsWith(page))) {
+  //   console.log(`[Middleware] Blocking old auth page: ${pathname}, redirecting to /onboarding`);
+  //   return NextResponse.redirect(new URL('/onboarding', request.url));
+  // }
 
   // Block access to under-development routes - redirect to profile for ALL users
   const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
