@@ -87,9 +87,9 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.json(
-      successResponse('Conversations retrieved successfully', {
+      successResponse({
         conversations: enrichedConversations,
-      })
+      }, 'Conversations retrieved successfully')
     );
 
   } catch (error: any) {
