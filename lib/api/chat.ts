@@ -35,6 +35,9 @@ export interface Conversation {
     senderId: string;
   } | null;
   unreadCount: number;
+  isApproved: boolean;
+  approvedAt: string | null;
+  approvedBy: string | null;
   createdAt: string;
 }
 
