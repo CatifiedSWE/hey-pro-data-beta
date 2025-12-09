@@ -44,6 +44,7 @@ export default function VisaSection({ onUpdate }: VisaSectionProps) {
 
     const [nationality, setNationality] = useState("");
     const [visaType, setVisaType] = useState("");
+    const [customVisaName, setCustomVisaName] = useState("");
     const [issuedBy, setIssuedBy] = useState("");
     const [passportExpiryDate, setPassportExpiryDate] = useState<Date | undefined>(undefined);
     const [visaExpiryDate, setVisaExpiryDate] = useState<Date | undefined>(undefined);
@@ -54,7 +55,7 @@ export default function VisaSection({ onUpdate }: VisaSectionProps) {
     const [visaPopoverOpen, setVisaPopoverOpen] = useState(false);
 
     const nationalityOptions = ["United States", "Canada", "United Kingdom", "Australia", "India", "Germany", "France", "United Arab Emirates", "Saudi Arabia", "Egypt"];
-    const visaTypes = ["H1B", "L1", "O1", "TN", "E3", "F1", "J1", "B1/B2", "Work Visa", "Tourist Visa", "Resident Visa", "UAE Golden Visa"];
+    const visaTypes = ["Employment Visa", "Family Visa", "Investor Visa", "Partner Visa", "Resident Visa", "Sponsor Visa", "Tourist Visa", "UAE Golden Visa", "Other"];
 
     // Load visa data when component mounts or when visa changes
     useEffect(() => {
