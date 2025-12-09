@@ -375,7 +375,7 @@ export const processNextStep = async (
               
               const checkResult = await checkResponse.json();
               if (!checkResult.hasCompletedOnboarding) {
-                  // User DOESN'T exist - route to waitlist
+                  // User exists but hasn't completed onboarding - redirect to activation
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
