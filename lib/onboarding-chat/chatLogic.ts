@@ -141,7 +141,7 @@ export const processNextStep = async (
         nextMessages.push({
             id: generateId(),
             type: 'bot',
-            text: 'The goal is simple: a clear picture of MENA's production world - who's here, what they do, where they've worked and how to reach them.\n\nLess guesswork, more clarity.\n\nIf you're part of this world, we'd love to see you on the inside!',
+            text: "The goal is simple: a clear picture of MENA's production world - who's here, what they do, where they've worked and how to reach them.\n\nLess guesswork, more clarity.\n\nIf you're part of this world, we'd love to see you on the inside!",
             delay: 1000
         });
         nextMessages.push({
