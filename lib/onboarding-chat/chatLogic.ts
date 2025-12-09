@@ -1108,6 +1108,31 @@ export const processNextStep = async (
             text: 'Share HeyProData?',
             options: [{ label: 'Share', value: 'SHARE', icon: 'Share2' }, {label: 'Back to start', value: 'RESTART', icon: 'RotateCcw'}],
             inputType: 'options_only',
+          if (selectionValue === 'EDIT') {
+               nextMessages.push({
+                id: generateId(),
+                type: 'bot',
+                text: 'What needs fixing?',
+                options: [
+                    { label: 'Company Details', value: 'EDIT_COMPANY', icon: 'Truck' },
+                    { label: 'Contact Person', value: 'EDIT_CONTACT', icon: 'User' },
+                    { label: 'Contact Info', value: 'EDIT_INFO', icon: 'Mail' }
+                ],
+                inputType: 'options_only'
+               });
+               nextStep = 9; // Stay on this logic step
+          } else if (selectionValue === 'EDIT_COMPANY') {
+               nextMessages.push({ id: generateId(), type: 'bot', text: 'Let’s update company details. Company Name?', inputType: 'text' });
+               nextStep = 0;
+          } else if (selectionValue === 'EDIT_CONTACT') {
+               nextMessages.push({ id: generateId(), type: 'bot', text: 'Let’s update contact person. First Name?', inputType: 'text' });
+               nextStep = 4;
+          } else if (selectionValue === 'EDIT_INFO') {
+               nextMessages.push({ id: generateId(), type: 'bot', text: 'Let’s update contact info. Email address?', inputType: 'email' });
+               nextStep = 7;
+          } else if (selectionValue === 'RESTART') {
+               window.location.reload();
+
             delay: 1500
           });
       } else if (step === 1) {
