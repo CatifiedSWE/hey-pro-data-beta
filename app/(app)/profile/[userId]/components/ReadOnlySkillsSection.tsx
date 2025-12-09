@@ -6,6 +6,9 @@ interface Skill {
   id: string;
   skillName: string;
   proficiencyLevel?: string;
+  dayRate?: number;
+  dayRateCurrency?: string;
+  isPublic?: boolean;
 }
 
 interface ReadOnlySkillsSectionProps {
@@ -43,6 +46,13 @@ export default function ReadOnlySkillsSection({ skills }: ReadOnlySkillsSectionP
               <div className="space-y-2 ml-10">
                 <div className="flex flex-wrap items-center justify-start gap-x-1 px-4 bg-[#FFFFFF] h-[31px] w-[233px] rounded-[5px]">
                   <h4 className="text-sm font-[600] text-[#000]">{skill.proficiencyLevel}</h4>
+                </div>
+              </div>
+            )}
+            {skill.dayRate && skill.dayRateCurrency && skill.isPublic && (
+              <div className="ml-10">
+                <div className="inline-flex items-center px-4 py-1.5 bg-[#E7FAFC] rounded-[5px]">
+                  <p className="text-sm font-[600] text-[#31A7AC]">{skill.dayRateCurrency} {skill.dayRate} per day</p>
                 </div>
               </div>
             )}
