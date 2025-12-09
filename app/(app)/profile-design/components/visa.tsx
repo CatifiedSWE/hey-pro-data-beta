@@ -51,6 +51,7 @@ export default function VisaSection({
 
     const [nationality, setNationality] = useState(initialNationality || "");
     const [visaType, setVisaType] = useState(initialVisaType || "");
+    const [customVisaName, setCustomVisaName] = useState("");
     const [issuedBy, setIssuedBy] = useState(initialVisaIssueBy || "");
     const [passportExpiryDate, setPassportExpiryDate] = useState<Date | undefined>(
         initialPassportExpDate ? new Date(initialPassportExpDate) : undefined
@@ -65,7 +66,7 @@ export default function VisaSection({
     const [visaPopoverOpen, setVisaPopoverOpen] = useState(false);
 
     const nationalityOptions = ["United States", "Canada", "United Kingdom", "Australia", "India", "Germany", "France"];
-    const visaTypes = ["H1B", "L1", "O1", "TN", "E3", "F1", "J1", "B1/B2"];
+    const visaTypes = ["Employment Visa", "Family Visa", "Investor Visa", "Partner Visa", "Resident Visa", "Sponsor Visa", "Tourist Visa", "UAE Golden Visa", "Other"];
 
     const resetForm = () => {
         setNationality(initialNationality || "");
