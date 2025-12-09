@@ -223,16 +223,37 @@ export async function POST(
     // Create notification for the other user
     const recipientId = conversation.user1_id === user.id ? conversation.user2_id : conversation.user1_id;
     
+    // ⭐ Different notification types for approved/unapproved conversations
+    const notificationType = conversation.is_approved 
+      ? 'direct_message' 
+      : 'conversation_request';
+    
+    // Get sender's name for notification
+    const { data: senderProfile } = await supabase
+      .from('user_profiles')
+      .select('first_name, surname')
+      .eq('user_id', user.id)
+      .single();
+    
+    const senderName = senderProfile 
+      ? `${senderProfile.first_name || ''} ${senderProfile.surname || ''}`.trim() || 'Someone'
+      : 'Someone';
+    
+    const notificationMessage = conversation.is_approved
+      ? `${senderName}: ${content.substring(0, 100)}`
+      : `${senderName} sent you a message request`;
+
     await supabase
       .from('notifications')
       .insert({
         user_id: recipientId,
         actor_id: user.id,
-        type: 'direct_message',
-        message: `New message: ${content.substring(0, 100)}`,
+        type: notificationType,
+        message: notificationMessage,
         metadata: {
           conversation_id: conversationId,
           message_id: message.id,
+          requires_approval: !conversation.is_approved,
         },
       });
 
