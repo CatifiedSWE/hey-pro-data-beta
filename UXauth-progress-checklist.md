@@ -89,7 +89,11 @@ EXISTING selected
 
 ### 🔄 Phase 4: Manual Testing (In Progress)
 
-**📖 Testing Guide:** See `/app/MANUAL_TESTING_GUIDE_UX_AUTH.md` for detailed step-by-step instructions
+**📚 Testing Resources:**
+- 📖 **Detailed Guide:** `/app/MANUAL_TESTING_GUIDE_UX_AUTH.md` - Complete step-by-step testing instructions
+- ⚡ **Quick Reference:** `/app/QUICK_TEST_REFERENCE.md` - Quick lookup for expected results
+- 📝 **Results Template:** `/app/TEST_RESULTS_UX_AUTH.md` - Record your testing findings
+- 🔧 **Troubleshooting:** `/app/TROUBLESHOOTING_UX_AUTH.md` - Solutions for common issues
 
 **Test Scenarios:**
 - [ ] Test migrated user (no auth) → Should only see "Access activation link"
