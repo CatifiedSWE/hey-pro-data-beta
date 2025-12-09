@@ -70,7 +70,7 @@ export async function GET(
     const sortedMessages = (messages || []).reverse();
 
     return NextResponse.json(
-      successResponse('Messages retrieved successfully', {
+      successResponse({
         messages: sortedMessages,
         pagination: {
           page,
@@ -78,7 +78,7 @@ export async function GET(
           total: count || 0,
           hasMore: count ? offset + limit < count : false,
         },
-      })
+      }, 'Messages retrieved successfully')
     );
 
   } catch (error: any) {
