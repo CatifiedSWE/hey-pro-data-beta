@@ -97,6 +97,21 @@ export async function startConversation(participantId: string): Promise<any> {
 }
 
 /**
+ * Approve a conversation request
+ */
+export async function approveConversation(conversationId: string): Promise<any> {
+  try {
+    const response = await axios.post(
+      `/chat/conversations/${conversationId}/approve`
+    );
+    return response.data.data;
+  } catch (error: any) {
+    console.error('Error approving conversation:', error);
+    throw error;
+  }
+}
+
+/**
  * Get messages for a specific conversation
  */
 export async function getConversationMessages(
