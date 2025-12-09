@@ -181,9 +181,16 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                                         />
                                                         <div className="flex flex-row items-center gap-[7px] flex-1 min-w-0">
                                                             <div className="flex flex-col justify-center items-start gap-[1px] flex-1 min-w-0">
-                                                                <span className="w-full font-medium text-[16px] leading-[24px] text-black truncate">
-                                                                    {conv.user.name}
-                                                                </span>
+                                                                <div className="flex items-center gap-2 w-full">
+                                                                    <span className="font-medium text-[16px] leading-[24px] text-black truncate">
+                                                                        {conv.user.name}
+                                                                    </span>
+                                                                    {!conv.isApproved && (
+                                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-medium bg-amber-100 text-amber-800 border border-amber-200 shrink-0">
+                                                                            Pending
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                                 <span className="w-full font-medium text-[12px] leading-[15px] text-[#444444] truncate">
                                                                     {conv.lastMessage?.content || 'No messages yet'}
                                                                 </span>
