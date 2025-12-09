@@ -74,16 +74,12 @@ export const processNextStep = async (
     // Initial response based on selection
     switch (newFlow) {
       case 'EXISTING':
+        // Solution 1: Ask for email FIRST, then filter options
         nextMessages.push({
           id: generateId(),
           type: 'bot',
-          text: 'Nice. Existing member it is. What do you want to do right now?',
-          options: [
-            { label: 'Access activation link', value: 'ACTIVATION', icon: 'Link' },
-            { label: 'Sign in to profile', value: 'SIGNIN', icon: 'LogIn' },
-            { label: 'Check placement in next batch', value: 'BATCH', icon: 'ListOrdered' }
-          ],
-          inputType: 'options_only'
+          text: 'Nice. Existing member it is. What's your email address?',
+          inputType: 'email'
         });
         break;
       case 'CREW':
