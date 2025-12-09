@@ -434,8 +434,8 @@ export const processNextStep = async (
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Welcome back! Please enter your password to continue.',
-                  inputType: 'password'
+                  text: "Okay, let's try another one. What's your email address?",
+                  inputType: 'email'
               });
               nextStep = 0; // Reset to step 0 for email input
           }
