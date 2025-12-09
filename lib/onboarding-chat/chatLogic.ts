@@ -238,22 +238,8 @@ export const processNextStep = async (
               });
               
               const checkResult = await checkResponse.json();
-          // Email received - check user status
-          const email = input as string;
-          nextFormData.email = email;
-          const action = nextFormData.action;
-          
-          // Call check-user API
-          const checkResponse = await fetch('/api/auth/check-user', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email })
-          });
-          
-          const checkResult = await checkResponse.json();
-          
-          // --- ACTIVATION LINK PATH ---
-          if (action === 'ACTIVATION') {
+              
+              // --- ACTIVATION LINK PATH ---
               if (!checkResult.exists) {
                   // User DOESN'T exist - route to waitlist
                   nextMessages.push({
