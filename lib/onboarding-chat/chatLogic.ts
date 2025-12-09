@@ -426,11 +426,11 @@ export const processNextStep = async (
                   });
                   
                   // Redirect to profile after a short delay
-                  setTimeout(() => {
-                      if (typeof window !== 'undefined') {
+                  if (typeof window !== 'undefined') {
+                      setTimeout(() => {
                           window.location.href = '/profile';
-                      }
-                  }, 1500);
+                      }, 1500);
+                  }
               } else {
                   // Password incorrect - allow retry
                   nextMessages.push({
@@ -727,7 +727,9 @@ export const processNextStep = async (
         }
     } else if (step === 7) {
          if (selectionValue === 'RESTART') {
-             window.location.reload();
+             if (typeof window !== 'undefined') {
+                 window.location.reload();
+             }
          } else if (selectionValue === 'SUBMIT_PROJECT') {
              // Redirect to CLIENT flow
              return {
@@ -741,7 +743,9 @@ export const processNextStep = async (
              };
          } else if (selectionValue === 'DONE') {
              // Go back to first page
-             window.location.href = '/';
+             if (typeof window !== 'undefined') {
+                 window.location.href = '/';
+             }
          } else if (selectionValue === 'SHARE') {
              // Share flow - now opens on same screen
              nextMessages.push({
@@ -908,7 +912,9 @@ export const processNextStep = async (
                nextMessages.push({ id: generateId(), type: 'bot', text: 'Let’s update contact info. Email address?', inputType: 'email' });
                nextStep = 7;
           } else if (selectionValue === 'RESTART') {
-               window.location.reload();
+               if (typeof window !== 'undefined') {
+                   window.location.reload();
+               }
           } else {
             await submitData('SUPPLIER', nextFormData);
             nextMessages.push({
@@ -926,7 +932,9 @@ export const processNextStep = async (
           }
       } else if (step === 10) {
            if (selectionValue === 'RESTART') {
-               window.location.reload();
+               if (typeof window !== 'undefined') {
+                   window.location.reload();
+               }
            } else if (selectionValue === 'SUBMIT_PROJECT') {
                // Redirect to CLIENT flow
                return {
@@ -939,7 +947,9 @@ export const processNextStep = async (
                    ]
                };
            } else if (selectionValue === 'DONE') {
-               window.location.href = '/';
+               if (typeof window !== 'undefined') {
+                   window.location.href = '/';
+               }
            } else if (selectionValue === 'SHARE') {
                nextMessages.push({
                  id: generateId(),
@@ -1127,7 +1137,9 @@ export const processNextStep = async (
           });
       } else if (step === 1) {
           if (selectionValue === 'RESTART') {
-              window.location.reload(); // Simple restart
+              if (typeof window !== 'undefined') {
+                  window.location.reload(); // Simple restart
+              }
           } else if (selectionValue === 'SHARE') {
                nextMessages.push({
                 id: generateId(),

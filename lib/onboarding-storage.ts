@@ -50,6 +50,7 @@ export class OnboardingStorage {
    * Merges with existing data
    */
   static save(data: Partial<OnboardingContainer>): void {
+    if (typeof window === 'undefined') return;
     try {
       const existing = this.load();
       const merged = { ...existing, ...data };
@@ -64,6 +65,7 @@ export class OnboardingStorage {
    * Load data from localStorage
    */
   static load(): Partial<OnboardingContainer> {
+    if (typeof window === 'undefined') return {};
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       return stored ? JSON.parse(stored) : {};
@@ -77,6 +79,7 @@ export class OnboardingStorage {
    * Clear all onboarding data from localStorage
    */
   static clear(): void {
+    if (typeof window === 'undefined') return;
     try {
       localStorage.removeItem(this.STORAGE_KEY);
       console.log('[OnboardingStorage] Data cleared');
