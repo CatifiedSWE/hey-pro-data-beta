@@ -9,7 +9,7 @@ import Link from "next/link";
 import { getConversationMessages, sendConversationMessage, type Message } from "@/lib/api/chat";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import ApprovalBanner from "../../components/ApprovalBanner";
+import ApprovalBanner from "../../../components/ApprovalBanner";
 import axios from "@/lib/axios";
 
 type paramsType = { id: string };
