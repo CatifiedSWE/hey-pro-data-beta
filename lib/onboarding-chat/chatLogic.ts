@@ -353,10 +353,27 @@ export const processNextStep = async (
                       });
                   }
               }
-          }
-          
-          // --- SIGN IN TO PROFILE PATH ---
-          else if (action === 'SIGNIN') {
+          } else if (selectionValue === 'GOOGLE_SIGNIN') {
+              // Google Sign In - show Google auth button
+              nextFormData.action = 'GOOGLE_SIGNIN';
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Welcome back! Click below to continue with Google:',
+                  inputType: 'google_auth'
+              });
+          } else if (selectionValue === 'SIGNIN') {
+              // Email/Password Sign In Path
+              nextFormData.action = 'SIGNIN';
+              
+              // Call check-user again to get latest status
+              const checkResponse = await fetch('/api/auth/check-user', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email })
+              });
+              
+              const checkResult = await checkResponse.json();
               if (!checkResult.exists) {
                   // User DOESN'T exist - route to waitlist
                   nextMessages.push({
