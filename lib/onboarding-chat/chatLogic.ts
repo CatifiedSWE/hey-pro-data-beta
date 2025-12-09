@@ -135,13 +135,13 @@ export const processNextStep = async (
         nextMessages.push({
             id: generateId(),
             type: 'bot',
-            text: 'Cool. Quick snapshot, then you can decide what to do next.',
+            text: 'We have big dreams!',
             isIntro: true
         });
         nextMessages.push({
             id: generateId(),
             type: 'bot',
-            text: 'HeyProData connects people by making them visible, circulating info to the network, and letting people reach out to each other.',
+            text: 'The goal is simple: a clear picture of MENA's production world - who's here, what they do, where they've worked and how to reach them.\n\nLess guesswork, more clarity.\n\nIf you're part of this world, we'd love to see you on the inside!',
             delay: 1000
         });
         nextMessages.push({
@@ -150,8 +150,7 @@ export const processNextStep = async (
             text: 'What would you like to see?',
             options: [
                 { label: 'How joining works', value: 'HOW_JOIN', icon: 'HelpCircle' },
-                { label: 'Submit a project', value: 'SUBMIT_PROJ', icon: 'Send' },
-                { label: 'See what this is building toward', value: 'VISION', icon: 'Eye' }
+                { label: 'Submit a project', value: 'SUBMIT_PROJ', icon: 'Send' }
             ],
             inputType: 'options_only',
             delay: 2000
