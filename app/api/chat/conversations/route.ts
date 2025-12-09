@@ -23,16 +23,7 @@ export async function GET(request: NextRequest) {
     // Get conversations where user is participant
     const { data: conversations, error } = await supabase
       .from('conversations')
-      .select(`
-        id,
-        user1_id,
-        user2_id,
-        is_approved,
-        approved_at,
-        approved_by,
-        last_message_at,
-        created_at
-      `)
+      .select('*')
       .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
       .order('last_message_at', { ascending: false, nullsFirst: false });
 
@@ -87,9 +78,9 @@ export async function GET(request: NextRequest) {
             senderId: lastMessage.sender_id,
           } : null,
           unreadCount: unreadCount || 0,
-          isApproved: conv.is_approved,
-          approvedAt: conv.approved_at,
-          approvedBy: conv.approved_by,
+          isApproved: conv.is_approved ?? true, // Default to true if field doesn't exist
+          approvedAt: conv.approved_at || null,
+          approvedBy: conv.approved_by || null,
           createdAt: conv.created_at,
         };
       })
