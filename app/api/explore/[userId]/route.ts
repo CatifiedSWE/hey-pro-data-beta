@@ -245,6 +245,9 @@ export async function GET(
         id: s.id,
         skillName: s.skill_name,
         proficiencyLevel: s.proficiency_level,
+        dayRate: s.day_rate,
+        dayRateCurrency: s.day_rate_currency,
+        isPublic: s.is_public,
         sortOrder: s.sort_order
       })) || [],
       links: links?.map(l => ({
