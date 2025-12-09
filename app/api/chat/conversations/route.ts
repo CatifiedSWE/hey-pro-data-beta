@@ -87,6 +87,9 @@ export async function GET(request: NextRequest) {
             senderId: lastMessage.sender_id,
           } : null,
           unreadCount: unreadCount || 0,
+          isApproved: conv.is_approved,
+          approvedAt: conv.approved_at,
+          approvedBy: conv.approved_by,
           createdAt: conv.created_at,
         };
       })
