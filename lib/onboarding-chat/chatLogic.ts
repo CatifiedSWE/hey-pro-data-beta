@@ -379,7 +379,7 @@ export const processNextStep = async (
                   nextMessages.push({
                       id: generateId(),
                       type: 'bot',
-                      text: "I can’t find that email. Want to try another one, or jump in and reserve your spot?",
+                      text: "I can see you're in the system, but you haven't completed your onboarding yet. Please use the 'Access activation link' option to set up your password first.",
                       isIntro: true
                   });
                   nextMessages.push({
