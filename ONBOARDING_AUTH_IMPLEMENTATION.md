@@ -58,7 +58,7 @@ if (user) {
 - ✅ Non-authenticated users → Allow access (for waitlist signups)
 - ✅ Authenticated users with incomplete onboarding → Allow access
 - ✅ Authenticated users with completed onboarding → Redirect to `/profile`
-
+ 
 **Purpose:**
 Prevents authenticated users who already completed onboarding from manually navigating to `/onboarding` and redoing it.
 

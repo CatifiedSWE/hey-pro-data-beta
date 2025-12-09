@@ -449,7 +449,7 @@ export const processNextStep = async (
                   formData: {},
                   messages: [
                       ...currentState.messages,
-                      { id: generateId(), type: 'bot', text: 'Good. Let's get your details in. This takes less than a minute.', isIntro: true },
+                      { id: generateId(), type: 'bot', text: "Good. Let's get your details in. This takes less than a minute.", isIntro: true },
                       { id: generateId(), type: 'bot', text: 'First name?', inputType: 'text', delay: 1000 }
                   ]
               };
@@ -464,8 +464,8 @@ export const processNextStep = async (
                   formData: {},
                   messages: [
                       ...currentState.messages,
-                      { id: generateId(), type: 'bot', text: 'Nice. Let's add your company so people know how you provide for the industry.', isIntro: true },
-                      { id: generateId(), type: 'bot', text: 'What's the Company name?', inputType: 'text', delay: 1000 }
+                      { id: generateId(), type: 'bot', text: "Nice. Let's add your company so people know how you provide for the industry.", isIntro: true },
+                      { id: generateId(), type: 'bot', text: "What's the Company name?", inputType: 'text', delay: 1000 }
                   ]
               };
           }
