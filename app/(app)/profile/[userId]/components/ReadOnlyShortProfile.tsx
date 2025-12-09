@@ -99,8 +99,29 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
   };
 
   // Handle message button click
-  const handleMessageClick = () => {
-    toast.info('Preparing soon');
+  const handleMessageClick = async () => {
+    setMessageLoading(true);
+    try {
+      const participantId = profile.userId || profile.user_id;
+      
+      if (!participantId) {
+        toast.error('Unable to start conversation: User ID not found');
+        return;
+      }
+
+      // Start or get existing conversation
+      const result = await startConversation(participantId);
+      
+      // Navigate to the conversation page
+      router.push(`/inbox/c/${result.id}`);
+      toast.success('Opening conversation...');
+    } catch (error: any) {
+      console.error('Failed to start conversation:', error);
+      const errorMessage = error?.response?.data?.error || 'Failed to start conversation';
+      toast.error(errorMessage);
+    } finally {
+      setMessageLoading(false);
+    }
   };
 
   return (
