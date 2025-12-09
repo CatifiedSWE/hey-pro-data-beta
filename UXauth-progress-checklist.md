@@ -87,7 +87,7 @@ EXISTING selected
 
 ---
 
-### 🔄 Phase 4: Testing (Pending)
+### 🔄 Phase 4: Manual Testing (In Progress)
 
 **Test Scenarios:**
 - [ ] Test migrated user (no auth) → Should only see "Access activation link"
