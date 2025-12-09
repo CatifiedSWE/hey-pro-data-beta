@@ -149,6 +149,7 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (fetchError) {
+      console.error('[Chat API] Error checking existing conversation:', fetchError);
       return NextResponse.json(
         errorResponse('Failed to check existing conversation', fetchError.message),
         { status: 500 }
@@ -156,6 +157,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (existing) {
+      console.log('[Chat API] Conversation already exists:', existing.id);
       return NextResponse.json(
         successResponse('Conversation already exists', existing)
       );
@@ -175,24 +177,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create new conversation (unapproved by default)
-    const { data: newConversation, error: createError } = await supabase
-      .from('conversations')
-      .insert({
-        user1_id: user1Id,
-        user2_id: user2Id,
-        is_approved: false, // New conversations require approval
-      })
-      .select()
-      .single();
+    // Create new conversation
+    // Try with is_approved field first, fallback if it doesn't exist
+    let newConversation;
+    let createError;
+    
+    // Try creating with approval fields
+    const insertData: any = {
+      user1_id: user1Id,
+      user2_id: user2Id,
+    };
+    
+    // Only add is_approved if the field exists (avoid errors on older schemas)
+    try {
+      const result = await supabase
+        .from('conversations')
+        .insert({
+          ...insertData,
+          is_approved: false, // New conversations require approval
+        })
+        .select()
+        .single();
+      
+      newConversation = result.data;
+      createError = result.error;
+    } catch (err) {
+      // If approval field doesn't exist, create without it
+      console.log('[Chat API] Approval field may not exist, creating conversation without it');
+      const result = await supabase
+        .from('conversations')
+        .insert(insertData)
+        .select()
+        .single();
+      
+      newConversation = result.data;
+      createError = result.error;
+    }
 
-    if (createError) {
+    if (createError || !newConversation) {
+      console.error('[Chat API] Error creating conversation:', createError);
       return NextResponse.json(
-        errorResponse('Failed to create conversation', createError.message),
+        errorResponse('Failed to create conversation', createError?.message || 'Unknown error'),
         { status: 500 }
       );
     }
 
+    console.log('[Chat API] Conversation created successfully:', newConversation.id);
+    
     return NextResponse.json(
       successResponse('Conversation created successfully', newConversation),
       { status: 201 }
