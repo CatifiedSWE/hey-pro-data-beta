@@ -98,7 +98,6 @@ export async function POST(
         errorResponse('Authentication required'),
         { status: 401 }
       );
-      );
     }
 
     const { groupId } = await params;
