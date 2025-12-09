@@ -1,7 +1,9 @@
 "use client"
+import { use } from "react";
 import ProjectDetails from "@/app/(app)/jobs/components/jobs/ProjectDetails";
-export default function Jobs({ params }: { params: { id: string } }) {
-    console.log(params.id)
+export default function Jobs({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    console.log(id)
     const Job = {
         "id": 1,
         "name": "Dubai Fashion Week BTS",
