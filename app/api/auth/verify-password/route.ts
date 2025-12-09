@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 /**
  * Verify user password and sign them in
@@ -16,7 +17,29 @@ export async function POST(req: NextRequest) {
     // Normalize email to lowercase and trim whitespace
     const normalizedEmail = email.toLowerCase().trim();
 
-    const supabase = createServerClient();
+    const cookieStore = await cookies();
+
+    // Create Supabase server client with proper cookie handling for SSR
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+              });
+            } catch (error) {
+              console.error('[Verify Password] Cookie set error:', error);
+            }
+          },
+        },
+      }
+    );
 
     // FIXED: Attempt authentication FIRST before checking profile
     // This ensures we get proper error messages for incorrect passwords

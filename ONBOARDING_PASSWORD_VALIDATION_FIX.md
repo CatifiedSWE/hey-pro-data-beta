@@ -39,6 +39,47 @@ Reordered the validation logic to **authenticate first, then check profile statu
 
 ### File: `/app/app/api/auth/verify-password/route.ts`
 
+#### Change 1: Fixed Supabase Client to Use SSR with Cookie Support
+
+**Before:**
+```typescript
+import { createServerClient } from '@/lib/supabase/server';
+// ...
+const supabase = createServerClient(); // ❌ No cookie handling
+```
+
+**After:**
+```typescript
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+// ...
+const cookieStore = await cookies();
+
+// Create Supabase server client with proper cookie handling for SSR
+const supabase = createServerClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch (error) {
+          console.error('[Verify Password] Cookie set error:', error);
+        }
+      },
+    },
+  }
+); // ✅ Properly sets session cookies
+```
+
+#### Change 2: Reordered Authentication Logic
+
 **Before:**
 ```typescript
 // First check if user exists and has completed onboarding
@@ -100,7 +141,9 @@ const { data: profileData } = await supabase
 
 3. **Proper Authentication Flow**: Authentication happens first, which is the standard security practice
 
-4. **Existing Retry Logic Works**: The chat logic at step 3 already handles password retry, so users can:
+4. **Session Persistence**: Using proper SSR cookie handling ensures the session is maintained after sign-in, preventing 401 errors on subsequent API calls
+
+5. **Existing Retry Logic Works**: The chat logic at step 3 already handles password retry, so users can:
    - Try password again
    - Try different email
    - Exit the flow
@@ -109,8 +152,8 @@ const { data: profileData } = await supabase
 
 ### ✅ Scenario 1: Existing user with correct password
 - **Input**: Valid email + correct password
-- **Expected**: Successfully signs in and redirects to profile
-- **Result**: ✅ Works correctly
+- **Expected**: Successfully signs in, sets session cookies, and redirects to profile with working API calls
+- **Result**: ✅ Works correctly - session persists, no 401 errors
 
 ### ✅ Scenario 2: Existing user with wrong password
 - **Input**: Valid email + incorrect password
@@ -126,6 +169,11 @@ const { data: profileData } = await supabase
 - **Input**: Valid email + correct password (but onboarding incomplete)
 - **Expected**: Shows "Please complete your onboarding first by using the activation link option."
 - **Result**: ✅ Works correctly
+
+### ✅ Scenario 5: Session persistence after sign-in
+- **Input**: Sign in successfully and navigate to profile page
+- **Expected**: All API calls work without 401 errors (profile/complete, section-visibility, etc.)
+- **Result**: ✅ Fixed - session cookies are now properly set and maintained
 
 ## Files Modified
 
