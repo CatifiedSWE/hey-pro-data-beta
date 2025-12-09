@@ -137,8 +137,13 @@ export default function OnboardingPage() {
         }
         
         if (currentMessage.inputType === 'url') {
-            // Basic URL validation - at least has a dot
+             // Basic URL validation
              return textInput.includes('.') && textInput.length > 3;
+        }
+
+        if (currentMessage.inputType === 'phone') {
+             // Basic check: only numbers, spaces, dashes, plus. And at least some digits.
+             return /^[\d\s\-+]+$/.test(textInput) && textInput.replace(/\D/g, '').length >= 8;
         }
         
         return true;
@@ -153,6 +158,7 @@ export default function OnboardingPage() {
     }
   };
 
+  // Intro View (Full Screen)
   if (currentMessage.isIntro) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-6 animate-fade-in font-['Outfit']">
@@ -165,17 +171,31 @@ export default function OnboardingPage() {
           <div className="mb-12 animate-pop">
             {/* Mascot Removed */}
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tight drop-shadow-sm">
+          <h1 className="text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tight drop-shadow-sm whitespace-pre-line">
             {currentMessage.text}
           </h1>
           
-          <button 
-            onClick={() => submitStep()}
-            disabled={isProcessing}
-            className="w-full bg-[#ff5168] text-white font-black text-xl py-5 rounded-2xl shadow-[0_6px_0_0_#d64154] hover:bg-[#e63e54] hover:shadow-[0_4px_0_0_#d64154] active:shadow-none active:translate-y-[6px] transition-all uppercase tracking-wider"
-          >
-            {isProcessing ? 'Thinking...' : 'CONTINUE'}
-          </button>
+          {currentMessage.options ? (
+             <div className="w-full grid grid-cols-1 gap-4">
+                {currentMessage.options.map((opt) => (
+                   <OptionCard 
+                      key={opt.value}
+                      option={opt}
+                      selected={selectedOption === opt.value}
+                      onClick={() => handleOptionSelect(opt.value)}
+                      disabled={isProcessing && selectedOption !== opt.value}
+                    />
+                ))}
+             </div>
+          ) : (
+            <button 
+              onClick={() => submitStep()}
+              disabled={isProcessing}
+              className="w-full bg-[#ff5168] text-white font-black text-xl py-5 rounded-2xl shadow-[0_6px_0_0_#d64154] hover:bg-[#e63e54] hover:shadow-[0_4px_0_0_#d64154] active:shadow-none active:translate-y-[6px] transition-all uppercase tracking-wider"
+            >
+              {isProcessing ? 'Thinking...' : 'CONTINUE'}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -216,10 +236,9 @@ export default function OnboardingPage() {
             {/* Mascot Removed */}
             
             <div className="text-center md:text-left max-w-2xl">
-              <h2 className="text-2xl md:text-4xl font-black text-slate-800 leading-tight mb-3">
+              <h2 className="text-2xl md:text-4xl font-black text-slate-800 leading-tight mb-3 whitespace-pre-line">
                 {currentMessage.text}
               </h2>
-              {/* Removed 'Select one to continue' */}
             </div>
           </div>
 
@@ -252,14 +271,27 @@ export default function OnboardingPage() {
                   ref={inputRef as React.RefObject<HTMLInputElement>}
                   type={currentMessage.inputType === 'phone' ? 'tel' : currentMessage.inputType === 'email' ? 'email' : currentMessage.inputType === 'password' ? 'password' : 'text'}
                   className="w-full p-6 text-2xl md:text-3xl font-bold border-[3px] border-slate-200 rounded-2xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
-                  placeholder={currentMessage.inputType === 'password' ? 'Enter your password...' : 'Type here...'}
+                  placeholder={currentMessage.inputType === 'password' ? 'Enter your password...' : currentMessage.inputType === 'phone' ? 'Enter numbers only...' : 'Type here...'}
                   value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
+                  onChange={(e) => {
+                      if (currentMessage.inputType === 'phone') {
+                          // Allow digits, spaces, dashes, plus
+                          const val = e.target.value;
+                          if (/^[\d\s\-+]*$/.test(val)) {
+                              setTextInput(val);
+                          }
+                      } else {
+                          setTextInput(e.target.value);
+                      }
+                  }}
                   onKeyDown={handleKeyDown}
                 />
                 <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none group-focus-within:text-[#25c9d0] transition-colors">
                   <Edit2 size={24} />
                 </div>
+                {currentMessage.inputType === 'phone' && (
+                   <p className="text-center text-slate-400 mt-2 text-sm font-bold uppercase tracking-wide">Enter country code (e.g. +971...)</p>
+                )}
               </div>
             )}
 
@@ -269,7 +301,7 @@ export default function OnboardingPage() {
                   ref={inputRef as React.RefObject<HTMLTextAreaElement>}
                   rows={5}
                   className="w-full p-6 text-xl md:text-2xl font-medium border-[3px] border-slate-200 rounded-2xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 resize-none text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
-                  placeholder="Tell us the details..."
+                  placeholder="Tell us about the project requirement"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) e.preventDefault(); }}
@@ -295,7 +327,16 @@ export default function OnboardingPage() {
                     {fileInput ? 'Click to change' : 'Drag & Drop or Click'}
                   </p>
                 </div>
-                <input type="file" className="hidden" onChange={(e) => setFileInput(e.target.files?.[0] || null)} />
+                <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="application/pdf"
+                    onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                            setFileInput(e.target.files[0]);
+                        }
+                    }} 
+                />
               </label>
             )}
           </div>
