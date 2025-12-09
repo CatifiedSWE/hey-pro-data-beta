@@ -273,10 +273,25 @@ export default function SkillEditor({
 
         setSaving(true);
         try {
+            // Parse rate if it exists to extract currency and amount
+            let dayRate = undefined;
+            let dayRateCurrency = undefined;
+            if (editingSkill.rate) {
+                // Try to extract currency and number from rate string (e.g., "AED 1000 per day")
+                const rateMatch = editingSkill.rate.match(/([A-Z]{3})\s*([\d,]+)/);
+                if (rateMatch) {
+                    dayRateCurrency = rateMatch[1];
+                    dayRate = parseFloat(rateMatch[2].replace(/,/g, ''));
+                }
+            }
+
             // Update only the currently editing skill
             const skillData = {
                 skill_name: `${editingSkill.department} - ${editingSkill.role}`,
                 description: editingSkill.description || undefined,
+                day_rate: dayRate,
+                day_rate_currency: dayRateCurrency,
+                is_public: editingSkill.isPublic ?? true,
             };
             
             await updateSkill(editingSkill.id, skillData);
