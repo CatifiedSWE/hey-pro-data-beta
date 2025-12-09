@@ -258,7 +258,7 @@ export async function POST(
       });
 
     return NextResponse.json(
-      successResponse('Message sent successfully', message),
+      successResponse(message, 'Message sent successfully'),
       { status: 201 }
     );
 
