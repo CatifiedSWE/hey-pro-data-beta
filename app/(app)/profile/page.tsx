@@ -477,7 +477,7 @@ function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: (
   return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} />;
 }
 
-function SkillsSection({ skills, onUpdate }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; } }[]; onUpdate: () => void }) {
+function SkillsSection({ skills, onUpdate }: { skills: { id: string, department: string, role: string, description: string, experience?: { value: string; title: string; description: string; }, rate?: string, isPublic?: boolean }[]; onUpdate: () => void }) {
   const [selectedSkillId, setSelectedSkillId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
@@ -531,6 +531,8 @@ function SkillsSection({ skills, onUpdate }: { skills: { id: string, department:
               role={skill.role} 
               description={skill.description} 
               experience={skill.experience}
+              rate={skill.rate}
+              isPublic={skill.isPublic}
               onEdit={() => handleEditSkill(skill.id)}
             />
           ))}
