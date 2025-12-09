@@ -54,27 +54,48 @@ export async function GET(
       );
     }
 
-    // Fetch user profiles for all members
+    // Fetch user profiles for all members with alias names
     const userIds = (members || []).map(m => m.user_id);
     const { data: profiles } = await supabase
       .from('user_profiles')
-      .select('user_id, first_name, surname, profile_photo_url')
+      .select('user_id, first_name, surname, alias_first_name, alias_surname, profile_photo_url')
       .in('user_id', userIds);
 
     const profileMap = new Map(
       (profiles || []).map(p => [p.user_id, p])
     );
 
-    const enrichedMembers = (members || []).map(member => {
+    // Fetch Google auth user metadata for profile pictures
+    const enrichedMembers = await Promise.all((members || []).map(async (member) => {
       const profile = profileMap.get(member.user_id);
+      
+      // Prioritize alias names over regular names
+      const firstName = profile?.alias_first_name || profile?.first_name || '';
+      const surname = profile?.alias_surname || profile?.surname || '';
+      const displayName = `${firstName} ${surname}`.trim() || 'Unknown User';
+      
+      // Get Google auth profile picture if profile_photo_url is not set
+      let avatarUrl = profile?.profile_photo_url || null;
+      if (!avatarUrl) {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.admin.getUserById(member.user_id);
+          if (authUser?.user_metadata) {
+            avatarUrl = authUser.user_metadata.avatar_url || authUser.user_metadata.picture || null;
+          }
+        } catch (err) {
+          // Ignore errors fetching auth metadata
+          console.error('Error fetching auth metadata for user:', member.user_id, err);
+        }
+      }
+      
       return {
         id: member.user_id,
-        name: profile ? `${profile.first_name || ''} ${profile.surname || ''}`.trim() : 'Unknown User',
-        avatar: profile?.profile_photo_url || null,
+        name: displayName,
+        avatar: avatarUrl,
         role: member.role,
         joinedAt: member.joined_at,
       };
-    });
+    }));
 
     return NextResponse.json(
       successResponse('Members retrieved successfully', {
