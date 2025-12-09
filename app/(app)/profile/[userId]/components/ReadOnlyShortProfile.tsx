@@ -314,10 +314,15 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
           
           <button 
             onClick={handleMessageClick}
-            className="flex-1 flex items-center justify-center gap-2 h-10 rounded-full bg-gray-50 text-[#FA6E80] hover:bg-[#FA6E80]/10 transition-colors border border-gray-200 font-medium text-sm"
+            disabled={messageLoading}
+            className="flex-1 flex items-center justify-center gap-2 h-10 rounded-full bg-gray-50 text-[#FA6E80] hover:bg-[#FA6E80]/10 transition-colors border border-gray-200 font-medium text-sm disabled:opacity-50"
             data-testid="message-button-mobile"
           >
-            <MessageCircle className="h-4 w-4" />
+            {messageLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MessageCircle className="h-4 w-4" />
+            )}
             Message
           </button>
         </div>
