@@ -184,12 +184,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create new conversation
+    // Create new conversation (unapproved by default)
     const { data: newConversation, error: createError } = await supabase
       .from('conversations')
       .insert({
         user1_id: user1Id,
         user2_id: user2Id,
+        is_approved: false, // New conversations require approval
       })
       .select()
       .single();
