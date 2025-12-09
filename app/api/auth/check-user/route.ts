@@ -102,20 +102,25 @@ export async function POST(req: NextRequest) {
     // Check if user has 'google' provider (Google OAuth)
     const hasGoogleProvider = identities.some((identity: any) => identity.provider === 'google');
     
-    // User has authentication if they have email OR google provider
-    const hasAuthentication = hasEmailProvider || hasGoogleProvider;
+    // NEW AUTHENTICATION SEMANTICS (Solution 2)
+    // hasAuthenticationMethod: true if user has ANY auth method (email OR google)
+    const hasAuthenticationMethod = hasEmailProvider || hasGoogleProvider;
     
-    // Only need password setup if user exists but has NO authentication method at all
-    const needsPasswordSetup = !hasAuthentication;
+    // hasPassword: true ONLY if user has email/password authentication
+    const hasPassword = hasEmailProvider;
+    
+    // needsPasswordSetup: true if user exists but has NO authentication method at all (migrated users)
+    const needsPasswordSetup = !hasAuthenticationMethod;
 
     // Check onboarding status
     const hasCompletedOnboarding = profileData?.has_completed_onboarding || false;
 
-    console.log(`[Check User] ${normalizedEmail}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuth=${hasAuthentication}, needsSetup=${needsPasswordSetup}, hasProfile=${!!profileData}, onboardingComplete=${hasCompletedOnboarding}`);
+    console.log(`[Check User] ${normalizedEmail}: exists=true, hasEmail=${hasEmailProvider}, hasGoogle=${hasGoogleProvider}, hasAuthMethod=${hasAuthenticationMethod}, hasPassword=${hasPassword}, needsSetup=${needsPasswordSetup}, hasProfile=${!!profileData}, onboardingComplete=${hasCompletedOnboarding}`);
 
     return NextResponse.json({
       exists: true,
-      hasPassword: hasAuthentication, // True if they have ANY auth method (email or google)
+      hasAuthenticationMethod: hasAuthenticationMethod, // NEW: True if ANY auth method exists
+      hasPassword: hasPassword,                          // UPDATED: True ONLY for email/password users
       hasGoogleAuth: hasGoogleProvider,
       needsPasswordSetup: needsPasswordSetup,
       userId: authUser.id,
