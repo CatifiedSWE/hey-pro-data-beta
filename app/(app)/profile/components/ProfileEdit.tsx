@@ -553,12 +553,21 @@ function VisaTab({ visa, onUpdate, refetch, onSuccess }: { visa: VisaData | null
     }, [visa]);
 
     const handleSubmit = async () => {
+        // Validate that if "Other" is selected, custom visa name is provided
+        if (visaType === "Other" && !customVisaName.trim()) {
+            toast.error("Please enter a visa name for 'Other' type");
+            return;
+        }
+
+        // Determine the final visa type value to save
+        const finalVisaType = visaType === "Other" ? customVisaName.trim() : visaType;
+
         setSaving(true);
         try {
             const result = await onUpdate({
                 nationality: nationality || undefined,
                 passport_expiry_date: passportExpiryDate ? passportExpiryDate.toISOString().split('T')[0] : undefined,
-                visa_type: visaType || undefined,
+                visa_type: finalVisaType || undefined,
                 visa_issued_by: issuedBy || undefined,
                 visa_expiry_date: visaExpiryDate ? visaExpiryDate.toISOString().split('T')[0] : undefined,
             });
