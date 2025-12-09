@@ -54,14 +54,14 @@ export async function POST(
     // Check if already approved
     if (conversation.is_approved) {
       return NextResponse.json(
-        successResponse('Conversation is already approved', {
+        successResponse({
           conversation: {
             id: conversation.id,
             is_approved: true,
             approved_at: conversation.approved_at,
             approved_by: conversation.approved_by,
           },
-        })
+        }, 'Conversation is already approved')
       );
     }
 
