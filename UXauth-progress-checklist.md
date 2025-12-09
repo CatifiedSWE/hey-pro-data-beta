@@ -89,6 +89,8 @@ EXISTING selected
 
 ### 🔄 Phase 4: Manual Testing (In Progress)
 
+**📖 Testing Guide:** See `/app/MANUAL_TESTING_GUIDE_UX_AUTH.md` for detailed step-by-step instructions
+
 **Test Scenarios:**
 - [ ] Test migrated user (no auth) → Should only see "Access activation link"
 - [ ] Test email/password user → Should only see "Sign in to profile"
@@ -98,6 +100,9 @@ EXISTING selected
 - [ ] Test user who hasn't completed onboarding
 - [ ] Verify all step transitions work correctly
 - [ ] Verify error handling works correctly
+- [ ] Test edge cases (invalid email, empty input, network errors)
+- [ ] Verify backend API returns correct flags
+- [ ] Check browser console for errors
 
 ---
 
