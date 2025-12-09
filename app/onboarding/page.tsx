@@ -168,15 +168,15 @@ export default function OnboardingPage() {
         </div>
 
         <div className="z-10 flex flex-col items-center max-w-lg w-full text-center">
-          <div className="mb-12 animate-pop">
+          <div className="mb-8 animate-pop">
             {/* Mascot Removed */}
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tight drop-shadow-sm whitespace-pre-line">
+          <h1 className="text-3xl md:text-4xl font-black mb-6 leading-tight tracking-tight drop-shadow-sm whitespace-pre-line">
             {currentMessage.text}
           </h1>
           
           {currentMessage.options ? (
-             <div className="w-full grid grid-cols-1 gap-4">
+             <div className="w-full grid grid-cols-1 gap-3">
                 {currentMessage.options.map((opt) => (
                    <OptionCard 
                       key={opt.value}
@@ -191,7 +191,7 @@ export default function OnboardingPage() {
             <button 
               onClick={() => submitStep()}
               disabled={isProcessing}
-              className="w-full bg-[#ff5168] text-white font-black text-xl py-5 rounded-2xl shadow-[0_6px_0_0_#d64154] hover:bg-[#e63e54] hover:shadow-[0_4px_0_0_#d64154] active:shadow-none active:translate-y-[6px] transition-all uppercase tracking-wider"
+              className="w-full bg-[#ff5168] text-white font-black text-lg py-4 rounded-xl shadow-[0_6px_0_0_#d64154] hover:bg-[#e63e54] hover:shadow-[0_4px_0_0_#d64154] active:shadow-none active:translate-y-[6px] transition-all uppercase tracking-wider"
             >
               {isProcessing ? 'Thinking...' : 'CONTINUE'}
             </button>
@@ -204,21 +204,21 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-['Outfit'] text-slate-800">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-slate-50/90 backdrop-blur-md border-b-2 border-slate-200 px-4 py-4 md:px-8">
-        <div className="max-w-6xl mx-auto flex items-center gap-6">
+      <div className="sticky top-0 z-30 bg-slate-50/90 backdrop-blur-md border-b-2 border-slate-200 px-4 py-3 md:px-6">
+        <div className="max-w-6xl mx-auto flex items-center gap-4">
           {visibleMessageIndex > 0 ? (
             <button 
               onClick={handleBack}
               disabled={isProcessing}
               className="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-200 rounded-xl"
             >
-              <ArrowLeft size={24} strokeWidth={3} />
+              <ArrowLeft size={20} strokeWidth={3} />
             </button>
           ) : (
-            <div className="w-10"></div>
+            <div className="w-9"></div>
           )}
           
-          <div className="flex-1 h-5 bg-slate-200 rounded-full overflow-hidden p-1">
+          <div className="flex-1 h-4 bg-slate-200 rounded-full overflow-hidden p-1">
             <div 
               className="h-full bg-[#ff5168] rounded-full transition-all duration-700 ease-out shadow-sm relative overflow-hidden" 
               style={{ width: `${Math.max(5, progress)}%` }}
@@ -231,12 +231,12 @@ export default function OnboardingPage() {
 
       {/* Body */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="max-w-6xl mx-auto px-6 py-4 md:py-8 min-h-[calc(100vh-100px)] flex flex-col justify-center">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center justify-center mb-8 animate-fade-in">
+        <div className="max-w-6xl mx-auto px-4 py-2 md:py-4 min-h-[50vh] md:min-h-[calc(100vh-140px)] flex flex-col justify-center">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center justify-center mb-4 md:mb-6 animate-fade-in">
             {/* Mascot Removed */}
             
             <div className="text-center md:text-left max-w-2xl">
-              <h2 className="text-2xl md:text-4xl font-black text-slate-800 leading-tight mb-3 whitespace-pre-line">
+              <h2 className="text-xl md:text-3xl font-black text-slate-800 leading-tight mb-2 whitespace-pre-line">
                 {currentMessage.text}
               </h2>
             </div>
@@ -245,7 +245,7 @@ export default function OnboardingPage() {
           <div className="w-full animate-fade-in delay-75">
             {isOptions && currentMessage.options && (
               <div className={`
-                w-full gap-4 lg:gap-6
+                w-full gap-3 lg:gap-4
                 ${isSingleOption ? 'flex justify-center' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}
               `}>
                 {currentMessage.options.map((opt) => (
@@ -270,7 +270,7 @@ export default function OnboardingPage() {
                 <input
                   ref={inputRef as React.RefObject<HTMLInputElement>}
                   type={currentMessage.inputType === 'phone' ? 'tel' : currentMessage.inputType === 'email' ? 'email' : currentMessage.inputType === 'password' ? 'password' : 'text'}
-                  className="w-full p-6 text-2xl md:text-3xl font-bold border-[3px] border-slate-200 rounded-2xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
+                  className="w-full p-4 md:p-5 text-xl md:text-2xl font-bold border-[3px] border-slate-200 rounded-xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
                   placeholder={currentMessage.inputType === 'password' ? 'Enter your password...' : currentMessage.inputType === 'phone' ? 'Enter numbers only...' : 'Type here...'}
                   value={textInput}
                   onChange={(e) => {
@@ -287,7 +287,7 @@ export default function OnboardingPage() {
                   onKeyDown={handleKeyDown}
                 />
                 <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none group-focus-within:text-[#25c9d0] transition-colors">
-                  <Edit2 size={24} />
+                  <Edit2 size={20} />
                 </div>
                 {currentMessage.inputType === 'phone' && (
                    <p className="text-center text-slate-400 mt-2 text-sm font-bold uppercase tracking-wide">Enter country code (e.g. +971...)</p>
@@ -299,8 +299,8 @@ export default function OnboardingPage() {
               <div className="relative group max-w-3xl mx-auto">
                 <textarea
                   ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-                  rows={5}
-                  className="w-full p-6 text-xl md:text-2xl font-medium border-[3px] border-slate-200 rounded-2xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 resize-none text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
+                  rows={4}
+                  className="w-full p-4 md:p-5 text-lg md:text-xl font-medium border-[3px] border-slate-200 rounded-xl focus:border-[#25c9d0] focus:bg-white bg-slate-100 outline-none transition-all placeholder-slate-300 resize-none text-slate-800 shadow-sm focus:shadow-[0_4px_0_0_#25c9d0]"
                   placeholder="Tell us about the project requirement"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
@@ -311,19 +311,19 @@ export default function OnboardingPage() {
 
             {currentMessage.inputType === 'file' && (
               <label className={`
-                flex flex-col items-center justify-center w-full h-64 border-[3px] border-dashed rounded-3xl cursor-pointer transition-all group relative overflow-hidden max-w-3xl mx-auto
+                flex flex-col items-center justify-center w-full h-56 border-[3px] border-dashed rounded-2xl cursor-pointer transition-all group relative overflow-hidden max-w-3xl mx-auto
                 ${fileInput ? 'border-[#25c9d0] bg-teal-50' : 'border-slate-300 bg-slate-100 hover:bg-white hover:border-slate-400 hover:shadow-lg'}
               `}>
                 <div className="z-10 flex flex-col items-center justify-center pt-5 pb-6">
-                  <div className={`p-5 rounded-2xl mb-4 transition-colors ${
+                  <div className={`p-4 rounded-xl mb-3 transition-colors ${
                     fileInput ? 'bg-white text-[#25c9d0] shadow-sm' : 'bg-slate-200 text-slate-400 group-hover:bg-[#ff5168] group-hover:text-white'
                   }`}>
-                    <Paperclip size={40} strokeWidth={2.5} />
+                    <Paperclip size={32} strokeWidth={2.5} />
                   </div>
-                  <p className="mb-2 text-xl font-bold text-slate-600">
+                  <p className="mb-2 text-lg font-bold text-slate-600">
                     {fileInput ? <span className="text-[#25c9d0]">{fileInput.name}</span> : <span>Upload Document</span>}
                   </p>
-                  <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                     {fileInput ? 'Click to change' : 'Drag & Drop or Click'}
                   </p>
                 </div>
@@ -345,7 +345,7 @@ export default function OnboardingPage() {
 
       {/* Footer */}
       {!isOptions && !isShareCard && !isGoogleAuth && (
-        <div className="border-t-2 border-slate-200 bg-white p-4 md:p-6 pb-8 z-20">
+        <div className="border-t-2 border-slate-200 bg-white p-3 md:p-5 pb-6 z-20">
           <div className="max-w-3xl mx-auto flex justify-between items-center">
             <div className="hidden md:block">
               {needsInput && textInput.length === 0 && (
@@ -365,7 +365,7 @@ export default function OnboardingPage() {
               onClick={() => handleTextSubmit()}
               disabled={!isInputValid() || isProcessing}
               className={`
-                w-full md:w-auto px-10 py-4 rounded-2xl font-black text-lg tracking-wider uppercase transition-all flex items-center justify-center gap-3
+                w-full md:w-auto px-8 py-3 md:px-10 md:py-4 rounded-xl font-black text-lg tracking-wider uppercase transition-all flex items-center justify-center gap-3
                 ${isInputValid() && !isProcessing
                   ? 'bg-[#ff5168] text-white shadow-[0_5px_0_0_#d64154] hover:bg-[#e63e54] hover:shadow-[0_4px_0_0_#d64154] active:shadow-none active:translate-y-[5px]'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
@@ -373,7 +373,7 @@ export default function OnboardingPage() {
               `}
             >
               {isProcessing ? 'WAITING...' : (isLastMessage && needsInput ? 'SUBMIT' : 'CONTINUE')}
-              {!isProcessing && <ArrowRight size={24} strokeWidth={3} />}
+              {!isProcessing && <ArrowRight size={20} strokeWidth={3} />}
             </button>
           </div>
         </div>
