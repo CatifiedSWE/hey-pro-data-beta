@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     Tabs,
     TabsContent,
@@ -24,8 +24,8 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
     // Logic to determine if a specific chat is open
     const isChatOpen = pathname?.includes('/inbox/c/') || pathname?.includes('/inbox/g/');
 
-    // Fetch conversations and groups
-    const fetchData = async () => {
+    // Fetch conversations and groups - wrapped in useCallback for optimization
+    const fetchData = useCallback(async () => {
         // Don't fetch if auth is still loading or user is not authenticated
         if (authLoading || !user) {
             return;
@@ -58,9 +58,10 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         } finally {
             setLoading(false);
         }
-    };
+    }, [authLoading, user]);
 
     // Initial fetch - only after auth is ready and user is authenticated
+    // Also refetch when pathname changes (navigation to /inbox)
     useEffect(() => {
         if (!authLoading && user) {
             fetchData();
@@ -68,7 +69,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
             // Auth is ready but no user - stop loading
             setLoading(false);
         }
-    }, [authLoading, user]);
+    }, [authLoading, user, fetchData, pathname]);
 
     // Poll for updates every 5 seconds - only if user is authenticated
     useEffect(() => {
@@ -79,7 +80,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [authLoading, user]);
+    }, [authLoading, user, fetchData]);
 
     return (
         <div className="w-full h-screen bg-[#F8F8F8] md:bg-white overflow-hidden flex flex-col md:flex-row justify-center items-stretch gap-4 p-0 md:p-6 max-w-[1600px] mx-auto">
