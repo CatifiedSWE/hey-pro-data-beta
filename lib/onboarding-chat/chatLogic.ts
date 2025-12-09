@@ -418,12 +418,65 @@ export const processNextStep = async (
           }
           
           // --- BATCH CHECK PATH (keeping for now, but ignoring) ---
-          else if (action === 'BATCH') {
+          else if (selectionValue === 'BATCH') {
               // This is ignored for now as per user request
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
                   text: "This feature is coming soon. Please use one of the other options.",
+                  isIntro: true
+              });
+          }
+          
+          // --- RETRY EMAIL PATH ---
+          else if (selectionValue === 'RETRY') {
+              // User wants to try another email
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'Welcome back! Please enter your password to continue.',
+                  inputType: 'password'
+              });
+              nextStep = 0; // Reset to step 0 for email input
+          }
+          
+          // --- JOIN CREW PATH ---
+          else if (selectionValue === 'JOIN_CREW') {
+              // User wants to join as crew instead
+              return {
+                  currentFlow: 'CREW',
+                  step: 0,
+                  formData: {},
+                  messages: [
+                      ...currentState.messages,
+                      { id: generateId(), type: 'bot', text: 'Good. Let's get your details in. This takes less than a minute.', isIntro: true },
+                      { id: generateId(), type: 'bot', text: 'First name?', inputType: 'text', delay: 1000 }
+                  ]
+              };
+          }
+          
+          // --- JOIN SUPPLIER PATH ---
+          else if (selectionValue === 'JOIN_SUPPLIER') {
+              // User wants to join as supplier instead
+              return {
+                  currentFlow: 'SUPPLIER',
+                  step: 0,
+                  formData: {},
+                  messages: [
+                      ...currentState.messages,
+                      { id: generateId(), type: 'bot', text: 'Nice. Let's add your company so people know how you provide for the industry.', isIntro: true },
+                      { id: generateId(), type: 'bot', text: 'What's the Company name?', inputType: 'text', delay: 1000 }
+                  ]
+              };
+          }
+          
+          // --- DONE PATH ---
+          else if (selectionValue === 'DONE') {
+              // User is done
+              nextMessages.push({
+                  id: generateId(),
+                  type: 'bot',
+                  text: 'All set. See you soon!',
                   isIntro: true
               });
           }
@@ -487,22 +540,14 @@ export const processNextStep = async (
               };
           }
           
-          if (selectionValue === 'RETRY') {
-              nextMessages.push({
-                  id: generateId(),
-                  type: 'bot',
-                  text: 'Okay, let’s try another one. What is the email?',
-                  inputType: 'email'
-              });
-              nextStep = 1; // Reset to step 1 so next input is treated as email
-          } else if (selectionValue === 'SWITCH_TO_SIGNIN') {
+          if (selectionValue === 'SWITCH_TO_SIGNIN') {
               // User wants to switch to sign in
               nextFormData.action = 'SIGNIN';
               nextMessages.push({
                   id: generateId(),
                   type: 'bot',
-                  text: 'Welcome back! Please enter your password to continue.',
-                  inputType: 'password'
+                  text: 'Okay, let’s try another one. What is the email?',
+                  inputType: 'email'
               });
           } else if (selectionValue === 'SWITCH_TO_ACTIVATION') {
               // User wants to switch to activation
