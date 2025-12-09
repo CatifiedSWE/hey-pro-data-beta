@@ -91,7 +91,21 @@ export default function VisaSection({ onUpdate }: VisaSectionProps) {
     const resetForm = () => {
         if (visa) {
             setNationality(visa.nationality || "");
-            setVisaType(visa.visa_type || "");
+            const savedVisaType = visa.visa_type || "";
+            
+            // Check if saved visa type is in the predefined list
+            if (visaTypes.includes(savedVisaType)) {
+                setVisaType(savedVisaType);
+                setCustomVisaName("");
+            } else if (savedVisaType) {
+                // If not in list, treat it as "Other" with custom name
+                setVisaType("Other");
+                setCustomVisaName(savedVisaType);
+            } else {
+                setVisaType("");
+                setCustomVisaName("");
+            }
+            
             setIssuedBy(visa.visa_issued_by || "");
             
             const passportDate = visa.passport_expiry_date ? new Date(visa.passport_expiry_date) : undefined;
@@ -104,6 +118,7 @@ export default function VisaSection({ onUpdate }: VisaSectionProps) {
         } else {
             setNationality("");
             setVisaType("");
+            setCustomVisaName("");
             setIssuedBy("");
             setPassportExpiryDate(undefined);
             setPassportMonth(undefined);
