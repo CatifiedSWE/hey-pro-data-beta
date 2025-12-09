@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
     console.log('[Chat API] Conversation created successfully:', newConversation.id);
     
     return NextResponse.json(
-      successResponse('Conversation created successfully', newConversation),
+      successResponse(newConversation, 'Conversation created successfully'),
       { status: 201 }
     );
 
