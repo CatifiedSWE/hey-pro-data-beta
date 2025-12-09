@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, use } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,8 @@ import axios from "@/lib/axios";
 
 type paramsType = { id: string };
 
-export default function MessageInbox({ params }: { params: paramsType }) {
-    const { id } = params;
+export default function MessageInbox({ params }: { params: Promise<paramsType> }) {
+    const { id } = use(params);
     const { user } = useAuth();
     
     // Refs
