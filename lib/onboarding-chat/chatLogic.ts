@@ -23,7 +23,7 @@ export const INITIAL_STATE: ChatState = {
         { label: 'I’m an existing member', value: 'EXISTING', icon: 'UserCheck' },
         { label: 'I’m new - I want to reserve my spot as crew/creative', value: 'CREW', icon: 'Clapperboard' },
         { label: 'I’m new - I want to apply as a supplier/vendor', value: 'SUPPLIER', icon: 'Truck' },
-        { label: 'I’m a client/agency - I need crew for my project', value: 'CLIENT', icon: 'Briefcase' },
+        { label: 'I’m a client - I need crew for my project', value: 'CLIENT', icon: 'Briefcase' },
         { label: 'Just exploring', value: 'EXPLORING', icon: 'Compass' }
       ],
       inputType: 'options_only'
