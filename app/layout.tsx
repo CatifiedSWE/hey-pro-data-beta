@@ -58,7 +58,7 @@ function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <head>
-        <meta name="apple-mobile-web-app-title" content="Eazika" />
+        <meta name="apple-mobile-web-app-title" content="HeyProData" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
