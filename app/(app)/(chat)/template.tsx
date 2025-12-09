@@ -105,10 +105,10 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
 
                             {/* Tabs Header */}
                             <div className="p-4 shrink-0">
-                                <TabsList className="flex flex-row w-full gap-2 mx-auto sm:w-96">
+                                <TabsList className="flex flex-row w-full gap-2 mx-auto sm:w-96 justify-center">
                                     <TabsTrigger
                                         value="chat"
-                                        className="flex-1 flex justify-center items-center px-[25px] py-[10px] h-[47px] rounded-[20px] cursor-pointer border-none relative bg-white data-[state=active]:bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC]"
+                                        className="flex justify-center items-center px-[25px] py-[10px] h-[47px] rounded-[20px] cursor-pointer border-none relative bg-white data-[state=active]:bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] w-48"
                                     >
                                         <span className="font-medium text-[18px] leading-[27px] text-black data-[state=active]:text-white z-10">
                                             Chats
@@ -127,7 +127,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="groups"
-                                        className="flex-1 flex justify-center items-center px-[25px] py-[10px] h-[47px] rounded-[20px] cursor-pointer border-none relative bg-white data-[state=active]:bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC]"
+                                        className="hidden flex-1 flex justify-center items-center px-[25px] py-[10px] h-[47px] rounded-[20px] cursor-pointer border-none relative bg-white data-[state=active]:bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC]"
                                     >
                                         <span className="font-medium text-[18px] leading-[27px] text-black data-[state=active]:text-white z-10">
                                             Groups
