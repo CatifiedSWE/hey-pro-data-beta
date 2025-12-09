@@ -17,14 +17,14 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Hey Pro Data",
+  title: "HeyProData",
   description: "A Creative Industry Marketplace Platform",
   keywords:
-    "Hey Pro Data, creative marketplace, film industry jobs, media professionals, hire creatives, production gigs, freelance filmmakers, creative collaboration, entertainment industry network, project hiring platform",
+    "HeyProData, creative marketplace, film industry jobs, media professionals, hire creatives, production gigs, freelance filmmakers, creative collaboration, entertainment industry network, project hiring platform",
   robots: { index: true, follow: true },
-  authors: [{ name: "Hey Pro Data", url: "https://heyprodata.com" }],
-  creator: "Hey Pro Data",
-  publisher: "Hey Pro Data",
+  authors: [{ name: "HeyProData", url: "https://heyprodata.com" }],
+  creator: "HeyProData",
+  publisher: "HeyProData",
   icons: {
     icon: [
       "/favicon.ico",
@@ -40,13 +40,13 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://heyprodata.com"),
   openGraph: {
-    title: "Hey Pro Data",
+    title: "HeyProData",
     description: "A Creative Industry Marketplace Platform",
     type: "website",
     emails: "support@heyprodata.com",
     countryName: "UAE",
     url: "https://heyprodata.com",
-    siteName: "Hey Pro Data",
+    siteName: "HeyProData",
     images: ["/favicon.ico", "logo.png"],
     locale: "en-UAE",
   },
