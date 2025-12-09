@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button"
 import { countries } from "@/lib/countries"
 import { ProfileShareModal } from "@/components/profile/ProfileShareModal"
 import { saveProfile, unsaveProfile } from "@/lib/api/profile-save"
+import { startConversation } from "@/lib/api/chat"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface ReadOnlyShortProfileProps {
   profile: any;
