@@ -25,9 +25,10 @@ export const ShareCard: React.FC = () => {
       case 'x':
         shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
         break;
-      case 'instagram':
-        shareUrl = "https://instagram.com";
-        break;
+      // case 'instagram':
+      //   // Instagram web share is not directly supported via URL parameters
+      //   shareUrl = "https://instagram.com";
+      //   break;
     }
     if (shareUrl) window.open(shareUrl, '_blank');
   };
@@ -55,9 +56,11 @@ export const ShareCard: React.FC = () => {
         <button onClick={() => handleShare('whatsapp')} className="p-3 bg-white rounded-full shadow-sm border border-slate-100 hover:scale-110 transition-transform duration-200">
           <SocialIcons.WhatsApp />
         </button>
+        {/* Instagram button hidden as requested/broken destination
         <button onClick={() => handleShare('instagram')} className="p-3 bg-white rounded-full shadow-sm border border-slate-100 hover:scale-110 transition-transform duration-200">
           <SocialIcons.Instagram />
         </button>
+        */}
         <button onClick={() => handleShare('x')} className="p-3 bg-white rounded-full shadow-sm border border-slate-100 hover:scale-110 transition-transform duration-200">
           <SocialIcons.X />
         </button>
