@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
     if (existing) {
       console.log('[Chat API] Conversation already exists:', existing.id);
       return NextResponse.json(
-        successResponse('Conversation already exists', existing)
+        successResponse(existing, 'Conversation already exists')
       );
     }
 
