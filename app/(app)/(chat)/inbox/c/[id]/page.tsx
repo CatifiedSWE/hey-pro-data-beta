@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, EllipsisVertical, Paperclip, Send } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getConversationMessages, sendConversationMessage, type Message } from "@/lib/api/chat";
+import { getConversationMessages, sendConversationMessage, markMessageAsRead, type Message } from "@/lib/api/chat";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ApprovalBanner from "../../../components/ApprovalBanner";
