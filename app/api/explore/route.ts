@@ -32,6 +32,47 @@ export async function GET(request: NextRequest) {
 
     const offset = (page - 1) * limit;
 
+    // If role filter is specified, first get user IDs with that role
+    let roleFilteredUserIds: string[] | null = null;
+    if (role || category) {
+      const searchRole = (role || category || '').toLowerCase().trim();
+      
+      const { data: userRoles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role_name');
+      
+      if (!rolesError && userRoles) {
+        // Filter roles that match the search term (case-insensitive, with trim)
+        roleFilteredUserIds = userRoles
+          .filter(r => {
+            const roleName = r.role_name.toLowerCase().trim();
+            return roleName === searchRole || roleName.includes(searchRole);
+          })
+          .map(r => r.user_id);
+        
+        // If no matching roles found, return empty results early
+        if (roleFilteredUserIds.length === 0) {
+          return NextResponse.json(
+            successResponse(
+              {
+                profiles: [],
+                pagination: {
+                  currentPage: page,
+                  totalPages: 0,
+                  totalProfiles: 0,
+                  limit,
+                  hasNextPage: false,
+                  hasPrevPage: false
+                }
+              },
+              'No profiles found matching the role filter'
+            ),
+            { status: 200 }
+          );
+        }
+      }
+    }
+
     // Build base query
     // Query only basic columns that exist in the database
     let query = supabase
@@ -55,6 +96,11 @@ export async function GET(request: NextRequest) {
     // Exclude current user from explore results
     if (currentUserId) {
       query = query.neq('user_id', currentUserId);
+    }
+
+    // Apply role filter by user IDs (if role filter was specified)
+    if (roleFilteredUserIds !== null) {
+      query = query.in('user_id', roleFilteredUserIds);
     }
 
     // Apply keyword search
@@ -122,15 +168,6 @@ export async function GET(request: NextRequest) {
           .eq('user_id', profile.user_id)
           .order('sort_order', { ascending: true });
 
-        // Filter by role if specified
-        if (role || category) {
-          const roleNames = roles?.map(r => r.role_name.toLowerCase().trim()) || [];
-          const searchRole = (role || category || '').toLowerCase().trim();
-          if (!roleNames.some(r => r === searchRole || r.includes(searchRole))) {
-            return null; // Skip this profile
-          }
-        }
-
         // Build display name with priority: alias_first_name + alias_surname (1st), first_name + surname (2nd)
         const aliasName = `${profile.alias_first_name || ''} ${profile.alias_surname || ''}`.trim();
         const realName = `${profile.first_name || ''} ${profile.surname || ''}`.trim();
@@ -158,8 +195,8 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    // Filter out null profiles (those that didn't match role filter)
-    let filteredProfiles = enrichedProfiles.filter(p => p !== null);
+    // All profiles are already filtered at query level, no need to filter again
+    let filteredProfiles = enrichedProfiles;
 
     // Apply randomization if seed is provided (for initial page loads)
     if (seed && page === 1) {
