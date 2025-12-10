@@ -34,11 +34,16 @@ export function useNotifications() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchNotifications = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('[useNotifications] No user found, skipping fetch');
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
+      
+      console.log('[useNotifications] Fetching notifications for user:', user.id);
       
       // Get auth token from Supabase
       const supabase = createClient();
@@ -46,9 +51,11 @@ export function useNotifications() {
       const token = session?.access_token;
 
       if (!token) {
+        console.error('[useNotifications] No auth token available');
         throw new Error('No auth token available');
       }
 
+      console.log('[useNotifications] Making API call to /api/notifications');
       const response = await axios.get('/api/notifications', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,12 +65,31 @@ export function useNotifications() {
         },
       });
 
+      console.log('[useNotifications] API Response:', {
+        success: response.data.success,
+        notificationCount: response.data.data?.notifications?.length || 0,
+        unreadCount: response.data.data?.unreadCount || 0,
+      });
+
       if (response.data.success) {
-        setNotifications(response.data.data.notifications || []);
-        setUnreadCount(response.data.data.unreadCount || 0);
+        const notifications = response.data.data.notifications || [];
+        const unreadCount = response.data.data.unreadCount || 0;
+        
+        console.log('[useNotifications] Setting notifications:', notifications);
+        console.log('[useNotifications] Setting unread count:', unreadCount);
+        
+        setNotifications(notifications);
+        setUnreadCount(unreadCount);
+      } else {
+        console.error('[useNotifications] API returned success: false');
       }
     } catch (err: any) {
-      console.error('Error fetching notifications:', err);
+      console.error('[useNotifications] Error fetching notifications:', err);
+      console.error('[useNotifications] Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
       setError(err.message);
     } finally {
       setLoading(false);
