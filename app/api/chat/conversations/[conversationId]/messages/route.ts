@@ -261,12 +261,18 @@ export async function POST(
       messageId: message.id,
     });
 
+    // ⭐ Create notification title based on type
+    const notificationTitle = conversation.is_approved
+      ? 'New Message'
+      : 'New Message Request';
+    
     const { data: notificationData, error: notificationError } = await supabase
       .from('notifications')
       .insert({
         user_id: recipientId,
         actor_id: user.id,
         type: notificationType,
+        title: notificationTitle,  // ✅ ADDED: Required field
         message: notificationMessage,
         metadata: {
           conversation_id: conversationId,
