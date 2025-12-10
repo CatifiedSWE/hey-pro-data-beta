@@ -103,17 +103,54 @@ END $$;
 -- =====================================================
 -- TABLE COMMENTS
 -- =====================================================
-COMMENT ON TABLE notifications IS 'User notifications for chat messages and system events';
-COMMENT ON COLUMN notifications.id IS 'Unique notification identifier';
-COMMENT ON COLUMN notifications.user_id IS 'Recipient of the notification';
-COMMENT ON COLUMN notifications.actor_id IS 'User who triggered the notification (e.g., message sender)';
-COMMENT ON COLUMN notifications.type IS 'Type of notification (chat_message, direct_message, conversation_request, etc.)';
-COMMENT ON COLUMN notifications.title IS 'Optional short title for the notification (max 200 chars)';
-COMMENT ON COLUMN notifications.message IS 'Notification message content (1-1000 chars)';
-COMMENT ON COLUMN notifications.is_read IS 'Whether the notification has been read by the user';
-COMMENT ON COLUMN notifications.metadata IS 'JSON object containing contextual data (conversation_id, message_id, sender_id, content, etc.)';
-COMMENT ON COLUMN notifications.created_at IS 'When the notification was created';
-COMMENT ON COLUMN notifications.updated_at IS 'When the notification was last updated';
+DO $$
+BEGIN
+    -- Add table comment
+    COMMENT ON TABLE notifications IS 'User notifications for chat messages and system events';
+    
+    -- Add column comments only if columns exist
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='id') THEN
+        COMMENT ON COLUMN notifications.id IS 'Unique notification identifier';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='user_id') THEN
+        COMMENT ON COLUMN notifications.user_id IS 'Recipient of the notification';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='actor_id') THEN
+        COMMENT ON COLUMN notifications.actor_id IS 'User who triggered the notification (e.g., message sender)';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='type') THEN
+        COMMENT ON COLUMN notifications.type IS 'Type of notification (chat_message, direct_message, conversation_request, etc.)';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='title') THEN
+        COMMENT ON COLUMN notifications.title IS 'Optional short title for the notification (max 200 chars)';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='message') THEN
+        COMMENT ON COLUMN notifications.message IS 'Notification message content (1-1000 chars)';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='is_read') THEN
+        COMMENT ON COLUMN notifications.is_read IS 'Whether the notification has been read by the user';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='metadata') THEN
+        COMMENT ON COLUMN notifications.metadata IS 'JSON object containing contextual data (conversation_id, message_id, sender_id, content, etc.)';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='created_at') THEN
+        COMMENT ON COLUMN notifications.created_at IS 'When the notification was created';
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='updated_at') THEN
+        COMMENT ON COLUMN notifications.updated_at IS 'When the notification was last updated';
+    END IF;
+    
+    RAISE NOTICE 'Table and column comments added successfully';
+END $$;
 
 -- =====================================================
 -- TRIGGERS FOR UPDATED_AT
