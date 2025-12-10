@@ -190,7 +190,7 @@ export default function CreditsSection() {
         <section className="isolate w-full max-w-[600px] rounded-[20px] bg-[#FAFAFA] p-[29px] shadow-[0px_1px_10px_rgba(0,0,0,0.1)]">
             <header className="mb-6 flex items-start justify-between gap-4">
                 <div>
-                    <h2 className="text-[22px] font-[400] leading-[33px] text-black">Credits</h2>
+                    <h2 className="text-[22px] font-semibold leading-[33px] text-black">Credits</h2>
                 </div>
                 <CreditsEditor
                     mode="add"
