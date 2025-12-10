@@ -201,6 +201,7 @@ export async function POST(
       user_id: memberId,
       actor_id: user.id,
       type: 'group_added',
+      title: 'Added to Group',  // ✅ ADDED: Required field
       message: 'You have been added to a group',
       metadata: {
         group_id: groupId,
