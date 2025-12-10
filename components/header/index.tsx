@@ -195,16 +195,14 @@ export default function Header() {
                 onMouseLeave={() => setChatOpen(false)}
               >
                 <Link href="/inbox"
-
                   className="relative cursor-pointer"
                 >
                   <MessageCircleMore className="h-9 w-9" />
-                  <Badge className="absolute top-6 right-1 h-3 w-3 rounded-full p-0 flex items-center justify-center text-xs bg-[#FA596E] text-white">
-
-                  </Badge>
+                  {chatUnreadCount > 0 && (
+                    <Badge className="absolute top-6 right-1 h-3 w-3 rounded-full p-0 flex items-center justify-center text-xs bg-[#FA596E] text-white">
+                    </Badge>
+                  )}
                 </Link>
-
-
               </div>
 
               <div
