@@ -165,14 +165,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger for notifications
-CREATE TRIGGER trigger_notifications_updated_at
-    BEFORE UPDATE ON notifications
-    FOR EACH ROW
-    EXECUTE FUNCTION update_notifications_updated_at();
+-- Drop existing trigger if it exists, then create it
+DO $$
+BEGIN
+    -- Drop trigger if exists
+    DROP TRIGGER IF EXISTS trigger_notifications_updated_at ON notifications;
+    
+    -- Create trigger only if updated_at column exists
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='updated_at') THEN
+        CREATE TRIGGER trigger_notifications_updated_at
+            BEFORE UPDATE ON notifications
+            FOR EACH ROW
+            EXECUTE FUNCTION update_notifications_updated_at();
+        RAISE NOTICE 'Trigger for updated_at created successfully';
+    ELSE
+        RAISE NOTICE 'Skipped trigger creation: updated_at column does not exist';
+    END IF;
+END $$;
 
 COMMENT ON FUNCTION update_notifications_updated_at() IS 'Automatically updates updated_at timestamp on row modification';
-COMMENT ON TRIGGER trigger_notifications_updated_at ON notifications IS 'Trigger to update updated_at on every update';
 
 -- =====================================================
 -- VERIFICATION QUERY
