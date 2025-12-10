@@ -474,12 +474,12 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     </div>
                                 )}
                                 
-                                <div className="rounded-[5.71px] border border-[#017A7C]/30 px-4 py-2.5 flex items-center justify-between bg-white">
+                                <div className="rounded-[5.71px] border border-[#017A7C]/30 pl-4 pr-3 py-2.5 flex items-center justify-between bg-white">
                                     <label className="text-sm font-[400] text-[#017A7C]">Availability</label>
                                     <select 
                                         value={filterForm.availability} 
                                         onChange={(e) => handleFilterChange("availability", e.target.value)}
-                                        className="bg-transparent outline-none text-sm text-right cursor-pointer font-[400] text-[#017A7C] min-w-[80px]"
+                                        className="bg-transparent outline-none text-sm text-right cursor-pointer font-[400] text-[#017A7C] min-w-[80px] pr-1"
                                     >
                                         <option value="">Any</option>
                                         <option value="available">Available</option>
@@ -491,7 +491,8 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     <select
                                         value={filterForm.productionType}
                                         onChange={(e) => handleFilterChange("productionType", e.target.value)}
-                                        className="w-full rounded-[5.71px] border border-[#017A7C]/30 px-4 py-2.5 text-sm font-[400] text-[#017A7C] bg-white focus:outline-none focus:ring-2 focus:ring-[#31A7AC] cursor-pointer"
+                                        className="w-full rounded-[5.71px] border border-[#017A7C]/30 pl-4 pr-3 py-2.5 text-sm font-[400] text-[#017A7C] bg-white focus:outline-none focus:ring-2 focus:ring-[#31A7AC] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23017A7C%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e')] bg-[length:16px_16px] bg-[right_0.75rem_center] bg-no-repeat"
+                                        style={{ paddingRight: '2.5rem' }}
                                     >
                                         <option value="">Select production type</option>
                                         <option value="commercial">Commercial</option>
