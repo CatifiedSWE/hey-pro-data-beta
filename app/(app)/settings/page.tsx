@@ -248,23 +248,21 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-            <div className="mb-6">
+        <div className="container mx-auto px-4 py-4 max-w-4xl">
+            <div className="mb-4">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent">
                     Settings
                 </h1>
-                <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
+                <p className="text-gray-600 mt-1">Manage your account settings and preferences</p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {/* Account Information */}
-                <Card className="p-6 border-gray-200 bg-white" data-testid="account-info-card">
-                    <div className="mb-4">
-                        <h2 className="text-xl font-semibold">Account Information</h2>
-                    </div>
-                    <Separator className="mb-4" />
+                <Card className="p-4 border-gray-200 bg-white" data-testid="account-info-card">
+                    <h2 className="text-xl font-semibold mb-2">Account Information</h2>
+                    <Separator className="mb-3" />
                     
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div>
                             <Label htmlFor="email" className="text-sm font-medium text-gray-700">
                                 Email Address
@@ -302,15 +300,15 @@ export default function SettingsPage() {
                 </Card>
 
                 {/* Password Management */}
-                <Card className="p-6 border-gray-200 bg-white" data-testid="password-management-card">
-                    <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <Card className="p-4 border-gray-200 bg-white" data-testid="password-management-card">
+                    <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
                         <KeyRound className="h-5 w-5" />
                         Password Management
                     </h2>
-                    <Separator className="mb-4" />
+                    <Separator className="mb-3" />
                     
                     {/* Send Password Reset Email */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         <h3 className="text-sm font-semibold text-gray-700">Reset Your Password</h3>
                         <p className="text-sm text-gray-600">
                             We'll send a password reset link to your email address
@@ -536,18 +534,18 @@ export default function SettingsPage() {
                 </Card> */}
 
                 {/* Account Deletion */}
-                <Card className="p-6 border-red-200 bg-red-50/50" data-testid="account-deletion-card">
-                    <h2 className="text-xl font-semibold text-red-700 mb-4">Danger Zone</h2>
-                    <Separator className="mb-4 bg-red-200" />
+                <Card className="p-4 border-red-200 bg-red-50/50" data-testid="account-deletion-card">
+                    <h2 className="text-xl font-semibold text-red-700 mb-2">Danger Zone</h2>
+                    <Separator className="mb-3 bg-red-200" />
                     
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         <p className="text-sm text-gray-700">
                             Once you delete your account, there is no going back. Please be certain.
                         </p>
                         <p className="text-sm text-gray-700 font-semibold">
                             This will permanently delete:
                         </p>
-                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                        <ul className="text-sm text-gray-600 list-disc list-inside space-y-0.5">
                             <li>Your profile and personal information</li>
                             <li>All your gig postings and applications</li>
                             <li>Collaboration posts and projects</li>
@@ -560,7 +558,7 @@ export default function SettingsPage() {
                             <AlertDialogTrigger asChild>
                                 <Button
                                     variant="destructive"
-                                    className="bg-red-600 hover:bg-red-700 mt-4"
+                                    className="bg-red-600 hover:bg-red-700 mt-2"
                                     data-testid="delete-account-trigger"
                                 >
                                     <Trash2 className="h-4 w-4 mr-2" />
