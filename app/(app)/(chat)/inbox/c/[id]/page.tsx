@@ -136,6 +136,34 @@ export default function MessageInbox({ params }: { params: Promise<paramsType> }
         lastMessageCount.current = messages.length;
     }, [messages]);
 
+    // ⭐ Mark unread messages as read when viewing conversation
+    useEffect(() => {
+        const markMessagesAsRead = async () => {
+            if (!user || messages.length === 0) return;
+
+            // Find unread messages from the other user
+            const unreadMessages = messages.filter(
+                msg => msg.sender_id !== user.id && msg.status !== 'read'
+            );
+
+            // Mark each unread message as read
+            for (const msg of unreadMessages) {
+                try {
+                    await markMessageAsRead(msg.id);
+                } catch (err) {
+                    console.error('Error marking message as read:', err);
+                }
+            }
+
+            // If any messages were marked as read, refresh the conversation list
+            if (unreadMessages.length > 0) {
+                fetchConversationDetails();
+            }
+        };
+
+        markMessagesAsRead();
+    }, [messages, user, fetchConversationDetails]);
+
     // Auto-scroll to bottom on new messages (but not when loading more)
     useEffect(() => {
         if (scrollRef.current && !loadingMore) {
