@@ -149,7 +149,7 @@ export default function Header() {
             {/* Logo & Search Group */}
             <div className="flex items-center gap-2">
               {/* Logo */}
-              <Link href="/" className="flex items-center shrink-0">
+              <Link href="/profile" className="flex items-center shrink-0">
                 <img 
                   src="/logo/web-app-manifest-461x161.png" 
                   alt="HeyProData" 
@@ -394,7 +394,7 @@ export default function Header() {
                             </span>
                           </Link>
                         </Button>
-{/*  settings
+
                         <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base" asChild>
                           <Link href="/settings" onClick={() => setUserMenuOpen(false)}>
                             <span className="font-[400]">
@@ -402,7 +402,7 @@ export default function Header() {
                             </span>
                           </Link>
                         </Button>
-                         */}
+                        
                         
                         
                         <Separator className="mt-2 mb-0" />
