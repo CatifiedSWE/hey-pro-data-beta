@@ -206,7 +206,15 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
                 onMouseEnter={() => setCoverImageHovered(true)}
                 onMouseLeave={() => setCoverImageHovered(false)}
             >
-                <div className="relative sm:h-[150px] h-[88px] w-full overflow-hidden rounded-[20px]">
+                <div 
+                    className="relative sm:h-[150px] h-[88px] w-full overflow-hidden rounded-[20px]"
+                    onClick={(e) => {
+                        // Only toggle on mobile when tapping the banner (not the buttons)
+                        if (window.innerWidth < 640 && !(e.target as HTMLElement).closest('button')) {
+                            setShowMobileButtons(!showMobileButtons);
+                        }
+                    }}
+                >
                     <Image
                         src={profile?.banner_url || '/default-banner.png'}
                         alt="Cover image"
@@ -253,33 +261,35 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
                             )}
                         </div>
                     </div>
-                    {/* Mobile always-visible buttons */}
-                    <div className="absolute sm:hidden bottom-2 right-2 flex gap-2">
-                        <label htmlFor="cover-image-upload">
-                            <Button 
-                                variant="default" 
-                                size="sm"
-                                className="rounded-full bg-[#FA6E80] hover:bg-[#FA6E80] min-h-[44px] min-w-[44px] px-4 shadow-lg" 
-                                disabled={uploadingBanner}
-                                asChild
-                            >
-                                <span className="cursor-pointer text-xs sm:text-sm">
-                                    {uploadingBanner ? 'Uploading...' : 'Edit'}
-                                </span>
-                            </Button>
-                        </label>
-                        {profile?.banner_url && (
-                            <Button 
-                                variant="ghost" 
-                                size="sm"
-                                className="rounded-full border border-white bg-black/40 text-white hover:bg-black/60 min-h-[44px] min-w-[44px] px-4 shadow-lg"
-                                onClick={handleBannerRemove}
-                                disabled={uploadingBanner}
-                            >
-                                <span className="text-xs sm:text-sm">Remove</span>
-                            </Button>
-                        )}
-                    </div>
+                    {/* Mobile tap-to-show buttons */}
+                    {showMobileButtons && (
+                        <div className="absolute sm:hidden bottom-2 right-2 flex gap-2 animate-in fade-in slide-in-from-right duration-200">
+                            <label htmlFor="cover-image-upload">
+                                <Button 
+                                    variant="default" 
+                                    size="sm"
+                                    className="rounded-full bg-[#FA6E80] hover:bg-[#FA6E80] min-h-[44px] min-w-[44px] px-4 shadow-lg" 
+                                    disabled={uploadingBanner}
+                                    asChild
+                                >
+                                    <span className="cursor-pointer text-xs sm:text-sm">
+                                        {uploadingBanner ? 'Uploading...' : 'Edit'}
+                                    </span>
+                                </Button>
+                            </label>
+                            {profile?.banner_url && (
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="rounded-full border border-white bg-black/40 text-white hover:bg-black/60 min-h-[44px] min-w-[44px] px-4 shadow-lg"
+                                    onClick={handleBannerRemove}
+                                    disabled={uploadingBanner}
+                                >
+                                    <span className="text-xs sm:text-sm">Remove</span>
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="absolute inset-x-0 top-[38px] sm:top-[108px] left-[9px] sm:left-[58px] flex justify-start">
