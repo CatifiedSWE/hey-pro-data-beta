@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id, // Send to self for testing
         actor_id: user.id,
         type: 'test_notification',
+        title: 'Test Notification',  // ✅ ADDED: Required field
         message: `Test notification created at ${new Date().toISOString()}`,
         metadata: {
           test: true,
