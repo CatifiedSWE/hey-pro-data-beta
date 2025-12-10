@@ -350,6 +350,5 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
                     </div>
                 </DialogContent>
             </Dialog>
-        </div>
     );
 }
