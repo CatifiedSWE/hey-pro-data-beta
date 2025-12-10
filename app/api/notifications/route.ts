@@ -68,14 +68,19 @@ export async function GET(request: NextRequest) {
         if (notification.actor_id) {
           const { data: actorProfile } = await supabase
             .from('user_profiles')
-            .select('id, name, profile_photo_url')
+            .select('user_id, first_name, surname, alias_first_name, alias_surname, profile_photo_url')
             .eq('user_id', notification.actor_id)
             .maybeSingle();
           
           if (actorProfile) {
+            // Prioritize alias names over regular names
+            const firstName = actorProfile.alias_first_name || actorProfile.first_name || '';
+            const surname = actorProfile.alias_surname || actorProfile.surname || '';
+            const fullName = `${firstName} ${surname}`.trim() || 'User';
+            
             actor = {
-              id: actorProfile.id,
-              name: actorProfile.name,
+              id: actorProfile.user_id,
+              name: fullName,
               avatar: actorProfile.profile_photo_url
             };
           }
