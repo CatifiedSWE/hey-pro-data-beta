@@ -35,10 +35,10 @@ function CreditCard({ credit, onEdit }: { credit: CreditType; onEdit: () => void
     const heading = headingParts.filter(Boolean).join(" • ") || credit.creditTitle
     const releaseSuffix = credit.releaseYear ? ` (${credit.releaseYear}${credit.isUnreleased ? " • Unreleased" : ""})` : ""
 
-    const roleLine = [credit.role, credit.localCompany || credit.internationalCompany]
+    const roleLine = [credit.role, credit.localCompany || credit.internationalCompany, credit.country]
         .filter(Boolean)
         .join(" • ")
-    const companyLine = [credit.internationalCompany, credit.country].filter(Boolean).join(" • ")
+    const companyLine = null; // Country is now shown in roleLine
     const productionTimeline = [credit.productionType, formatRange(credit.startDate, credit.endDate)].filter(Boolean).join(" • ")
     const awards = credit.awards ?? []
 

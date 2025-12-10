@@ -50,10 +50,10 @@ export default function ReadOnlyCreditsSection({ credits }: ReadOnlyCreditsSecti
         {credits.map((credit) => {
           const heading = credit.brandClient || credit.projectTitle || credit.creditTitle || "Untitled";
           const displayYear = credit.releaseYear;
-          const roleLine = [credit.role, credit.localCompany || credit.internationalCompany]
+          const roleLine = [credit.role, credit.localCompany || credit.internationalCompany, credit.country]
             .filter(Boolean)
             .join(" • ");
-          const companyLine = [credit.internationalCompany, credit.country].filter(Boolean).join(" • ");
+          const companyLine = null; // Country is now shown in roleLine
           
           return (
             <article
