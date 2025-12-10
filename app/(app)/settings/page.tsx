@@ -259,19 +259,8 @@ export default function SettingsPage() {
             <div className="space-y-6">
                 {/* Account Information */}
                 <Card className="p-6 border-gray-200 bg-white" data-testid="account-info-card">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="mb-4">
                         <h2 className="text-xl font-semibold">Account Information</h2>
-                        {!isEditingAccount && (
-                            <Button
-                                onClick={() => setIsEditingAccount(true)}
-                                variant="outline"
-                                size="sm"
-                                className="border-[#6A89BE] text-[#6A89BE] hover:bg-[#6A89BE] hover:text-white"
-                                data-testid="edit-account-button"
-                            >
-                                Edit
-                            </Button>
-                        )}
                     </div>
                     <Separator className="mb-4" />
                     
@@ -286,15 +275,11 @@ export default function SettingsPage() {
                                     id="email"
                                     type="email"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    disabled={!isEditingAccount}
-                                    className="pl-10 disabled:bg-[#F8F8F8] disabled:cursor-not-allowed"
+                                    disabled
+                                    className="pl-10 bg-[#F8F8F8] cursor-not-allowed"
                                     data-testid="email-input"
                                 />
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                                Note: Changing your email will require verification
-                            </p>
                         </div>
 
                         <div>
@@ -306,43 +291,13 @@ export default function SettingsPage() {
                                 <Input
                                     id="phone"
                                     type="tel"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    disabled={!isEditingAccount}
-                                    className="pl-10 disabled:bg-[#F8F8F8] disabled:cursor-not-allowed"
+                                    value={phone || "Not provided"}
+                                    disabled
+                                    className="pl-10 bg-[#F8F8F8] cursor-not-allowed"
                                     data-testid="phone-input"
                                 />
                             </div>
                         </div>
-
-                        {isEditingAccount && (
-                            <div className="flex gap-2 pt-2">
-                                <Button
-                                    onClick={handleSaveAccountInfo}
-                                    disabled={savingAccount}
-                                    className="bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] text-white hover:opacity-90"
-                                    data-testid="save-account-button"
-                                >
-                                    {savingAccount ? (
-                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    ) : (
-                                        <Save className="h-4 w-4 mr-2" />
-                                    )}
-                                    Save Changes
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        setIsEditingAccount(false);
-                                        fetchSettings(); // Reset to original values
-                                    }}
-                                    variant="outline"
-                                    disabled={savingAccount}
-                                    data-testid="cancel-edit-button"
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        )}
                     </div>
                 </Card>
 
@@ -376,8 +331,8 @@ export default function SettingsPage() {
                     </div>
                 </Card>
 
-                {/* Notification Preferences */}
-                <Card className="p-6 border-gray-200 bg-white" data-testid="notification-preferences-card">
+                {/* Notification Preferences - Commented for now */}
+                {/* <Card className="p-6 border-gray-200 bg-white" data-testid="notification-preferences-card">
                     <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                         <Bell className="h-5 w-5" />
                         Notification Preferences
@@ -487,10 +442,10 @@ export default function SettingsPage() {
                             Save Preferences
                         </Button>
                     </div>
-                </Card>
+                </Card> */}
 
-                {/* Privacy Settings */}
-                <Card className="p-6 border-gray-200 bg-white" data-testid="privacy-settings-card">
+                {/* Privacy Settings - Commented for now */}
+                {/* <Card className="p-6 border-gray-200 bg-white" data-testid="privacy-settings-card">
                     <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                         <Shield className="h-5 w-5" />
                         Privacy Settings
@@ -578,7 +533,7 @@ export default function SettingsPage() {
                             Save Privacy Settings
                         </Button>
                     </div>
-                </Card>
+                </Card> */}
 
                 {/* Account Deletion */}
                 <Card className="p-6 border-red-200 bg-red-50/50" data-testid="account-deletion-card">
