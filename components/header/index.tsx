@@ -201,19 +201,52 @@ export default function Header() {
                           </Button>
                         </div>
                         <Separator className="mb-2" />
-                        {notifications.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">No notifications</p>
+                        {loading ? (
+                          <p className="text-sm text-muted-foreground text-center py-4">Loading...</p>
+                        ) : notifications.length === 0 ? (
+                          <p className="text-sm text-muted-foreground text-center py-4">No notifications</p>
                         ) : (
                           notifications.map((notification) => (
-                            <div
+                            <Link
                               key={notification.id}
-                              className={`p-3 rounded-lg mb-2 cursor-pointer hover:bg-secondary/50 ${!notification.read ? "bg-accent/10" : ""
-                                }`}
+                              href={
+                                notification.metadata?.conversation_id
+                                  ? `/inbox/c/${notification.metadata.conversation_id}`
+                                  : '#'
+                              }
+                              onClick={() => {
+                                if (!notification.isRead) {
+                                  markAsRead(notification.id)
+                                }
+                                setNotificationOpen(false)
+                              }}
+                              className={`block p-3 rounded-lg mb-2 cursor-pointer hover:bg-secondary/50 ${
+                                !notification.isRead ? "bg-accent/10" : ""
+                              }`}
                             >
-                              <h4 className="font-medium">{notification.title}</h4>
-                              <p className="text-sm text-muted-foreground">{notification.description}</p>
-                              <span className="text-xs text-muted-foreground">{notification.time}</span>
-                            </div>
+                              <div className="flex items-start gap-3">
+                                {notification.actor?.avatar && (
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={notification.actor.avatar} alt={notification.actor.name} />
+                                    <AvatarFallback>{notification.actor.name?.[0] || 'U'}</AvatarFallback>
+                                  </Avatar>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-sm">
+                                    {notification.title || notification.type.replace(/_/g, ' ')}
+                                  </h4>
+                                  <p className="text-sm text-muted-foreground truncate">
+                                    {notification.message}
+                                  </p>
+                                  <span className="text-xs text-muted-foreground">
+                                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                                  </span>
+                                </div>
+                                {!notification.isRead && (
+                                  <div className="h-2 w-2 rounded-full bg-blue-500 mt-2" />
+                                )}
+                              </div>
+                            </Link>
                           ))
                         )}
                       </div>
