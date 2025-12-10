@@ -487,12 +487,11 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     </select>
                                 </div>
 
-                                <div className="space-y-1">
+                                <div className="space-y-1 relative">
                                     <select
                                         value={filterForm.productionType}
                                         onChange={(e) => handleFilterChange("productionType", e.target.value)}
-                                        className="w-full rounded-[5.71px] border border-[#017A7C]/30 pl-4 pr-3 py-2.5 text-sm font-[400] text-[#017A7C] bg-white focus:outline-none focus:ring-2 focus:ring-[#31A7AC] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23017A7C%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e')] bg-[length:16px_16px] bg-[right_0.75rem_center] bg-no-repeat"
-                                        style={{ paddingRight: '2.5rem' }}
+                                        className="w-full rounded-[5.71px] border border-[#017A7C]/30 pl-4 pr-10 py-2.5 text-sm font-[400] text-[#017A7C] bg-white focus:outline-none focus:ring-2 focus:ring-[#31A7AC] cursor-pointer appearance-none"
                                     >
                                         <option value="">Select production type</option>
                                         <option value="commercial">Commercial</option>
@@ -500,6 +499,11 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                         <option value="film">Film</option>
                                         <option value="social">Social / Digital</option>
                                     </select>
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#017A7C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-1">
