@@ -130,7 +130,6 @@ export function useNotifications() {
     if (!user) return;
 
     try {
-      const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
