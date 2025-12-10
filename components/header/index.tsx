@@ -31,7 +31,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { useProfile } from "@/hooks/useProfile"
 import { useNotifications } from "@/hooks/useNotifications"
 import { formatDistanceToNow } from "date-fns"
-import { createClient } from "@/lib/supabase/client"
+import supabase from "@/lib/supabase/client"
 
 interface NavigationMenuItem {
   title: string;
