@@ -30,6 +30,7 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
     const [coverImageHovered, setCoverImageHovered] = useState(false)
     const [uploadingBanner, setUploadingBanner] = useState(false)
     const [uploadingProfile, setUploadingProfile] = useState(false)
+    const [showMobileButtons, setShowMobileButtons] = useState(false)
     const filterScrollRef = useRef<HTMLDivElement>(null)
     const bannerInputRef = useRef<HTMLInputElement>(null)
     const profileInputRef = useRef<HTMLInputElement>(null)
