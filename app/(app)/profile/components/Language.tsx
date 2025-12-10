@@ -131,12 +131,16 @@ export default function AddLanguageSection({ languages: initialLanguages, trigge
         <>
             <Dialog open={isLanguagesDialogOpen} onOpenChange={setIsLanguagesDialogOpen}>
                 <DialogTrigger asChild>
-                    <div
-                        onClick={handleOpenLanguagesDialog}
-                        className="flex flex-row gap-5 h-[44px] w-auto text-base font-medium rounded-[15px]  bg-transparent border px-9 justify-start items-center cursor-pointer hover:bg-muted/50 border-[#444444] "
-                    >
-                        Language
-                    </div>
+                    {trigger ? (
+                        trigger
+                    ) : (
+                        <div
+                            onClick={handleOpenLanguagesDialog}
+                            className="flex flex-row gap-5 h-[44px] w-auto text-base font-medium rounded-[15px]  bg-transparent border px-9 justify-start items-center cursor-pointer hover:bg-muted/50 border-[#444444] "
+                        >
+                            Language
+                        </div>
+                    )}
                 </DialogTrigger>
                 <DialogContent className="">
                     <DialogHeader>
