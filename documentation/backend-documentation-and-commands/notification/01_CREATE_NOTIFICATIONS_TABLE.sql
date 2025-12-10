@@ -70,12 +70,27 @@ BEGIN
         RAISE NOTICE 'Notifications table created successfully';
     ELSE
         -- Table exists, add missing columns if they don't exist
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='notifications' AND column_name='title') THEN
+        RAISE NOTICE 'Notifications table already exists, checking for missing columns...';
+        
+        -- Add actor_id if missing
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='actor_id') THEN
+            ALTER TABLE notifications ADD COLUMN actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+            RAISE NOTICE 'Added actor_id column to notifications table';
+        END IF;
+        
+        -- Add title if missing
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='title') THEN
             ALTER TABLE notifications ADD COLUMN title TEXT CHECK (title IS NULL OR char_length(title) <= 200);
             RAISE NOTICE 'Added title column to notifications table';
         END IF;
         
-        RAISE NOTICE 'Notifications table already exists, checked for missing columns';
+        -- Add metadata if missing
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='metadata') THEN
+            ALTER TABLE notifications ADD COLUMN metadata JSONB DEFAULT '{}'::jsonb;
+            RAISE NOTICE 'Added metadata column to notifications table';
+        END IF;
+        
+        RAISE NOTICE 'All missing columns added successfully';
     END IF;
 END $$;
 
