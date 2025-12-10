@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     // Get user profile data
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
-      .select('email, phone, first_name, surname, notification_preferences, privacy_settings')
+      .select('email, phone, first_name, surname')
       .eq('user_id', user.id)
       .single();
 
@@ -42,13 +42,13 @@ export async function GET(request: NextRequest) {
         phone: profile?.phone || '',
         firstName: profile?.first_name || '',
         surname: profile?.surname || '',
-        notificationPreferences: profile?.notification_preferences || {
+        notificationPreferences: {
           emailNotifications: true,
           applicationUpdates: true,
           collabInvites: true,
           eventReminders: true,
         },
-        privacySettings: profile?.privacy_settings || {
+        privacySettings: {
           profileVisibility: 'public',
           showEmail: false,
           showPhone: false,
@@ -88,25 +88,23 @@ export async function PATCH(request: NextRequest) {
     const updateData: any = {};
 
     if (phone !== undefined) updateData.phone = phone;
-    if (notificationPreferences !== undefined) {
-      updateData.notification_preferences = notificationPreferences;
-    }
-    if (privacySettings !== undefined) {
-      updateData.privacy_settings = privacySettings;
-    }
+    // Note: notification_preferences and privacy_settings are not stored in database
+    // These settings would need database columns added if persistence is required
 
-    // Update profile
-    const { error: updateError } = await supabase
-      .from('user_profiles')
-      .update(updateData)
-      .eq('user_id', user.id);
+    // Update profile (only if there's data to update)
+    if (Object.keys(updateData).length > 0) {
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update(updateData)
+        .eq('user_id', user.id);
 
-    if (updateError) {
-      console.error('[Settings PATCH] Update error:', updateError);
-      return NextResponse.json(
-        errorResponse('Failed to update settings'),
-        { status: 500 }
-      );
+      if (updateError) {
+        console.error('[Settings PATCH] Update error:', updateError);
+        return NextResponse.json(
+          errorResponse('Failed to update settings'),
+          { status: 500 }
+        );
+      }
     }
 
     // If email is being updated, update in auth as well

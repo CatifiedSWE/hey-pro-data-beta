@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Eye, EyeOff, Trash2, Save, Mail, Phone, Bell, Shield, Send, Loader2, KeyRound } from "lucide-react";
+import { Trash2, Save, Mail, Phone, Bell, Shield, Send, Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { getAccessToken } from "@/lib/supabase/client";
 import axios from "axios";
@@ -32,7 +32,6 @@ export default function SettingsPage() {
     // Loading States
     const [loading, setLoading] = useState(true);
     const [savingAccount, setSavingAccount] = useState(false);
-    const [changingPassword, setChangingPassword] = useState(false);
     const [sendingResetEmail, setSendingResetEmail] = useState(false);
     const [savingPreferences, setSavingPreferences] = useState(false);
     const [deletingAccount, setDeletingAccount] = useState(false);
@@ -43,14 +42,6 @@ export default function SettingsPage() {
     const [firstName, setFirstName] = useState("");
     const [surname, setSurname] = useState("");
     const [isEditingAccount, setIsEditingAccount] = useState(false);
-
-    // Password Change State
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // Notification Preferences State
     const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>({
@@ -138,70 +129,6 @@ export default function SettingsPage() {
             toast.error(error.response?.data?.error || "Failed to update account information");
         } finally {
             setSavingAccount(false);
-        }
-    };
-
-    const handlePasswordChange = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (newPassword.length < 8) {
-            toast.error("Password must be at least 8 characters long");
-            return;
-        }
-        
-        if (!/(?=.*[a-z])/.test(newPassword)) {
-            toast.error("Password must contain at least one lowercase letter");
-            return;
-        }
-        
-        if (!/(?=.*[A-Z])/.test(newPassword)) {
-            toast.error("Password must contain at least one uppercase letter");
-            return;
-        }
-        
-        if (!/(?=.*[0-9])/.test(newPassword)) {
-            toast.error("Password must contain at least one number");
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
-
-        try {
-            setChangingPassword(true);
-            const token = await getAccessToken();
-            
-            if (!token) {
-                toast.error("Authentication required");
-                return;
-            }
-
-            const response = await axios.post(
-                "/api/settings/change-password",
-                {
-                    currentPassword,
-                    newPassword,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (response.data.success) {
-                toast.success("Password changed successfully!");
-                setCurrentPassword("");
-                setNewPassword("");
-                setConfirmPassword("");
-            }
-        } catch (error: any) {
-            console.error("Failed to change password:", error);
-            toast.error(error.response?.data?.error || "Failed to change password");
-        } finally {
-            setChangingPassword(false);
         }
     };
 
@@ -427,116 +354,16 @@ export default function SettingsPage() {
                     </h2>
                     <Separator className="mb-4" />
                     
-                    {/* Change Password Form */}
-                    <form onSubmit={handlePasswordChange} className="space-y-4 mb-6">
-                        <h3 className="text-sm font-semibold text-gray-700">Change Password</h3>
-                        
-                        <div>
-                            <Label htmlFor="current-password" className="text-sm font-medium text-gray-700">
-                                Current Password
-                            </Label>
-                            <div className="relative mt-1">
-                                <Input
-                                    id="current-password"
-                                    type={showCurrentPassword ? "text" : "password"}
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                    placeholder="Enter current password"
-                                    className="pr-10"
-                                    data-testid="current-password-input"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    data-testid="toggle-current-password"
-                                >
-                                    {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <Label htmlFor="new-password" className="text-sm font-medium text-gray-700">
-                                New Password
-                            </Label>
-                            <div className="relative mt-1">
-                                <Input
-                                    id="new-password"
-                                    type={showNewPassword ? "text" : "password"}
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    placeholder="Enter new password"
-                                    className="pr-10"
-                                    data-testid="new-password-input"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    data-testid="toggle-new-password"
-                                >
-                                    {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                </button>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">
-                                Must be at least 8 characters with uppercase, lowercase, and number
-                            </p>
-                        </div>
-
-                        <div>
-                            <Label htmlFor="confirm-password" className="text-sm font-medium text-gray-700">
-                                Confirm New Password
-                            </Label>
-                            <div className="relative mt-1">
-                                <Input
-                                    id="confirm-password"
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    placeholder="Confirm new password"
-                                    className="pr-10"
-                                    data-testid="confirm-password-input"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    data-testid="toggle-confirm-password"
-                                >
-                                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                </button>
-                            </div>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            disabled={changingPassword}
-                            className="bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] text-white hover:opacity-90"
-                            data-testid="change-password-button"
-                        >
-                            {changingPassword ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            ) : (
-                                <KeyRound className="h-4 w-4 mr-2" />
-                            )}
-                            Change Password
-                        </Button>
-                    </form>
-
-                    <Separator className="my-6" />
-
                     {/* Send Password Reset Email */}
                     <div className="space-y-3">
-                        <h3 className="text-sm font-semibold text-gray-700">Forgot Your Password?</h3>
+                        <h3 className="text-sm font-semibold text-gray-700">Reset Your Password</h3>
                         <p className="text-sm text-gray-600">
-                            Send a password reset link to your email address
+                            We'll send a password reset link to your email address
                         </p>
                         <Button
                             onClick={handleRequestPasswordReset}
                             disabled={sendingResetEmail}
-                            variant="outline"
-                            className="border-[#6A89BE] text-[#6A89BE] hover:bg-[#6A89BE] hover:text-white"
+                            className="bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] text-white hover:opacity-90"
                             data-testid="send-reset-email-button"
                         >
                             {sendingResetEmail ? (
