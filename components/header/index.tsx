@@ -30,6 +30,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext"
 import { useProfile } from "@/hooks/useProfile"
 import { useNotifications } from "@/hooks/useNotifications"
+import { useChatUnreadCount } from "@/hooks/useChatUnreadCount"
 import { formatDistanceToNow } from "date-fns"
 import supabase from "@/lib/supabase/client"
 
