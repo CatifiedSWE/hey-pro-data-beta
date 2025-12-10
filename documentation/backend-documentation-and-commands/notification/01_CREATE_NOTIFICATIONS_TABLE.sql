@@ -19,50 +19,65 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 --   - actor_id → auth.users (trigger user)
 -- =====================================================
 
-CREATE TABLE IF NOT EXISTS notifications (
-    -- Primary Key
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
-    -- User References
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-    
-    -- Notification Content
-    type TEXT NOT NULL CHECK (type IN (
-        'chat_message',           -- Generic chat message
-        'direct_message',         -- Approved conversation message
-        'conversation_request',   -- Unapproved conversation message
-        'group_message',          -- Group chat message
-        'application_received',   -- Gig application received
-        'status_changed',         -- Application status changed
-        'interest_expressed',     -- Interest in collab post
-        'collab_invitation',      -- Invited to collaborate
-        'event_rsvp',            -- Event RSVP notification
-        'system_notification'    -- System-level notification
-    )),
-    
-    title TEXT CHECK (title IS NULL OR char_length(title) <= 200),
-    message TEXT NOT NULL CHECK (char_length(message) >= 1 AND char_length(message) <= 1000),
-    
-    -- Status
-    is_read BOOLEAN NOT NULL DEFAULT FALSE,
-    
-    -- Metadata (JSONB for flexibility)
-    -- Expected structure for chat notifications:
-    -- {
-    --   "conversation_id": "uuid",
-    --   "message_id": "uuid",
-    --   "sender_id": "uuid",
-    --   "content": "message preview...",
-    --   "chatroom_id": "uuid" (for group chats),
-    --   "requires_approval": false
-    -- }
-    metadata JSONB DEFAULT '{}'::jsonb,
-    
-    -- Timestamps
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+-- Check if table exists, if not create it
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'notifications') THEN
+        CREATE TABLE notifications (
+            -- Primary Key
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            
+            -- User References
+            user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+            actor_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+            
+            -- Notification Content
+            type TEXT NOT NULL CHECK (type IN (
+                'chat_message',           -- Generic chat message
+                'direct_message',         -- Approved conversation message
+                'conversation_request',   -- Unapproved conversation message
+                'group_message',          -- Group chat message
+                'application_received',   -- Gig application received
+                'status_changed',         -- Application status changed
+                'interest_expressed',     -- Interest in collab post
+                'collab_invitation',      -- Invited to collaborate
+                'event_rsvp',            -- Event RSVP notification
+                'system_notification'    -- System-level notification
+            )),
+            
+            title TEXT CHECK (title IS NULL OR char_length(title) <= 200),
+            message TEXT NOT NULL CHECK (char_length(message) >= 1 AND char_length(message) <= 1000),
+            
+            -- Status
+            is_read BOOLEAN NOT NULL DEFAULT FALSE,
+            
+            -- Metadata (JSONB for flexibility)
+            -- Expected structure for chat notifications:
+            -- {
+            --   "conversation_id": "uuid",
+            --   "message_id": "uuid",
+            --   "sender_id": "uuid",
+            --   "content": "message preview...",
+            --   "chatroom_id": "uuid" (for group chats),
+            --   "requires_approval": false
+            -- }
+            metadata JSONB DEFAULT '{}'::jsonb,
+            
+            -- Timestamps
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        RAISE NOTICE 'Notifications table created successfully';
+    ELSE
+        -- Table exists, add missing columns if they don't exist
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='notifications' AND column_name='title') THEN
+            ALTER TABLE notifications ADD COLUMN title TEXT CHECK (title IS NULL OR char_length(title) <= 200);
+            RAISE NOTICE 'Added title column to notifications table';
+        END IF;
+        
+        RAISE NOTICE 'Notifications table already exists, checked for missing columns';
+    END IF;
+END $$;
 
 -- =====================================================
 -- TABLE COMMENTS
