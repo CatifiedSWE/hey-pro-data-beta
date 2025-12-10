@@ -213,20 +213,19 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
         : tempCountries.slice(0, 6).map(c => ({ ...c, isSpecial: false }));
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                    {trigger ? (
-                        trigger
-                    ) : (
-                        <div
-                            onClick={handleOpenDialog}
-                            className="flex flex-row gap-5 h-11 w-auto text-base font-medium rounded-[15px] bg-transparent border px-9 justify-center items-center cursor-pointer hover:bg-muted/50 border-grey "
-                        >
-                            Available to travel
-                        </div>
-                    )}
-                </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                {trigger ? (
+                    trigger
+                ) : (
+                    <div
+                        onClick={handleOpenDialog}
+                        className="flex flex-row gap-5 h-11 w-auto text-base font-medium rounded-[15px] bg-transparent border px-9 justify-center items-center cursor-pointer hover:bg-muted/50 border-grey "
+                    >
+                        Available to travel
+                    </div>
+                )}
+            </DialogTrigger>
                 <DialogContent className=" border-none p-0">
                     <VisuallyHidden>
                         <DialogTitle>Available to travel</DialogTitle>
