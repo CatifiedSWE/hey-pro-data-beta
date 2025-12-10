@@ -814,9 +814,9 @@ export const processNextStep = async (
                  ]
              };
          } else if (selectionValue === 'DONE') {
-             // Go back to first page
+             // Go to profile page
              if (typeof window !== 'undefined') {
-                 window.location.href = '/';
+                 window.location.href = '/profile';
              }
          } else if (selectionValue === 'SHARE') {
              // Share flow - now opens on same screen
@@ -1020,7 +1020,7 @@ export const processNextStep = async (
                };
            } else if (selectionValue === 'DONE') {
                if (typeof window !== 'undefined') {
-                   window.location.href = '/';
+                   window.location.href = '/profile';
                }
            } else if (selectionValue === 'SHARE') {
                nextMessages.push({
