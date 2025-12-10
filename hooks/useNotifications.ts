@@ -46,7 +46,6 @@ export function useNotifications() {
       console.log('[useNotifications] Fetching notifications for user:', user.id);
       
       // Get auth token from Supabase
-      const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
 
