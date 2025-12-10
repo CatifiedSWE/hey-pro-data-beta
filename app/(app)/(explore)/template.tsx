@@ -710,8 +710,8 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                     </div>
 
                 </div>
-                <div className="flex w-full flex-col gap-6 lg:flex-row">
-                    <div className={`${isFilterOpen ? 'sm:flex hidden' : 'hidden lg:flex'} w-full flex-col gap-4 rounded-2xl bg-white/50 p-4 lg:max-w-[280px] lg:sticky lg:top-[88px] lg:self-start lg:overflow-y-auto lg:h-[calc(100vh-120px)]`}>
+                <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start">
+                    <aside className={`${isFilterOpen ? 'sm:flex hidden' : 'hidden lg:flex'} w-full flex-col gap-4 rounded-2xl bg-white/50 p-4 lg:max-w-[280px] sticky top-20 self-start overflow-y-auto max-h-[calc(100vh-6rem)]`}>
 
                         {filterOptions.map(opt => {
                             // Check if any role in this category is active
@@ -772,8 +772,8 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                             );
                         })
                         }
-                    </div>
-                    <div className="w-full flex-1 overflow-x-hidden p-2 sm:p-4 min-h-[600px]">{children}</div>
+                    </aside>
+                    <main className="w-full flex-1 overflow-x-hidden p-2 sm:p-4 min-h-[600px]">{children}</main>
                 </div>
 
             </div>
