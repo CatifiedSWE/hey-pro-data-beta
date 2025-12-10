@@ -474,12 +474,12 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     </div>
                                 )}
                                 
-                                <div className="rounded-[5.71px] border border-[#017A7C]/30 pl-4 py-2 justify-between items-center flex">
-                                    <label className="text-sm font-[400] w-full">Availability</label>
+                                <div className="rounded-[5.71px] border border-[#017A7C]/30 px-4 py-2.5 flex items-center justify-between bg-white">
+                                    <label className="text-sm font-[400] text-[#017A7C]">Availability</label>
                                     <select 
                                         value={filterForm.availability} 
                                         onChange={(e) => handleFilterChange("availability", e.target.value)}
-                                        className="bg-transparent outline-none text-sm text-right pr-4 cursor-pointer"
+                                        className="bg-transparent outline-none text-sm text-right cursor-pointer font-[400] text-[#017A7C] min-w-[80px]"
                                     >
                                         <option value="">Any</option>
                                         <option value="available">Available</option>
@@ -491,7 +491,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     <select
                                         value={filterForm.productionType}
                                         onChange={(e) => handleFilterChange("productionType", e.target.value)}
-                                        className="w-full rounded-[5.71px] border border-[#017A7C]/30 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#31A7AC]"
+                                        className="w-full rounded-[5.71px] border border-[#017A7C]/30 px-4 py-2.5 text-sm font-[400] text-[#017A7C] bg-white focus:outline-none focus:ring-2 focus:ring-[#31A7AC] cursor-pointer"
                                     >
                                         <option value="">Select production type</option>
                                         <option value="commercial">Commercial</option>
@@ -501,21 +501,21 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                     </select>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2 rounded-xl border border-[#017A7C]/30 px-4 py-2 bg-white">
-                                        <MapPin className="h-4 w-4 text-[#017A7C]" />
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2 rounded-[5.71px] border border-[#017A7C]/30 px-4 py-2.5 bg-white">
+                                        <MapPin className="h-4 w-4 text-[#017A7C] flex-shrink-0" />
                                         <input
                                             value={filterForm.location}
                                             onChange={(e) => handleFilterChange("location", e.target.value)}
-                                            className="w-full border-none text-sm outline-none"
+                                            className="w-full border-none text-sm font-[400] text-[#017A7C] outline-none placeholder:text-[#017A7C]/50"
                                             placeholder="Location"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <label className="text-sm font-[400]">Experience</label>
+                                <div className="space-y-2 pt-1">
+                                    <div className="flex items-center justify-between px-1">
+                                        <label className="text-sm font-[400] text-[#017A7C]">Experience</label>
                                         {filterForm.experience && (
                                             <button
                                                 type="button"
