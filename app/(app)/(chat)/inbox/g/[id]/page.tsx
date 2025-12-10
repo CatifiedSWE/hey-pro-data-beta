@@ -89,6 +89,29 @@ export default function MessageInbox({ params }: { params: Promise<paramsType> }
         lastMessageCount.current = messages.length;
     }, [messages]);
 
+    // ⭐ Mark unread messages as read when viewing group chat
+    useEffect(() => {
+        const markMessagesAsRead = async () => {
+            if (!user || messages.length === 0) return;
+
+            // Find unread messages from other users
+            const unreadMessages = messages.filter(
+                msg => msg.sender_id !== user.id && msg.status !== 'read'
+            );
+
+            // Mark each unread message as read
+            for (const msg of unreadMessages) {
+                try {
+                    await markMessageAsRead(msg.id);
+                } catch (err) {
+                    console.error('Error marking message as read:', err);
+                }
+            }
+        };
+
+        markMessagesAsRead();
+    }, [messages, user]);
+
     // Auto-scroll to bottom on new messages (but not when loading more)
     useEffect(() => {
         if (scrollRef.current && !loadingMore) {
