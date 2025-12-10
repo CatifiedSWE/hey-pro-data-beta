@@ -58,11 +58,18 @@ export default function Header() {
   
   const { user, signOut } = useAuth()
   const { profile } = useProfile()
+  const { notifications, unreadCount, loading, fetchNotifications, markAsRead } = useNotifications()
   const router = useRouter()
   const pathname = usePathname()
 
-  const unreadCount = notifications.filter((n) => !n.read).length
   const isProfilePage = pathname === '/profile'
+
+  // Refresh notifications when dropdown opens
+  useEffect(() => {
+    if (notificationOpen) {
+      fetchNotifications()
+    }
+  }, [notificationOpen, fetchNotifications])
 
   const handleSignOut = async () => {
     await signOut()
