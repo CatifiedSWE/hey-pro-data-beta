@@ -16,6 +16,7 @@ import { Flag } from "@/components/ui/flag";
 interface AvailableCountryProps {
     availableCountries: any[]; // Keeping prop compatibility
     onUpdate?: () => void;
+    trigger?: React.ReactNode;
 }
 
 const haveSameCountries = (a: Country[], b: Country[]) => {
@@ -24,7 +25,7 @@ const haveSameCountries = (a: Country[], b: Country[]) => {
     return b.every((country) => codes.has(country.code));
 };
 
-export default function AvalableCountryForTravel({ availableCountries: _ignore, onUpdate }: AvailableCountryProps) {
+export default function AvalableCountryForTravel({ availableCountries: _ignore, onUpdate, trigger }: AvailableCountryProps) {
     const { travelCountries: apiTravelCountries, addTravelCountry, addTravelCountriesBatch, deleteTravelCountry, deleteTravelCountriesBatch, fetchTravelCountries } = useProfile();
     
     const [isDialogOpen, setIsDialogOpen] = useState(false);
