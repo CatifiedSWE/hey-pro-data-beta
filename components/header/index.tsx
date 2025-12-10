@@ -75,8 +75,6 @@ export default function Header() {
   // Optional: Real-time notification updates via Supabase Realtime
   useEffect(() => {
     if (!user) return
-
-    const supabase = createClient()
     
     // Subscribe to new notifications
     const channel = supabase
