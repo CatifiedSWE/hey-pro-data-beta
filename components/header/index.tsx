@@ -71,6 +71,49 @@ export default function Header() {
     }
   }, [notificationOpen, fetchNotifications])
 
+  // Optional: Real-time notification updates via Supabase Realtime
+  useEffect(() => {
+    if (!user) return
+
+    const supabase = createClient()
+    
+    // Subscribe to new notifications
+    const channel = supabase
+      .channel('notifications-channel')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Fetch notifications when a new one arrives
+          fetchNotifications()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Refresh when notifications are updated (e.g., marked as read)
+          fetchNotifications()
+        }
+      )
+      .subscribe()
+
+    // Cleanup on unmount
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, fetchNotifications])
+
   const handleSignOut = async () => {
     await signOut()
     router.push('/onboarding')
