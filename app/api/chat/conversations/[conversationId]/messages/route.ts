@@ -261,7 +261,7 @@ export async function POST(
       messageId: message.id,
     });
 
-    // ⭐ Create notification title based on type
+    // ⭐ Create notification title based on type (FIXED: Added required title field)
     const notificationTitle = conversation.is_approved
       ? 'New Message'
       : 'New Message Request';
