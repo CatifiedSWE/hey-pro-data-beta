@@ -133,7 +133,7 @@ export default function AddLanguageSection({ languages: initialLanguages }: { la
                 <DialogTrigger asChild>
                     <div
                         onClick={handleOpenLanguagesDialog}
-                        className="flex flex-row gap-5 h-[44px] w-auto text-base font-[400] rounded-[15px]  bg-transparent border px-9 justify-start items-center cursor-pointer hover:bg-muted/50 border-[#444444] "
+                        className="flex flex-row gap-5 h-[44px] w-auto text-base font-medium rounded-[15px]  bg-transparent border px-9 justify-start items-center cursor-pointer hover:bg-muted/50 border-[#444444] "
                     >
                         Language
                     </div>
