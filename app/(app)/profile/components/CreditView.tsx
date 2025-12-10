@@ -74,11 +74,11 @@ function CreditCard({ credit, onEdit }: { credit: CreditType; onEdit: () => void
                                 src={credit.imgUrl}
                                 alt={credit.creditTitle}
                                 width={190}
-                                height={225}
-                                className="w-full sm:w-[190px] h-auto sm:h-[225px] rounded-[5px] object-cover"
+                                height={285}
+                                className="w-full sm:w-[190px] h-auto sm:h-[285px] rounded-[5px] object-cover"
                             />
                         ) : (
-                            <div className="relative w-full sm:w-[190px] h-[280px] sm:h-[225px] rounded-[5px] bg-[#ffffff] shadow-[4px_4px_6.4px_rgba(0,0,0,0.03)]">
+                            <div className="relative w-full sm:w-[190px] h-[400px] sm:h-[285px] rounded-[5px] bg-[#ffffff] shadow-[4px_4px_6.4px_rgba(0,0,0,0.03)]">
                                 <div className="absolute left-3 top-3 flex items-center gap-[6px]">
                                     <span className="relative inline-flex h-[22px] w-[22px] items-center justify-center rounded-full border-[2px] border-[#25C9D0] bg-white" />
                                     <span className="relative inline-flex h-[22px] w-[22px] items-center justify-center rounded-full border-[2px] border-[#FF5168] bg-white" />
