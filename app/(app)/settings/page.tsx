@@ -259,8 +259,8 @@ export default function SettingsPage() {
             <div className="space-y-4">
                 {/* Account Information */}
                 <Card className="p-4 border-gray-200 bg-white" data-testid="account-info-card">
-                    <h2 className="text-xl font-semibold mb-1">Account Information</h2>
-                    <Separator className="mb-3" />
+                    <h2 className="text-xl font-semibold mb-0.5">Account Information</h2>
+                    <Separator className="mb-2" />
                     
                     <div className="space-y-3">
                         <div>
@@ -301,11 +301,11 @@ export default function SettingsPage() {
 
                 {/* Password Management */}
                 <Card className="p-4 border-gray-200 bg-white" data-testid="password-management-card">
-                    <h2 className="text-xl font-semibold mb-1 flex items-center gap-2">
+                    <h2 className="text-xl font-semibold mb-0.5 flex items-center gap-2">
                         <KeyRound className="h-5 w-5" />
                         Password Management
                     </h2>
-                    <Separator className="mb-3" />
+                    <Separator className="mb-2" />
                     
                     {/* Send Password Reset Email */}
                     <div className="space-y-2">
@@ -535,8 +535,8 @@ export default function SettingsPage() {
 
                 {/* Account Deletion */}
                 <Card className="p-4 border-red-200 bg-red-50/50" data-testid="account-deletion-card">
-                    <h2 className="text-xl font-semibold text-red-700 mb-1">Danger Zone</h2>
-                    <Separator className="mb-3 bg-red-200" />
+                    <h2 className="text-xl font-semibold text-red-700 mb-0.5">Danger Zone</h2>
+                    <Separator className="mb-2 bg-red-200" />
                     
                     <div className="space-y-2">
                         <p className="text-sm text-gray-700">
