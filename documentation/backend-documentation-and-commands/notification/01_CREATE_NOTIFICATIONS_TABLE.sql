@@ -90,6 +90,12 @@ BEGIN
             RAISE NOTICE 'Added metadata column to notifications table';
         END IF;
         
+        -- Add updated_at if missing
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='notifications' AND column_name='updated_at') THEN
+            ALTER TABLE notifications ADD COLUMN updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+            RAISE NOTICE 'Added updated_at column to notifications table';
+        END IF;
+        
         RAISE NOTICE 'All missing columns added successfully';
     END IF;
 END $$;
