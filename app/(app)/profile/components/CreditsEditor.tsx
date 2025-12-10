@@ -879,13 +879,13 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
 
                             <div className="space-y-3">
                                 {creditForm.image ? (
-                                    <div className="relative rounded-[20px] overflow-hidden border border-[#E5E5E5]">
+                                    <div className="relative rounded-[20px] overflow-hidden border border-[#E5E5E5] mx-auto max-w-[280px]">
                                         <Image
                                             src={creditForm.image}
                                             alt="Credit artwork"
-                                            className="w-full h-48 object-cover"
-                                            height={100}
-                                            width={100}
+                                            className="w-full aspect-[2/3] object-cover"
+                                            height={420}
+                                            width={280}
                                         />
                                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3">
                                             <Button
@@ -916,7 +916,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                 ) : (
                                     <div className="rounded-[20px] border border-dashed border-[#31A7AC] bg-white/80 px-6 py-8 text-center">
                                         <p className="text-sm text-[#211536] font-medium mb-2">Upload image (Max 5 MB)</p>
-                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB • Portrait 9:16 ratio recommended</p>
+                                        <p className="text-xs text-[#8D8D8D] mb-4">PNG, JPG up to 5MB • Portrait 2:3 ratio recommended</p>
                                         <Button
                                             type="button"
                                             variant="outline"
