@@ -40,9 +40,11 @@ export function useSectionVisibility(userId?: string) {
     }
   }, [userId]);
 
+  // Only fetch on mount or when userId changes, not on every fetchVisibility change
   useEffect(() => {
     fetchVisibility();
-  }, [fetchVisibility]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]); // Only re-fetch when userId changes
 
   const toggleVisibility = async (sectionName: SectionName) => {
     const newVisibility = !visibility[sectionName];

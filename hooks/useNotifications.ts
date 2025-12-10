@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
 import supabase from '@/lib/supabase/client';
@@ -32,12 +32,30 @@ export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isFetchingRef = useRef(false); // Prevent duplicate fetches
+  const lastFetchTimeRef = useRef(0); // Track last fetch time
 
   const fetchNotifications = useCallback(async () => {
     if (!user) {
       console.log('[useNotifications] No user found, skipping fetch');
       return;
     }
+
+    // Debounce: Don't fetch if we fetched within the last 2 seconds
+    const now = Date.now();
+    if (now - lastFetchTimeRef.current < 2000) {
+      console.log('[useNotifications] Debouncing fetch (too soon since last fetch)');
+      return;
+    }
+
+    // Prevent duplicate simultaneous fetches
+    if (isFetchingRef.current) {
+      console.log('[useNotifications] Already fetching, skipping duplicate request');
+      return;
+    }
+
+    isFetchingRef.current = true;
+    lastFetchTimeRef.current = now;
 
     try {
       setLoading(true);
@@ -92,6 +110,7 @@ export function useNotifications() {
       setError(err.message);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   }, [user]);
 
@@ -155,9 +174,13 @@ export function useNotifications() {
     }
   }, [user]);
 
+  // Only fetch on mount, not on every fetchNotifications change
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+    if (user) {
+      fetchNotifications();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // Only re-fetch when user changes
 
   return {
     notifications,

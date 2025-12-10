@@ -67,14 +67,20 @@ export default function Header() {
 
   const isProfilePage = pathname === '/profile'
 
-  // Refresh notifications when dropdown opens
+  // Refresh notifications when dropdown opens (with debouncing)
   useEffect(() => {
     if (notificationOpen) {
-      fetchNotifications()
+      // Small delay to prevent immediate refetch if already fetched recently
+      const timer = setTimeout(() => {
+        fetchNotifications()
+      }, 100)
+      return () => clearTimeout(timer)
     }
-  }, [notificationOpen, fetchNotifications])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notificationOpen]) // Removed fetchNotifications dependency to prevent unnecessary refetches
 
   // Optional: Real-time notification updates via Supabase Realtime
+  // OPTIMIZED: Only subscribe once per user, not on every fetchNotifications change
   useEffect(() => {
     if (!user) return
     
@@ -113,7 +119,8 @@ export default function Header() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [user, fetchNotifications])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]) // Only re-subscribe when user ID changes
 
   const handleSignOut = async () => {
     await signOut()

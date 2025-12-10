@@ -3,7 +3,7 @@
  * Used for displaying unread count badge in the navbar
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getConversations, getGroups } from '@/lib/api/chat';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -11,6 +11,7 @@ export function useChatUnreadCount() {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const isFetchingRef = useRef(false); // Prevent duplicate fetches
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) {
@@ -18,6 +19,13 @@ export function useChatUnreadCount() {
       setLoading(false);
       return;
     }
+
+    // Prevent duplicate simultaneous fetches
+    if (isFetchingRef.current) {
+      return;
+    }
+
+    isFetchingRef.current = true;
 
     try {
       // Fetch conversations and groups in parallel
@@ -44,21 +52,26 @@ export function useChatUnreadCount() {
       setUnreadCount(0);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   }, [user]);
 
-  // Initial fetch
+  // Initial fetch - only when user changes, not when fetchUnreadCount changes
   useEffect(() => {
-    fetchUnreadCount();
-  }, [fetchUnreadCount]);
+    if (user) {
+      fetchUnreadCount();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // Only re-fetch when user changes
 
-  // Poll for updates every 5 seconds
+  // Poll for updates every 30 seconds (reduced from 5 seconds)
+  // This significantly reduces API calls while still keeping data reasonably fresh
   useEffect(() => {
     if (!user) return;
 
     const interval = setInterval(() => {
       fetchUnreadCount();
-    }, 5000);
+    }, 30000); // Changed from 5000 to 30000 (30 seconds)
 
     return () => clearInterval(interval);
   }, [user, fetchUnreadCount]);

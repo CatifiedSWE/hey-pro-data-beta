@@ -1087,12 +1087,18 @@ export const useProfile = () => {
   // Reduces 11 API calls to 1 call (91% reduction)
   useEffect(() => {
     fetchCompleteProfile();
-  }, []); // FIXED: Empty dependency array since fetchCompleteProfile is stable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only fetch once on mount
 
   // Auto-recalculate profile completion for existing users
   // This ensures old users get the new calculation on profile load
+  // OPTIMIZED: Only runs once after initial profile load, not on every state change
   useEffect(() => {
     if (!profile || loading) return;
+    
+    // Use a flag to ensure this only runs once per session
+    const hasRecalculated = sessionStorage.getItem('profile-recalculated');
+    if (hasRecalculated) return;
     
     // Calculate what the completion SHOULD be with new logic
     const calculatedCompletion = calculateLocalCompletion(
@@ -1112,6 +1118,9 @@ export const useProfile = () => {
     if (difference > 1) {
       console.log(`[Profile Completion] Auto-recalculating for user (stored: ${storedCompletion}%, calculated: ${calculatedCompletion}%)`);
       
+      // Mark as recalculated to prevent multiple calls
+      sessionStorage.setItem('profile-recalculated', 'true');
+      
       // Update in background without blocking UI
       apiCalling({
         method: 'post',
@@ -1129,7 +1138,8 @@ export const useProfile = () => {
         console.error('[Profile Completion] Failed to recalculate:', err);
       });
     }
-  }, [profile, roles, links, skills, credits, languages, loading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.user_id]); // Only run when profile user_id changes (i.e., on first load)
 
   return {
     // Profile data
