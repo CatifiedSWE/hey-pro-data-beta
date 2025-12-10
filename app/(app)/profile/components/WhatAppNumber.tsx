@@ -40,10 +40,12 @@ export default function WhatupNumbers({
     countryCode: initialCountryCode,
     phoneNumber: initialPhoneNumber,
     email: initialEmail,
+    trigger,
 }: {
     countryCode?: string;
     phoneNumber?: string;
     email?: string;
+    trigger?: React.ReactNode;
 }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [open, setOpen] = useState(false);
