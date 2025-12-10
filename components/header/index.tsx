@@ -61,6 +61,7 @@ export default function Header() {
   const { user, signOut } = useAuth()
   const { profile } = useProfile()
   const { notifications, unreadCount, loading, fetchNotifications, markAsRead } = useNotifications()
+  const { unreadCount: chatUnreadCount } = useChatUnreadCount()
   const router = useRouter()
   const pathname = usePathname()
 
