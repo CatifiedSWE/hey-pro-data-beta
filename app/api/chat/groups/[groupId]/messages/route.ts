@@ -181,6 +181,7 @@ export async function POST(
         user_id: member.user_id,
         actor_id: user.id,
         type: 'group_message',
+        title: 'New Group Message',  // ✅ ADDED: Required field
         message: `New message in group: ${content.substring(0, 100)}`,
         metadata: {
           group_id: groupId,
