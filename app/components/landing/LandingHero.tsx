@@ -51,30 +51,14 @@ export const LandingHero: React.FC = () => {
           <p className="font-medium text-slate-200">Want to start that now?</p>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+        {/* CTA Button */}
+        <div className="flex items-center justify-center">
           <button 
             onClick={handleGetStarted}
-            className="group relative inline-flex items-center gap-2 bg-[#ff5168] hover:bg-[#e63e54] text-white text-base md:text-lg font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-[0_10px_40px_-10px_rgba(255,81,104,0.5)] hover:shadow-[0_20px_60px_-15px_rgba(255,81,104,0.6)] hover:scale-105 active:scale-95 active:shadow-none"
+            className="group relative inline-flex items-center gap-3 bg-[#ff5168] hover:bg-[#e63e54] text-white text-lg md:text-xl font-bold px-12 py-5 rounded-full transition-all duration-300 shadow-[0_10px_40px_-10px_rgba(255,81,104,0.5)] hover:shadow-[0_20px_60px_-15px_rgba(255,81,104,0.6)] hover:scale-105 active:scale-95 active:shadow-none"
           >
-            <span>Join as crew</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          
-          <button 
-            onClick={() => router.push('/onboarding')}
-            className="group relative inline-flex items-center gap-2 bg-[#25c9d0] hover:bg-[#1eb5bf] text-white text-base md:text-lg font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-[0_10px_40px_-10px_rgba(37,201,208,0.5)] hover:shadow-[0_20px_60px_-15px_rgba(37,201,208,0.6)] hover:scale-105 active:scale-95 active:shadow-none"
-          >
-            <span>Join as supplier</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          
-          <button 
-            onClick={() => router.push('/onboarding')}
-            className="group relative inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white text-base md:text-lg font-bold px-8 py-4 rounded-full transition-all duration-300 shadow-[0_10px_40px_-10px_rgba(71,85,105,0.5)] hover:shadow-[0_20px_60px_-15px_rgba(71,85,105,0.6)] hover:scale-105 active:scale-95 active:shadow-none"
-          >
-            <span>See what this is building toward</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <span>Get Started</span>
+            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
