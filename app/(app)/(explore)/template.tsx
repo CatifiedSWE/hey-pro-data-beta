@@ -446,7 +446,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         <>
             <div className="max-w-7xl mx-auto">
                 <span className="hidden p-2 md:inline-block bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent text-2xl font-semibold">Crew</span>
-                <div className="sticky top-0 z-50 flex w-full flex-row gap-2 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
+                <div className="sticky top-0 z-50 flex w-full flex-row gap-2 bg-white p-4 sm:flex-row sm:items-center">
 
                     <DropdownMenu open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                         <DropdownMenuTrigger asChild>
@@ -711,7 +711,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
 
                 </div>
                 <div className="flex w-full flex-col gap-6 lg:flex-row">
-                    <div className={`${isFilterOpen ? 'sm:flex hidden' : 'hidden lg:flex'} w-full flex-col gap-4 rounded-2xl bg-white/50 p-4 lg:max-w-[280px] lg:overflow-y-auto h-[calc(100vh-200px)]`}>
+                    <div className={`${isFilterOpen ? 'sm:flex hidden' : 'hidden lg:flex'} w-full flex-col gap-4 rounded-2xl bg-white/50 p-4 lg:max-w-[280px] lg:sticky lg:top-[88px] lg:self-start lg:overflow-y-auto lg:h-[calc(100vh-120px)]`}>
 
                         {filterOptions.map(opt => {
                             // Check if any role in this category is active
