@@ -124,9 +124,9 @@ export async function GET(request: NextRequest) {
 
         // Filter by role if specified
         if (role || category) {
-          const roleNames = roles?.map(r => r.role_name.toLowerCase()) || [];
-          const searchRole = (role || category || '').toLowerCase();
-          if (!roleNames.some(r => r.includes(searchRole))) {
+          const roleNames = roles?.map(r => r.role_name.toLowerCase().trim()) || [];
+          const searchRole = (role || category || '').toLowerCase().trim();
+          if (!roleNames.some(r => r === searchRole || r.includes(searchRole))) {
             return null; // Skip this profile
           }
         }
