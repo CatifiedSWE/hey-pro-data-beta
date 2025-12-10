@@ -15,7 +15,7 @@ interface Language {
     canWrite: boolean;
 }
 
-export default function AddLanguageSection({ languages: initialLanguages }: { languages: any[] }) {
+export default function AddLanguageSection({ languages: initialLanguages, trigger }: { languages: any[]; trigger?: React.ReactNode }) {
     // initialLanguages prop is kept for compatibility but we use context for data
     const { languages: apiLanguages, addLanguage, deleteLanguage, fetchLanguages } = useProfile();
     const [isLanguagesDialogOpen, setIsLanguagesDialogOpen] = useState(false)
