@@ -252,7 +252,16 @@ export async function POST(
       ? `${senderName}: ${content.substring(0, 100)}`
       : `${senderName} sent you a message request`;
 
-    await supabase
+    // ⭐ FIXED: Add proper error handling for notification creation
+    console.log('[NOTIFICATION] Attempting to create notification:', {
+      recipientId,
+      senderId: user.id,
+      type: notificationType,
+      conversationId,
+      messageId: message.id,
+    });
+
+    const { data: notificationData, error: notificationError } = await supabase
       .from('notifications')
       .insert({
         user_id: recipientId,
@@ -266,7 +275,22 @@ export async function POST(
           content: content.substring(0, 100),
           requires_approval: !conversation.is_approved,
         },
+      })
+      .select()
+      .single();
+
+    if (notificationError) {
+      // Log error but don't fail the message send
+      console.error('[NOTIFICATION] Failed to create notification:', {
+        error: notificationError,
+        code: notificationError.code,
+        message: notificationError.message,
+        details: notificationError.details,
+        hint: notificationError.hint,
       });
+    } else {
+      console.log('[NOTIFICATION] Notification created successfully:', notificationData?.id);
+    }
 
     return NextResponse.json(
       successResponse(message, 'Message sent successfully'),
