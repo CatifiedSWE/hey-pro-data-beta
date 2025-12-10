@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, EllipsisVertical, Paperclip, Send } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getGroupMessages, sendGroupMessage, type Message } from "@/lib/api/chat";
+import { getGroupMessages, sendGroupMessage, markMessageAsRead, type Message } from "@/lib/api/chat";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
