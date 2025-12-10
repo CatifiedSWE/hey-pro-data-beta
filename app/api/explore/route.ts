@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
                   hasPrevPage: false
                 }
               },
-              'No profiles found matching the role filter'
+              'Profiles retrieved successfully'
             ),
             { status: 200 }
           );

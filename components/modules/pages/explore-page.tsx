@@ -137,7 +137,7 @@ export default function ExplorePage({ searchParams }: ExplorePageProps) {
           </div>
         ) : (
           <div className="col-span-full text-center text-gray-500 mt-10">
-            <p>Seems like people don't match your vibe</p>
+            <p>No crew members found. Try adjusting your search filters.</p>
           </div>
         )}
       </div>
