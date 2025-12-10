@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import {
@@ -29,44 +29,8 @@ import {
 } from "@/components/ui/navigation-menu"
 import { useAuth } from "@/contexts/AuthContext"
 import { useProfile } from "@/hooks/useProfile"
-
-const notifications = [
-  {
-    id: 1,
-    title: "New job match",
-    description: "Senior Frontend Developer at TechCorp matches your profile",
-    time: "2 hours ago",
-    read: false,
-  },
-  {
-    id: 2,
-    title: "Event reminder",
-    description: "Tech Networking Meetup starts tomorrow at 6 PM",
-    time: "5 hours ago",
-    read: false,
-  },
-  {
-    id: 3,
-    title: "Application update",
-    description: "Your application for Product Manager role is under review",
-    time: "1 day ago",
-    read: true,
-  },
-  {
-    id: 4,
-    title: "New message",
-    description: "Sarah from HR team sent you a message",
-    time: "2 days ago",
-    read: true,
-  },
-  {
-    id: 5,
-    title: "Profile view",
-    description: "5 recruiters viewed your profile this week",
-    time: "3 days ago",
-    read: true,
-  },
-]
+import { useNotifications } from "@/hooks/useNotifications"
+import { formatDistanceToNow } from "date-fns"
 
 interface NavigationMenuItem {
   title: string;
