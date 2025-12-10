@@ -446,7 +446,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         <>
             <div className="max-w-7xl mx-auto">
                 <span className="hidden p-2 md:inline-block bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent text-2xl font-semibold">Crew</span>
-                <div className="sticky top-0 z-50 flex w-full flex-row gap-2 bg-white p-4 sm:flex-row sm:items-center">
+                <div className="sticky top-0 z-10 flex w-full flex-row gap-2 bg-white p-4 sm:flex-row sm:items-center">
 
                     <DropdownMenu open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                         <DropdownMenuTrigger asChild>
@@ -459,7 +459,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
                                 </span>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[273px] border-none z-50 max-h-[calc(100vh-100px)] overflow-y-auto" align="start">
+                        <DropdownMenuContent className="w-[273px] border-none z-20 max-h-[calc(100vh-100px)] overflow-y-auto" align="start">
                             <form onSubmit={handleFilterSubmit} className=" space-y-2 rounded-[10px] bg-[#F8F8F8] p-4 text-[#017A7C]">
                                 {/* Clear Filters Button */}
                                 {activeFilterCount > 0 && (
@@ -711,7 +711,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
 
                 </div>
                 <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start">
-                    <aside className={`${isFilterOpen ? 'sm:flex hidden' : 'hidden lg:flex'} w-full flex-col gap-4 rounded-2xl bg-white/50 p-4 lg:max-w-[280px] sticky top-20 self-start overflow-y-auto max-h-[calc(100vh-6rem)]`}>
+                    <aside className={`${isFilterOpen ? 'sm:flex hidden' : 'hidden lg:flex'} w-full flex-col gap-4 rounded-2xl bg-white/50 p-4 lg:max-w-[280px] sticky top-20 self-start overflow-y-auto max-h-[calc(100vh-6rem)] z-0`}>
 
                         {filterOptions.map(opt => {
                             // Check if any role in this category is active
