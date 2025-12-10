@@ -262,6 +262,8 @@ export async function POST(
         metadata: {
           conversation_id: conversationId,
           message_id: message.id,
+          sender_id: user.id,
+          content: content.substring(0, 100),
           requires_approval: !conversation.is_approved,
         },
       });
