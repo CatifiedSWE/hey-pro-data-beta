@@ -887,11 +887,11 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                             height={420}
                                             width={280}
                                         />
-                                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3">
+                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-3 px-4">
                                             <Button
                                                 size="sm"
                                                 variant="secondary"
-                                                className="bg-white text-[#211536] hover:bg-white/90"
+                                                className="bg-white text-[#211536] hover:bg-white/90 w-full max-w-[200px]"
                                                 onClick={handleEditImage}
                                             >
                                                 <Edit className="h-4 w-4 mr-2" /> Edit & Crop
@@ -899,7 +899,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                             <Button
                                                 size="sm"
                                                 variant="secondary"
-                                                className="bg-white text-[#211536] hover:bg-white/90"
+                                                className="bg-white text-[#211536] hover:bg-white/90 w-full max-w-[200px]"
                                                 onClick={() => fileInputRef.current?.click()}
                                             >
                                                 <Upload className="h-4 w-4 mr-2" /> Replace
@@ -907,6 +907,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                             <Button
                                                 size="sm"
                                                 variant="destructive"
+                                                className="w-full max-w-[200px]"
                                                 onClick={() => handleCreditChange("image", "")}
                                             >
                                                 Remove
