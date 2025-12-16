@@ -247,8 +247,9 @@ export async function GET(
       location: profile.city && profile.country 
         ? `${profile.city}, ${profile.country}` 
         : profile.country || 'Not specified',
-      email: profile.email,
-      phone: profile.phone,
+      // Only include contact details if visibility is enabled
+      email: visibilityMap.contact_details ? profile.email : null,
+      phone: visibilityMap.contact_details ? profile.phone : null,
       portfolioUrl: profile.portfolio_url,
       imdbUrl: profile.imdb_url,
       dayRate: profile.day_rate,
