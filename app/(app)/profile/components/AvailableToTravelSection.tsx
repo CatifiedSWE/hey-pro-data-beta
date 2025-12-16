@@ -37,15 +37,26 @@ export default function AvailableToTravelSection({ travelCountries }: Omit<Avail
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
-          {travelCountries.map((country, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-[#31A7AC]/20 text-sm text-[#000]"
-            >
-              <Globe className="h-4 w-4 text-[#31A7AC]" />
-              <span>{country}</span>
-            </div>
-          ))}
+          {travelCountries.map((countryName, index) => {
+            // Find the country code for the flag
+            const countryData = countries.find(c => 
+              c.name.toLowerCase() === countryName.toLowerCase()
+            );
+            
+            return (
+              <div
+                key={index}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-[#31A7AC]/20 text-sm text-[#000]"
+              >
+                {countryData ? (
+                  <Flag countryCode={countryData.code} size="sm" />
+                ) : (
+                  <Globe className="h-4 w-4 text-[#31A7AC]" />
+                )}
+                <span>{countryName}</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
