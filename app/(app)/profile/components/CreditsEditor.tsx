@@ -983,7 +983,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="start" className="w-[260px] bg-white p-2">
-                                        <ScrollArea className="h-64">
+                                        <div className="h-64 overflow-y-auto">
                                             <YearPicker
                                                 value={accoladeForm.year}
                                                 onChange={(year) => {
@@ -993,7 +993,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 toYear={new Date().getFullYear() + 2}
 
                                             />
-                                        </ScrollArea>
+                                        </div>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
 
