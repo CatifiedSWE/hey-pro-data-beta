@@ -416,9 +416,15 @@ export default function ShortProfile({ profile, links, roles = [], visa, recomme
                     {profile?.work_identities && (
                          <div className="text-sm text-[#181818]">
                             {[
-                                profile.work_identities.freelance && "Freelance",
-                                profile.work_identities.employee?.enabled && `Employee at ${profile.work_identities.employee.company || 'Company'}`,
-                                profile.work_identities.businessOwner?.enabled && `Business Owner at ${profile.work_identities.businessOwner.businessName || 'Business'}`
+                                profile.work_identities.freelance && "Freelancer",
+                                profile.work_identities.employee?.enabled && [
+                                    profile.work_identities.employee.designation,
+                                    profile.work_identities.employee.company && `at ${profile.work_identities.employee.company}`
+                                ].filter(Boolean).join(' '),
+                                profile.work_identities.businessOwner?.enabled && [
+                                    profile.work_identities.businessOwner.designation,
+                                    profile.work_identities.businessOwner.businessName && `at ${profile.work_identities.businessOwner.businessName}`
+                                ].filter(Boolean).join(' ')
                             ].filter(Boolean).join(" • ")}
                         </div>
                     )}
