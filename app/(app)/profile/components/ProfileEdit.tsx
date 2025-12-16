@@ -429,7 +429,7 @@ function WorkStatusTab({ profile, onUpdate, onSuccess }: { profile: ProfileData 
                             onCheckedChange={(checked) => handleToggle("freelance")(Boolean(checked))}
                             className="h-[24px] w-[24px] rounded-[6px] border border-[#FA6E80] data-[state=checked]:bg-[#FA6E80] data-[state=checked]:text-white"
                         />
-                        Freelance
+                        Freelancer
                     </label>
                 </div>
 
