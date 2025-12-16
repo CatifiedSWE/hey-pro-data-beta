@@ -213,7 +213,7 @@ export default function Header() {
               </div>
 
               <div
-                className="relative hidden md:block"
+                className="relative"
                 onMouseLeave={() => setNotificationOpen(false)}
               >
                 <div
