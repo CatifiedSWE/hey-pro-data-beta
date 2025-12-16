@@ -26,7 +26,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { toast } from "sonner";
 import { CalendarIcon, Upload, ChevronDownIcon, Edit, ChevronsUpDown, Check } from "lucide-react";
 import Image from "next/image";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 import apiCalling from "@/lib/apiCalling";
