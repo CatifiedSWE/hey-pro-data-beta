@@ -86,9 +86,41 @@ function CommandList({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.List>) {
-  return (
+  const listRef = React.useRef<HTMLDivElement>(null)
 
+  React.useEffect(() => {
+    const listElement = listRef.current
+    if (!listElement) return
+
+    const handleWheel = (e: WheelEvent) => {
+      // Allow wheel scrolling even when input is focused
+      e.stopPropagation()
+      
+      const { scrollTop, scrollHeight, clientHeight } = listElement
+      const isScrollingUp = e.deltaY < 0
+      const isScrollingDown = e.deltaY > 0
+      
+      // Check if we can scroll in the attempted direction
+      const canScrollUp = scrollTop > 0
+      const canScrollDown = scrollTop < scrollHeight - clientHeight
+      
+      // Only prevent default if we can actually scroll in that direction
+      if ((isScrollingUp && canScrollUp) || (isScrollingDown && canScrollDown)) {
+        e.preventDefault()
+        listElement.scrollTop += e.deltaY
+      }
+    }
+
+    listElement.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      listElement.removeEventListener('wheel', handleWheel)
+    }
+  }, [])
+
+  return (
     <CommandPrimitive.List
+      ref={listRef}
       data-slot="command-list"
       className={cn(
         "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto",
