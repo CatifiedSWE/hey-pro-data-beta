@@ -173,12 +173,12 @@ export default function WhatupNumbers({
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-[300px] p-0">
-                                        <Command className="mt-2">
+                                        <Command>
                                             <CommandInput
                                                 placeholder="Search country..."
                                                 className=""
                                             />
-                                            <CommandList className="max-h-[300px] h-full overflow-y-auto  scroll-y-auto">
+                                            <CommandList className="max-h-[300px] overflow-y-auto">
                                                 <CommandEmpty>No country found.</CommandEmpty>
                                                 <CommandGroup>
                                                     {countries.map((country) => (
