@@ -693,31 +693,29 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                         <PopoverContent className="w-[300px] p-0" align="start">
                                             <Command>
                                                 <CommandInput placeholder="Search roles..." />
-                                                <ScrollArea className="h-[340px]">
-                                                    <CommandList>
-                                                        <CommandEmpty>No role found.</CommandEmpty>
-                                                        {ROLES_BY_CATEGORY.map((category) => (
-                                                            <CommandGroup key={category.category} heading={category.category}>
-                                                                {category.roles.map((role) => (
-                                                                    <CommandItem
-                                                                        key={role}
-                                                                        value={role}
-                                                                        onSelect={(currentValue) => {
-                                                                            handleCreditChange("role", currentValue);
-                                                                            setRoleComboboxOpen(false);
-                                                                        }}
-                                                                    >
-                                                                        <Check className={cn(
-                                                                            "mr-2 h-4 w-4",
-                                                                            creditForm.role === role ? "opacity-100" : "opacity-0"
-                                                                        )} />
-                                                                        {role}
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        ))}
-                                                    </CommandList>
-                                                </ScrollArea>
+                                                <CommandList className="max-h-[300px] overflow-y-auto">
+                                                    <CommandEmpty>No role found.</CommandEmpty>
+                                                    {ROLES_BY_CATEGORY.map((category) => (
+                                                        <CommandGroup key={category.category} heading={category.category}>
+                                                            {category.roles.map((role) => (
+                                                                <CommandItem
+                                                                    key={role}
+                                                                    value={role}
+                                                                    onSelect={(currentValue) => {
+                                                                        handleCreditChange("role", currentValue);
+                                                                        setRoleComboboxOpen(false);
+                                                                    }}
+                                                                >
+                                                                    <Check className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        creditForm.role === role ? "opacity-100" : "opacity-0"
+                                                                    )} />
+                                                                    {role}
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    ))}
+                                                </CommandList>
                                             </Command>
                                         </PopoverContent>
                                     </Popover>
