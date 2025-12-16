@@ -690,7 +690,7 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-[300px] p-0" align="start">
+                                        <PopoverContent className="w-[300px] p-0 overflow-visible" align="start">
                                             <Command>
                                                 <CommandInput placeholder="Search roles..." />
                                                 <CommandList>
