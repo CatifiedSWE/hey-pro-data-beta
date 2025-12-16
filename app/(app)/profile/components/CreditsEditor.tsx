@@ -691,9 +691,9 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-[300px] p-0 overflow-hidden" align="start" sideOffset={4}>
-                                            <Command className="flex flex-col h-full">
+                                            <Command className="[&_[cmdk-list]]:max-h-[300px] [&_[cmdk-list]]:overflow-y-auto">
                                                 <CommandInput placeholder="Search roles..." className="border-b" />
-                                                <CommandList className="overflow-y-auto" style={{ maxHeight: '300px' }}>
+                                                <CommandList>
                                                     <CommandEmpty>No role found.</CommandEmpty>
                                                     {ROLES_BY_CATEGORY.map((category) => (
                                                         <CommandGroup key={category.category} heading={category.category}>
