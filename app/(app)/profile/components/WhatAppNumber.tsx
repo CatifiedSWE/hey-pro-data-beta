@@ -28,6 +28,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronsUpDown, Check } from "lucide-react";
 import { useState } from "react";
 import { countries, type Country } from "@/lib/countries";
