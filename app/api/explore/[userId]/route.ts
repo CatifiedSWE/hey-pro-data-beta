@@ -201,6 +201,29 @@ export async function GET(
       userHasSaved = !!savedProfile;
     }
 
+    // Fetch section visibility settings for this user
+    const { data: visibilityData } = await supabase
+      .from('profile_section_visibility')
+      .select('*')
+      .eq('user_id', userId);
+
+    // Build visibility map with defaults (all sections visible by default)
+    const visibilityMap: Record<string, boolean> = {
+      about: true,
+      skills: true,
+      credits: true,
+      languages: true,
+      contact_details: true,
+      available_to_travel: true
+    };
+    
+    // Override with actual database values
+    if (visibilityData) {
+      visibilityData.forEach(item => {
+        visibilityMap[item.section_name] = item.is_visible;
+      });
+    }
+
     // Build display name with priority: alias_first_name + alias_surname (1st), first_name + surname (2nd)
     const aliasName = `${profile.alias_first_name || ''} ${profile.alias_surname || ''}`.trim();
     const realName = `${profile.first_name || ''} ${profile.surname || ''}`.trim();
