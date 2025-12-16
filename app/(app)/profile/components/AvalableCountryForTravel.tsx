@@ -267,7 +267,7 @@ export default function AvalableCountryForTravel({ availableCountries: _ignore, 
                                     </div>
 
 
-                                    <label className="flex items-center gap-4 text-base text-[#2E2E2E]">
+                                    <label className="flex items-center gap-4 text-base text-[#2E2E2E] mt-4">
                                         <Checkbox
                                             checked={markAll}
                                             onCheckedChange={(checked) => handleMarkAllToggle(Boolean(checked))}
