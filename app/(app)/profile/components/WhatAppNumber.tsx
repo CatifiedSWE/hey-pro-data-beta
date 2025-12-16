@@ -179,41 +179,39 @@ export default function WhatupNumbers({
                                                 placeholder="Search country..."
                                                 className="border-b"
                                             />
-                                            <ScrollArea className="h-[300px]">
-                                                <CommandList>
-                                                    <CommandEmpty>No country found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {countries.map((country) => (
-                                                            <CommandItem
-                                                                key={country.code}
-                                                                value={`${country.name} ${country.code}`}
-                                                                onSelect={() => {
-                                                                    setSelectedCountry(country);
-                                                                    setOpen(false);
-                                                                }}
-                                                            >
-                                                                <Check
-                                                                    color="#31A7AC"
-                                                                    className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        selectedCountry.code === country.code
-                                                                            ? "opacity-100"
-                                                                            : "opacity-0"
-                                                                    )}
-                                                                />
-                                                                <div className="flex justify-between w-full items-center">
-                                                                    <span className="flex items-center gap-2">
-                                                                        <Flag countryCode={country.code} size="sm" /> {country.name}
-                                                                    </span>
-                                                                    <span className="text-muted-foreground">
-                                                                        {country.dial_code}
-                                                                    </span>
-                                                                </div>
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </ScrollArea>
+                                            <CommandList className="max-h-[300px] overflow-y-auto">
+                                                <CommandEmpty>No country found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {countries.map((country) => (
+                                                        <CommandItem
+                                                            key={country.code}
+                                                            value={`${country.name} ${country.code}`}
+                                                            onSelect={() => {
+                                                                setSelectedCountry(country);
+                                                                setOpen(false);
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                color="#31A7AC"
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    selectedCountry.code === country.code
+                                                                        ? "opacity-100"
+                                                                        : "opacity-0"
+                                                                )}
+                                                            />
+                                                            <div className="flex justify-between w-full items-center">
+                                                                <span className="flex items-center gap-2">
+                                                                    <Flag countryCode={country.code} size="sm" /> {country.name}
+                                                                </span>
+                                                                <span className="text-muted-foreground">
+                                                                    {country.dial_code}
+                                                                </span>
+                                                            </div>
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
                                         </Command>
                                     </PopoverContent>
                                 </Popover>
