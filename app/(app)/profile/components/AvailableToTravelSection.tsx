@@ -4,6 +4,8 @@ import React from "react";
 import { Globe, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AvalableCountryForTravel from "./AvalableCountryForTravel";
+import { Flag } from "@/components/ui/flag";
+import { countries } from "@/lib/countries";
 
 interface AvailableToTravelSectionProps {
   travelCountries: string[];
