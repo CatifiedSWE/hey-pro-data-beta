@@ -690,32 +690,34 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-[300px] p-0 overflow-hidden" align="start" sideOffset={4}>
-                                            <Command className="[&_[cmdk-list]]:max-h-[300px] [&_[cmdk-list]]:overflow-y-auto">
+                                        <PopoverContent className="w-[300px] p-0" align="start" sideOffset={4}>
+                                            <Command>
                                                 <CommandInput placeholder="Search roles..." className="border-b" />
-                                                <CommandList>
-                                                    <CommandEmpty>No role found.</CommandEmpty>
-                                                    {ROLES_BY_CATEGORY.map((category) => (
-                                                        <CommandGroup key={category.category} heading={category.category}>
-                                                            {category.roles.map((role) => (
-                                                                <CommandItem
-                                                                    key={role}
-                                                                    value={role}
-                                                                    onSelect={(currentValue) => {
-                                                                        handleCreditChange("role", currentValue);
-                                                                        setRoleComboboxOpen(false);
-                                                                    }}
-                                                                >
-                                                                    <Check className={cn(
-                                                                        "mr-2 h-4 w-4",
-                                                                        creditForm.role === role ? "opacity-100" : "opacity-0"
-                                                                    )} />
-                                                                    {role}
-                                                                </CommandItem>
-                                                            ))}
-                                                        </CommandGroup>
-                                                    ))}
-                                                </CommandList>
+                                                <ScrollArea className="h-[300px]">
+                                                    <CommandList>
+                                                        <CommandEmpty>No role found.</CommandEmpty>
+                                                        {ROLES_BY_CATEGORY.map((category) => (
+                                                            <CommandGroup key={category.category} heading={category.category}>
+                                                                {category.roles.map((role) => (
+                                                                    <CommandItem
+                                                                        key={role}
+                                                                        value={role}
+                                                                        onSelect={(currentValue) => {
+                                                                            handleCreditChange("role", currentValue);
+                                                                            setRoleComboboxOpen(false);
+                                                                        }}
+                                                                    >
+                                                                        <Check className={cn(
+                                                                            "mr-2 h-4 w-4",
+                                                                            creditForm.role === role ? "opacity-100" : "opacity-0"
+                                                                        )} />
+                                                                        {role}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        ))}
+                                                    </CommandList>
+                                                </ScrollArea>
                                             </Command>
                                         </PopoverContent>
                                     </Popover>
