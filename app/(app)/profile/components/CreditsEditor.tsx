@@ -689,10 +689,10 @@ export default function CreditsEditor({ trigger, mode = 'add', creditToEdit, onU
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-[300px] p-0" align="start" sideOffset={4}>
+                                        <PopoverContent className="w-[300px] p-0 overflow-visible" align="start" sideOffset={4}>
                                             <Command className="h-auto" shouldFilter={true}>
                                                 <CommandInput placeholder="Search roles..." className="border-b" />
-                                                <CommandList className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100">
+                                                <CommandList className="max-h-[300px] overflow-y-scroll touch-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100" style={{ overscrollBehavior: 'contain' }}>
                                                     <CommandEmpty>No role found.</CommandEmpty>
                                                     {ROLES_BY_CATEGORY.map((category) => (
                                                         <CommandGroup key={category.category} heading={category.category}>
