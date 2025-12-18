@@ -164,6 +164,7 @@ export default function AddNewSkill({ trigger, onUpdate }: AddNewSkillProps) {
                 const skillData = {
                     skill_name: `${skill.department} - ${skill.role}`,
                     description: skill.description || undefined,
+                    experience_level: skill.experience?.title || undefined,
                     day_rate: dayRate,
                     day_rate_currency: dayRateCurrency,
                     is_public: skill.isPublic ?? true,

@@ -289,6 +289,7 @@ export default function SkillEditor({
             const skillData = {
                 skill_name: `${editingSkill.department} - ${editingSkill.role}`,
                 description: editingSkill.description || undefined,
+                experience_level: editingSkill.experience?.title || undefined,
                 day_rate: dayRate,
                 day_rate_currency: dayRateCurrency,
                 is_public: editingSkill.isPublic ?? true,
