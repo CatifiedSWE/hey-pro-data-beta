@@ -308,19 +308,24 @@ export default function Header() {
                 className="relative"
                 onMouseLeave={() => setUserMenuOpen(false)}
               >
-                {/* Desktop: Hover for menu, Click for profile */}
+                {/* Desktop: Logic based on page */}
                 <div className="hidden md:block">
-                    <div
-                        onMouseEnter={() => setUserMenuOpen(true)}
-                        className="cursor-pointer"
-                    >
+                    {isProfilePage ? (
+                        <div 
+                            onClick={() => setUserMenuOpen((prev) => !prev)}
+                            onMouseEnter={() => setUserMenuOpen(true)}
+                            className="cursor-pointer flex items-center justify-center h-[50px] w-[50px]"
+                        >
+                            <MoreVertical className="h-6 w-6" />
+                        </div>
+                    ) : (
                         <Link href="/profile">
                             <Avatar className="h-[50px] w-[50px] rounded-full border-[#000000] border-[2px]">
                                 <AvatarImage src={avatarUrl} alt={displayName} />
                                 <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
                             </Avatar>
                         </Link>
-                    </div>
+                    )}
                 </div>
 
                 {/* Mobile: Logic based on page */}
