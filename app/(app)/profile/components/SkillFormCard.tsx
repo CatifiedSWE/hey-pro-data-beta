@@ -34,6 +34,12 @@ export default function SkillFormCard({
     onRemove,
 }: SkillFormCardProps) {
     const [isPublic, setIsPublic] = React.useState(skill.isPublic ?? true)
+    
+    // Sync local state with prop changes
+    React.useEffect(() => {
+        setIsPublic(skill.isPublic ?? true);
+    }, [skill.isPublic]);
+    
     // Only show remove button if skill has been filled (has department or role)
     const showRemoveButton = skill.department || skill.role
     

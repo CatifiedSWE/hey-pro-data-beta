@@ -24,11 +24,30 @@ export async function PATCH(
     const supabase = createServerClient();
     const body = await request.json();
     const { id: skillId } = await params;
-    const { description, sort_order } = body;
+    const { 
+      skill_name, 
+      description, 
+      department, 
+      role, 
+      proficiency_level, 
+      experience_level, 
+      day_rate, 
+      day_rate_currency, 
+      is_public, 
+      sort_order 
+    } = body;
 
     // Build update object with only provided fields
     const updateData: any = {};
+    if (skill_name !== undefined) updateData.skill_name = skill_name;
     if (description !== undefined) updateData.description = description;
+    if (department !== undefined) updateData.department = department;
+    if (role !== undefined) updateData.role = role;
+    if (proficiency_level !== undefined) updateData.proficiency_level = proficiency_level;
+    if (experience_level !== undefined) updateData.experience_level = experience_level;
+    if (day_rate !== undefined) updateData.day_rate = day_rate;
+    if (day_rate_currency !== undefined) updateData.day_rate_currency = day_rate_currency;
+    if (is_public !== undefined) updateData.is_public = is_public;
     if (sort_order !== undefined) updateData.sort_order = sort_order;
 
     if (Object.keys(updateData).length === 0) {
