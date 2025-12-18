@@ -270,7 +270,9 @@ export async function GET(
       skills: skills?.map(s => ({
         id: s.id,
         skillName: s.skill_name,
+        description: s.description,
         proficiencyLevel: s.proficiency_level,
+        experienceLevel: s.experience_level,
         dayRate: s.day_rate,
         dayRateCurrency: s.day_rate_currency,
         isPublic: s.is_public,

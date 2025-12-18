@@ -5,7 +5,9 @@ import React from "react";
 interface Skill {
   id: string;
   skillName: string;
+  description?: string;
   proficiencyLevel?: string;
+  experienceLevel?: string;
   dayRate?: number;
   dayRateCurrency?: string;
   isPublic?: boolean;
@@ -42,10 +44,13 @@ export default function ReadOnlySkillsSection({ skills }: ReadOnlySkillsSectionP
                 {skill.skillName}
               </h3>
             </div>
-            {skill.proficiencyLevel && (
+            {skill.description && (
+              <p className="text-sm leading-relaxed text-[#444444]">{skill.description}</p>
+            )}
+            {skill.experienceLevel && (
               <div className="space-y-2 ml-10">
                 <div className="flex flex-wrap items-center justify-start gap-x-1 px-4 bg-[#FFFFFF] h-[31px] w-[233px] rounded-[5px]">
-                  <h4 className="text-sm font-[600] text-[#000]">{skill.proficiencyLevel}</h4>
+                  <h4 className="text-sm font-[600] text-[#000]">{skill.experienceLevel}</h4>
                 </div>
               </div>
             )}
