@@ -181,8 +181,10 @@ export async function GET(
     let googleAvatar = null;
     try {
       const { data: authUser } = await supabase.auth.admin.getUserById(userId);
-      if (authUser?.user?.user_metadata?.avatar_url || authUser?.user?.user_metadata?.picture) {
-        googleAvatar = authUser.user.user_metadata.avatar_url || authUser.user.user_metadata.picture;
+      if (authUser?.user) {
+        googleAvatar = authUser.user.user_metadata?.avatar_url || 
+                      authUser.user.user_metadata?.picture ||
+                      authUser.user.user_metadata?.avatarUrl;
       }
     } catch (err) {
       console.error('Error fetching Google avatar:', err);

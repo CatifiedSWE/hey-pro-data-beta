@@ -143,19 +143,28 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch Google OAuth avatars for all users at once (batch query)
-    const { data: authUsers } = await supabase.auth.admin.listUsers();
+    // Get all user IDs from profiles to fetch their auth data
+    const userIds = (profiles || []).map(p => p.user_id);
     
     // Create a map of user_id to Google avatar
     const googleAvatarMap = new Map<string, string>();
-    if (authUsers?.users) {
-      authUsers.users.forEach(authUser => {
-        if (authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture) {
-          googleAvatarMap.set(
-            authUser.id, 
-            authUser.user_metadata.avatar_url || authUser.user_metadata.picture
-          );
+    
+    // Fetch auth data for each user individually to get their metadata
+    for (const userId of userIds) {
+      try {
+        const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+        if (authUser?.user) {
+          const avatarUrl = authUser.user.user_metadata?.avatar_url || 
+                           authUser.user.user_metadata?.picture ||
+                           authUser.user.user_metadata?.avatarUrl;
+          if (avatarUrl) {
+            googleAvatarMap.set(userId, avatarUrl);
+          }
         }
-      });
+      } catch (error) {
+        // Silently continue if we can't fetch auth data for a user
+        console.log(`Could not fetch auth data for user ${userId}`);
+      }
     }
 
     // Enrich profiles with roles and Google avatars

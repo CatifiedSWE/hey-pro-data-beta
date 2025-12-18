@@ -311,3 +311,18 @@ export const getFlagElement = (countryCode: string, className: string = ""): Rea
     style: { fontSize: '1.5em', lineHeight: 1 }
   });
 };
+
+/**
+ * Get full country name from country code
+ * @param countryCode - ISO 3166-1-alpha-2 country code (e.g., "AE", "US")
+ * @returns Full country name or the code if not found
+ */
+export const getCountryNameFromCode = (countryCode: string): string => {
+  if (!countryCode) return 'Unknown';
+  
+  const country = countries.find(
+    c => c.code.toLowerCase() === countryCode.toLowerCase()
+  );
+  
+  return country ? country.name : countryCode;
+};

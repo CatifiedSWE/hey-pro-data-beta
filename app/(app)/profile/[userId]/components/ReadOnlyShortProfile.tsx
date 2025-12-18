@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from "react"
 import Image from "next/image"
 import { LinkIcon, MapPin, Calendar as CalendarIcon, Bookmark, MessageCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { countries } from "@/lib/countries"
+import { countries, getCountryNameFromCode } from "@/lib/countries"
 import { ProfileShareModal } from "@/components/profile/ProfileShareModal"
 import { saveProfile, unsaveProfile } from "@/lib/api/profile-save"
 import { startConversation } from "@/lib/api/chat"
@@ -24,9 +24,9 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
   const [messageLoading, setMessageLoading] = useState(false);
   
   const displayName = profile?.name || 'User Profile';
-  // Use country code instead of full name for shorter display
-  const countryCode = profile?.country ?? "Unknown";
-  const locationDescriptor = [countryCode, profile?.city?.trim()].filter(Boolean).join(" • ");
+  // Convert country code to full country name
+  const countryName = profile?.country ? getCountryNameFromCode(profile.country) : "Unknown";
+  const locationDescriptor = [profile?.city?.trim(), countryName].filter(Boolean).join(", ");
   
   const highlightedRoles = profile?.roles?.slice(0, 6) || [];
   const recommendations = profile?.recommendations || [];
@@ -284,14 +284,20 @@ export default function ReadOnlyShortProfile({ profile, initialSaved = false }: 
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {highlightedRoles.map((role: any) => (
-            <span
-              key={role.id}
-              className="flex items-center rounded-[29px] h-[19px] bg-[#FA6E80] px-4 py-1 text-[10px] font-[400] tracking-wide text-white"
-            >
-              {role.roleName}
-            </span>
-          ))}
+          {highlightedRoles.map((role: any) => {
+            // Truncate role name if it's too long (more than 20 characters)
+            const roleName = role.roleName || '';
+            const displayRole = roleName.length > 20 ? roleName.substring(0, 20) + '...' : roleName;
+            return (
+              <span
+                key={role.id}
+                className="flex items-center rounded-[29px] h-[19px] bg-[#FA6E80] px-4 py-1 text-[10px] font-[400] tracking-wide text-white max-w-[150px] truncate"
+                title={roleName}
+              >
+                {displayRole}
+              </span>
+            );
+          })}
         </div>
 
         {profile?.bio && (
