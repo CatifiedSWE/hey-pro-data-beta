@@ -445,7 +445,14 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
     return (
         <>
             <div className="max-w-7xl mx-auto">
-                <span className="hidden p-2 md:inline-block bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent text-2xl font-semibold">Crew</span>
+                <div className="hidden md:block p-2">
+                    <span className="bg-gradient-to-r from-[#FA6E80] via-[#6A89BE] to-[#31A7AC] bg-clip-text text-transparent text-2xl font-semibold">Crew</span>
+                    <p className="text-gray-600 text-sm mt-1">
+                        People who make productions happen
+                        <br />
+                        Find crew by role, department, and skill
+                    </p>
+                </div>
                 <div className="sticky top-0 z-10 flex w-full flex-row gap-2 bg-white p-4 sm:flex-row sm:items-center">
 
                     <DropdownMenu open={isFilterOpen} onOpenChange={setIsFilterOpen}>
