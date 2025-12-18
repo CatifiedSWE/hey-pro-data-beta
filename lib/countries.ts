@@ -313,13 +313,76 @@ export const getFlagElement = (countryCode: string, className: string = ""): Rea
 };
 
 /**
- * Get full country name from country code
+ * Common short names for countries (instead of 2-letter codes)
+ */
+const countryShortNames: Record<string, string> = {
+  'AE': 'UAE',
+  'US': 'USA',
+  'GB': 'UK',
+  'SA': 'KSA',
+  'NZ': 'New Zealand',
+  'AU': 'Australia',
+  'CA': 'Canada',
+  'IN': 'India',
+  'CN': 'China',
+  'JP': 'Japan',
+  'KR': 'South Korea',
+  'DE': 'Germany',
+  'FR': 'France',
+  'IT': 'Italy',
+  'ES': 'Spain',
+  'BR': 'Brazil',
+  'MX': 'Mexico',
+  'RU': 'Russia',
+  'ZA': 'South Africa',
+  'EG': 'Egypt',
+  'NG': 'Nigeria',
+  'KE': 'Kenya',
+  'MY': 'Malaysia',
+  'SG': 'Singapore',
+  'TH': 'Thailand',
+  'PH': 'Philippines',
+  'ID': 'Indonesia',
+  'VN': 'Vietnam',
+  'PK': 'Pakistan',
+  'BD': 'Bangladesh',
+  'TR': 'Turkey',
+  'IL': 'Israel',
+  'QA': 'Qatar',
+  'KW': 'Kuwait',
+  'BH': 'Bahrain',
+  'OM': 'Oman',
+  'JO': 'Jordan',
+  'LB': 'Lebanon',
+  'MA': 'Morocco',
+  'TN': 'Tunisia',
+  'DZ': 'Algeria',
+  'LY': 'Libya',
+  'SD': 'Sudan',
+  'ET': 'Ethiopia',
+  'GH': 'Ghana',
+  'UG': 'Uganda',
+  'TZ': 'Tanzania',
+};
+
+/**
+ * Get short country name from country code
+ * Returns commonly known short forms (e.g., "UAE" for "AE", "USA" for "US")
+ * Falls back to full name if no short name is defined
  * @param countryCode - ISO 3166-1-alpha-2 country code (e.g., "AE", "US")
- * @returns Full country name or the code if not found
+ * @returns Short country name or the code if not found
  */
 export const getCountryNameFromCode = (countryCode: string): string => {
   if (!countryCode) return 'Unknown';
   
+  const upperCode = countryCode.toUpperCase();
+  
+  // Check if we have a custom short name
+  if (countryShortNames[upperCode]) {
+    return countryShortNames[upperCode];
+  }
+  
+  // Otherwise find the full name from countries list
   const country = countries.find(
     c => c.code.toLowerCase() === countryCode.toLowerCase()
   );
