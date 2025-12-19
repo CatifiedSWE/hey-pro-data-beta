@@ -54,7 +54,7 @@ export default function ReadOnlySkillsSection({ skills }: ReadOnlySkillsSectionP
                 </div>
               </div>
             )}
-            {skill.dayRate && skill.dayRateCurrency && skill.isPublic && (
+            {skill.dayRate && skill.dayRateCurrency && (skill.isPublic !== false) && (
               <div className="ml-10">
                 <div className="inline-flex items-center px-4 py-1.5 bg-[#E7FAFC] rounded-[5px]">
                   <p className="text-sm font-[600] text-[#31A7AC]">{skill.dayRateCurrency} {skill.dayRate} per day</p>

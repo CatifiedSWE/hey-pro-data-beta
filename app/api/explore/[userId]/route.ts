@@ -275,7 +275,7 @@ export async function GET(
         experienceLevel: s.experience_level,
         dayRate: s.day_rate,
         dayRateCurrency: s.day_rate_currency,
-        isPublic: s.is_public,
+        isPublic: s.is_public ?? true, // Default to true if null/undefined
         sortOrder: s.sort_order
       })) || [],
       links: links?.map(l => ({
