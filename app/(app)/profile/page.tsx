@@ -473,7 +473,7 @@ function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: (
   const transformedSkills = skills && skills.length > 0 ? skills.map(skill => ({
     id: skill.id,
     department: skill.department || 'General',
-    role: skill.skill_name,
+    role: skill.role || skill.skill_name,
     description: skill.description || '',
     experience: skill.experience_level ? {
       value: skill.experience_level,

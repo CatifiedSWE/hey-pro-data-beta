@@ -288,6 +288,8 @@ export default function SkillEditor({
             // Update only the currently editing skill
             const skillData = {
                 skill_name: `${editingSkill.department} - ${editingSkill.role}`,
+                department: editingSkill.department,
+                role: editingSkill.role,
                 description: editingSkill.description || undefined,
                 experience_level: editingSkill.experience?.title || undefined,
                 day_rate: dayRate,

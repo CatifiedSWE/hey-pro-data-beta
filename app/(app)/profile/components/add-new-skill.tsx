@@ -163,6 +163,8 @@ export default function AddNewSkill({ trigger, onUpdate }: AddNewSkillProps) {
 
                 const skillData = {
                     skill_name: `${skill.department} - ${skill.role}`,
+                    department: skill.department,
+                    role: skill.role,
                     description: skill.description || undefined,
                     experience_level: skill.experience?.title || undefined,
                     day_rate: dayRate,
