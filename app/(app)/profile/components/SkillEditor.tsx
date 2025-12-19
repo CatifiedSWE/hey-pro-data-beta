@@ -33,6 +33,40 @@ import { toast } from "sonner";
 import SkillFormCard from "./SkillFormCard";
 import { useProfile } from "@/contexts/ProfileContext";
 
+/**
+ * Robust rate parser that handles multiple input formats
+ * Formats supported:
+ * - "AED 1000" or "AED1000" - Currency first
+ * - "1000 AED" or "1000AED" - Amount first
+ * - "1000" - Amount only (no currency)
+ * - "AED 1,000 per day" - With separators and extra text
+ * - "1,000.50 USD/day" - With decimals and symbols
+ */
+function parseRateString(rateStr: string): { amount: number; currency?: string } | null {
+    if (!rateStr || !rateStr.trim()) return null;
+    
+    const cleaned = rateStr.trim();
+    
+    // Try to find currency code (3 uppercase letters)
+    // Patterns: word boundary, before number, or after number
+    const currencyMatch = cleaned.match(/\b([A-Z]{3})\b|([A-Z]{3})(?=[\d,])|(?<=[\d,])([A-Z]{3})/);
+    const currency = currencyMatch ? (currencyMatch[1] || currencyMatch[2] || currencyMatch[3]) : undefined;
+    
+    // Try to find numeric value (supports decimals, commas)
+    // Matches: 1000, 1,000, 1000.50, 1,000.50
+    const numberMatch = cleaned.match(/([\d,]+\.?\d*)/);
+    
+    if (!numberMatch) return null;
+    
+    // Clean and parse the number
+    const amountStr = numberMatch[1].replace(/,/g, '');
+    const amount = parseFloat(amountStr);
+    
+    if (isNaN(amount) || amount <= 0) return null;
+    
+    return { amount, currency };
+}
+
 export interface Skill {
     id: string;
     department: string;
@@ -276,12 +310,15 @@ export default function SkillEditor({
             // Parse rate if it exists to extract currency and amount
             let dayRate = undefined;
             let dayRateCurrency = undefined;
-            if (editingSkill.rate) {
-                // Try to extract currency and number from rate string (e.g., "AED 1000 per day")
-                const rateMatch = editingSkill.rate.match(/([A-Z]{3})\s*([\d,]+)/);
-                if (rateMatch) {
-                    dayRateCurrency = rateMatch[1];
-                    dayRate = parseFloat(rateMatch[2].replace(/,/g, ''));
+            
+            if (editingSkill.rate && editingSkill.rate.trim()) {
+                const parsedRate = parseRateString(editingSkill.rate);
+                if (parsedRate) {
+                    dayRate = parsedRate.amount;
+                    dayRateCurrency = parsedRate.currency;
+                } else {
+                    // Show warning but continue with save (rate will be stored as-is in description)
+                    console.warn('Could not parse rate:', editingSkill.rate);
                 }
             }
 
