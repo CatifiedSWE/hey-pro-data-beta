@@ -470,19 +470,27 @@ function AboutSection({ about, onUpdate }: { about: string; onUpdate: () => void
 
 function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: () => void }) {
   // Transform skills data from API format to UI format
-  const transformedSkills = skills && skills.length > 0 ? skills.map(skill => ({
-    id: skill.id,
-    department: skill.department || 'General',
-    role: skill.role || skill.skill_name,
-    description: skill.description || '',
-    experience: skill.experience_level ? {
-      value: skill.experience_level,
-      title: skill.experience_level,
-      description: ''
-    } : undefined,
-    rate: skill.day_rate && skill.day_rate_currency ? `${skill.day_rate_currency} ${skill.day_rate} per day` : undefined,
-    isPublic: skill.is_public ?? true
-  })) : [];
+  const transformedSkills = skills && skills.length > 0 ? skills.map(skill => {
+    // Properly handle rate display - check for both fields and ensure they're not null/undefined
+    let rateDisplay = undefined;
+    if (skill.day_rate != null && skill.day_rate_currency != null) {
+      rateDisplay = `${skill.day_rate_currency} ${Number(skill.day_rate).toFixed(2)} per day`;
+    }
+    
+    return {
+      id: skill.id,
+      department: skill.department || 'General',
+      role: skill.role || skill.skill_name,
+      description: skill.description || '',
+      experience: skill.experience_level ? {
+        value: skill.experience_level,
+        title: skill.experience_level,
+        description: ''
+      } : undefined,
+      rate: rateDisplay,
+      isPublic: skill.is_public ?? true
+    };
+  }) : [];
 
   return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} />;
 }
