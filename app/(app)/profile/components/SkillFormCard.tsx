@@ -116,12 +116,17 @@ export default function SkillFormCard({
             </div>
 
             <div className="space-y-3">
-                <input
-                    value={skill.rate}
-                    onChange={(e) => onFieldChange("rate", e.target.value)}
-                    placeholder="AED 1000 per day"
-                    className="w-full rounded-[15px] border border-[#828282] px-5 py-3 text-sm text-[#444] focus:border-[#31A7AC] focus:outline-none"
-                />
+                <div className="space-y-1">
+                    <input
+                        value={skill.rate}
+                        onChange={(e) => onFieldChange("rate", e.target.value)}
+                        placeholder="e.g., AED 1000 per day or USD 500"
+                        className="w-full rounded-[15px] border border-[#828282] px-5 py-3 text-sm text-[#444] focus:border-[#31A7AC] focus:outline-none"
+                    />
+                    <p className="text-xs text-[#6B6B6B] px-2">
+                        Include currency code (AED, USD, EUR, etc.) with your rate
+                    </p>
+                </div>
                 <button
                     type="button"
                     onClick={() => {

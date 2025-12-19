@@ -302,6 +302,20 @@ export default function SkillEditor({
             return;
         }
 
+        // Validate rate and currency
+        if (editingSkill.rate && editingSkill.rate.trim()) {
+            const parsedRate = parseRateString(editingSkill.rate);
+            
+            // If rate is provided but no currency is detected
+            if (parsedRate && !parsedRate.currency) {
+                toast.error(
+                    'Please specify currency type (e.g., AED, USD, EUR) in your rate',
+                    { duration: 5000 }
+                );
+                return;
+            }
+        }
+
         // Prevent multiple simultaneous saves
         if (saving) return;
 
