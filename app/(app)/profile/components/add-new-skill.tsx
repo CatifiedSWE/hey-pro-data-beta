@@ -176,6 +176,27 @@ export default function AddNewSkill({ trigger, onUpdate }: AddNewSkillProps) {
             return;
         }
 
+        // Validate rate and currency
+        const skillsWithInvalidRates: string[] = [];
+        for (const skill of skills) {
+            if (skill.rate && skill.rate.trim()) {
+                const parsedRate = parseRateString(skill.rate);
+                
+                // If rate is provided but no currency is detected
+                if (parsedRate && !parsedRate.currency) {
+                    skillsWithInvalidRates.push(skill.role || skill.department || 'Unknown skill');
+                }
+            }
+        }
+
+        if (skillsWithInvalidRates.length > 0) {
+            toast.error(
+                `Please specify currency type (e.g., AED, USD, EUR) for: ${skillsWithInvalidRates.join(', ')}`,
+                { duration: 5000 }
+            );
+            return;
+        }
+
         // Prevent multiple simultaneous saves
         if (saving) return;
 
