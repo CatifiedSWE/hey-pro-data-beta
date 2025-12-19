@@ -481,7 +481,7 @@ function SkillsSectionWrapper({ skills, onUpdate }: { skills: any[]; onUpdate: (
       description: ''
     } : undefined,
     rate: skill.day_rate && skill.day_rate_currency ? `${skill.day_rate_currency} ${skill.day_rate} per day` : undefined,
-    isPublic: skill.is_public ?? false
+    isPublic: skill.is_public ?? true
   })) : [];
 
   return <SkillsSection skills={transformedSkills} onUpdate={onUpdate} />;
