@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 const TierSections: React.FC = () => {
-  const [activePopup, setActivePopup] = useState<'insider' | 'future' | 'share' | null>(null);
+  const [activePopup, setActivePopup] = useState<'insider' | 'future' | 'share' | 'reserve' | null>(null);
   const [copied, setCopied] = useState(false);
+  const [insiderEmail, setInsiderEmail] = useState('');
+  const [futureEmail, setFutureEmail] = useState('');
+  const [isLoadingInsider, setIsLoadingInsider] = useState(false);
+  const [isLoadingFuture, setIsLoadingFuture] = useState(false);
+  const futureInsiderRef = useRef<HTMLDivElement>(null);
 
   // SVG Path constants for masking (Material Symbols)
   const lockPath = "M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z";
@@ -38,14 +43,124 @@ const TierSections: React.FC = () => {
     );
   };
 
-  const handleInsiderSubmit = (e: React.FormEvent) => {
+  const handleInsiderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActivePopup('insider');
+    
+    if (!insiderEmail || !insiderEmail.trim()) {
+      return;
+    }
+
+    setIsLoadingInsider(true);
+
+    try {
+      // Step 1: Check if email exists
+      const checkResponse = await fetch('/api/landing/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: insiderEmail })
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (!checkResponse.ok) {
+        console.error('Email check failed:', checkData.error);
+        setIsLoadingInsider(false);
+        return;
+      }
+
+      const emailExists = checkData.exists;
+
+      // Step 2: Trigger appropriate webhook
+      const webhookResponse = await fetch('/api/landing/submit-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: insiderEmail, 
+          exists: emailExists,
+          source: 'insider-access'
+        })
+      });
+
+      if (!webhookResponse.ok) {
+        console.error('Webhook trigger failed');
+      }
+
+      // Step 3: Show appropriate popup
+      if (emailExists) {
+        // Email exists - show "You're on the list" popup
+        setActivePopup('insider');
+      } else {
+        // Email doesn't exist - show "Reserve your spot" message and scroll
+        setActivePopup('reserve');
+      }
+
+    } catch (error) {
+      console.error('Error submitting insider email:', error);
+    } finally {
+      setIsLoadingInsider(false);
+    }
   };
 
-  const handleFutureSubmit = (e: React.FormEvent) => {
+  const handleFutureSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActivePopup('future');
+    
+    if (!futureEmail || !futureEmail.trim()) {
+      return;
+    }
+
+    setIsLoadingFuture(true);
+
+    try {
+      // Step 1: Check if email exists
+      const checkResponse = await fetch('/api/landing/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: futureEmail })
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (!checkResponse.ok) {
+        console.error('Email check failed:', checkData.error);
+        setIsLoadingFuture(false);
+        return;
+      }
+
+      const emailExists = checkData.exists;
+
+      // Step 2: Trigger appropriate webhook
+      const webhookResponse = await fetch('/api/landing/submit-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: futureEmail, 
+          exists: emailExists,
+          source: 'future-insider'
+        })
+      });
+
+      if (!webhookResponse.ok) {
+        console.error('Webhook trigger failed');
+      }
+
+      // Step 3: Show appropriate popup
+      setActivePopup(emailExists ? 'insider' : 'future');
+
+    } catch (error) {
+      console.error('Error submitting future email:', error);
+    } finally {
+      setIsLoadingFuture(false);
+    }
+  };
+
+  const handleScrollToFuture = () => {
+    setActivePopup(null);
+    setTimeout(() => {
+      futureInsiderRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }, 100);
   };
 
   const handleShareClick = () => {
@@ -91,11 +206,25 @@ const TierSections: React.FC = () => {
               <input 
                 type="email" 
                 required
+                value={insiderEmail}
+                onChange={(e) => setInsiderEmail(e.target.value)}
                 placeholder="Enter registered email address" 
                 className="w-full sm:w-80 px-6 py-4 rounded-xl bg-[#111111] border border-gray-800 text-white focus:outline-none focus:border-gray-600 transition-colors"
+                disabled={isLoadingInsider}
               />
-              <button type="submit" className="w-full sm:w-auto bg-[#FF7A8B] text-white font-bold px-10 py-4 rounded-xl hover:bg-[#ff6b7e] transition-colors whitespace-nowrap">
-                Activate Access
+              <button 
+                type="submit" 
+                disabled={isLoadingInsider}
+                className="w-full sm:w-auto bg-[#FF7A8B] text-white font-bold px-10 py-4 rounded-xl hover:bg-[#ff6b7e] transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoadingInsider ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  'Activate Access'
+                )}
               </button>
             </form>
           </div>
@@ -103,7 +232,7 @@ const TierSections: React.FC = () => {
       </div>
 
       {/* Future Insider Section */}
-      <div className="bg-white py-32 px-6 flex flex-col items-center text-center relative overflow-hidden">
+      <div ref={futureInsiderRef} className="bg-white py-32 px-6 flex flex-col items-center text-center relative overflow-hidden">
         <GlowBlob />
         <div className="relative z-10 flex flex-col items-center w-full">
           {/* Envelope Icon with Moving Gradient */}
@@ -121,11 +250,25 @@ const TierSections: React.FC = () => {
               <input 
                 type="email" 
                 required
+                value={futureEmail}
+                onChange={(e) => setFutureEmail(e.target.value)}
                 placeholder="Enter your email" 
                 className="w-full px-5 py-3.5 rounded-lg border border-gray-100 bg-[#F9FAFB] text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-200"
+                disabled={isLoadingFuture}
               />
-              <button type="submit" className="w-full sm:w-auto bg-[#39A7A7] text-white font-bold px-8 py-3.5 rounded-lg hover:bg-[#2d8e8e] transition-colors whitespace-nowrap text-sm">
-                Reserve My Spot
+              <button 
+                type="submit" 
+                disabled={isLoadingFuture}
+                className="w-full sm:w-auto bg-[#39A7A7] text-white font-bold px-8 py-3.5 rounded-lg hover:bg-[#2d8e8e] transition-colors whitespace-nowrap text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoadingFuture ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  'Reserve My Spot'
+                )}
               </button>
             </form>
           </div>
@@ -193,6 +336,46 @@ const TierSections: React.FC = () => {
                     {copied ? 'Copied!' : 'Copy Link'}
                   </button>
                 </div>
+              </div>
+            </div>
+          ) : activePopup === 'reserve' ? (
+            /* Reserve Your Spot Popup - For non-existing emails in Insider Access */
+            <div className="relative w-full max-w-[620px] isolate">
+              {/* Background Blob/Ellipse */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[474px] sm:h-[474px] rounded-full -z-10 blur-[80px] sm:blur-[110px]"
+                   style={{ background: 'linear-gradient(61.39deg, #FA6E80 19.93%, #6A89BE 45.14%, #31A7AC 82.95%), #D9D9D9' }} 
+              />
+              
+              {/* Card Content */}
+              <div className="bg-[#F8F8F8] rounded-[25px] p-8 sm:px-[50px] sm:py-[30px] flex flex-col items-center text-center gap-8 shadow-[4px_4px_21px_rgba(0,0,0,0.15)] animate-in fade-in zoom-in-95 duration-200">
+                 <div className="w-16 h-16 sm:w-[72px] sm:h-[72px] mt-4">
+                    {/* Info Icon with Orange Color */}
+                    <svg viewBox="0 -960 960 960" className="w-full h-full" fill="#FF7A8B">
+                      <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                    </svg>
+                 </div>
+                 
+                 <div className="space-y-3">
+                   <h4 className="text-3xl font-bold text-gray-900">Reserve your spot</h4>
+                   <p className="text-gray-600 font-medium leading-relaxed max-w-[400px]">
+                     I can't find that email. Want to try another one, or jump in and reserve your spot?
+                   </p>
+                 </div>
+
+                 <div className="flex flex-col w-full max-w-[280px] gap-3 mb-2">
+                   <button 
+                     onClick={handleScrollToFuture}
+                     className="w-full bg-[#39A7A7] text-white font-bold py-3.5 rounded-xl hover:bg-[#2d8e8e] transition-opacity"
+                   >
+                     Reserve My Spot
+                   </button>
+                   <button 
+                     onClick={() => setActivePopup(null)}
+                     className="w-full py-2 text-gray-600 font-bold text-sm hover:underline"
+                   >
+                     Close
+                   </button>
+                 </div>
               </div>
             </div>
           ) : (
