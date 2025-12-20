@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
-import supabase from '@/lib/supabase/client';
+import { getAccessToken } from '@/lib/supabase/client';
 
 export interface Notification {
   id: string;
@@ -63,9 +63,8 @@ export function useNotifications() {
       
       console.log('[useNotifications] Fetching notifications for user:', user.id);
       
-      // Get auth token from Supabase
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
+      // Get auth token from Supabase - OPTIMIZED: Uses cached session
+      const token = await getAccessToken();
 
       if (!token) {
         console.error('[useNotifications] No auth token available');
@@ -118,9 +117,8 @@ export function useNotifications() {
     if (!user) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
+      // OPTIMIZED: Uses cached session
+      const token = await getAccessToken();
       if (!token) return;
 
       await axios.patch(
@@ -149,9 +147,8 @@ export function useNotifications() {
     if (!user) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
+      // OPTIMIZED: Uses cached session
+      const token = await getAccessToken();
       if (!token) return;
 
       await axios.patch(

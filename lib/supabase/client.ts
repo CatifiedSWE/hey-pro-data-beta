@@ -8,6 +8,52 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholde
 // Storage key for persistence preference
 const STORAGE_PREFERENCE_KEY = 'supabase-storage-preference';
 
+// OPTIMIZATION: Session cache to reduce excessive getSession() calls
+// Cache session for 5 minutes to prevent repeated auth requests
+interface SessionCache {
+  session: any;
+  expiresAt: number;
+}
+
+let sessionCache: SessionCache | null = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+/**
+ * Get cached session or fetch new one
+ * This reduces auth requests by caching the session for 5 minutes
+ */
+const getCachedSession = async () => {
+  const now = Date.now();
+  
+  // Return cached session if still valid
+  if (sessionCache && now < sessionCache.expiresAt) {
+    console.log('[getCachedSession] Using cached session');
+    return sessionCache.session;
+  }
+  
+  // Fetch new session
+  console.log('[getCachedSession] Fetching new session');
+  const { data: { session }, error } = await supabase.auth.getSession();
+  
+  if (!error && session) {
+    // Cache the session
+    sessionCache = {
+      session,
+      expiresAt: now + CACHE_DURATION
+    };
+  }
+  
+  return error ? null : session;
+};
+
+/**
+ * Clear the session cache
+ * Call this when user logs out or when you need to force a fresh session fetch
+ */
+export const clearSessionCache = () => {
+  sessionCache = null;
+};
+
 /**
  * Create Supabase browser client for use in Client Components
  * Uses @supabase/ssr for proper SSR cookie integration
@@ -78,14 +124,13 @@ export const getStoragePreference = (): boolean => {
 /**
  * Get the current access token from the session
  * Uses promise-based approach as recommended by Next.js
+ * OPTIMIZED: Uses cached session to reduce auth requests
  * @returns Promise that resolves to the access token or null if not authenticated
  */
-export const getAccessToken = (): Promise<string | null> => {
-  return supabase.auth.getSession().then(({ data: { session }, error }) => {
-    if (error) {
-      console.error('[getAccessToken] Error retrieving session:', error.message);
-      return null;
-    }
+export const getAccessToken = async (): Promise<string | null> => {
+  try {
+    // Use cached session instead of always fetching
+    const session = await getCachedSession();
     
     if (!session) {
       console.warn('[getAccessToken] No active session found');
@@ -103,24 +148,32 @@ export const getAccessToken = (): Promise<string | null> => {
       const now = Math.floor(Date.now() / 1000);
       if (now >= expiresAt) {
         console.warn('[getAccessToken] Token expired, refreshing session');
-        // Token expired, refresh it
-        return supabase.auth.refreshSession().then(({ data, error: refreshError }) => {
-          if (refreshError || !data.session) {
-            console.error('[getAccessToken] Failed to refresh session:', refreshError?.message);
-            return null;
-          }
-          console.log('[getAccessToken] Session refreshed successfully');
-          return data.session.access_token || null;
-        });
+        // Clear cache and refresh
+        clearSessionCache();
+        const { data, error: refreshError } = await supabase.auth.refreshSession();
+        
+        if (refreshError || !data.session) {
+          console.error('[getAccessToken] Failed to refresh session:', refreshError?.message);
+          return null;
+        }
+        
+        // Update cache with new session
+        sessionCache = {
+          session: data.session,
+          expiresAt: Date.now() + CACHE_DURATION
+        };
+        
+        console.log('[getAccessToken] Session refreshed successfully');
+        return data.session.access_token || null;
       }
     }
     
     console.log('[getAccessToken] Valid token retrieved');
     return session.access_token;
-  }).catch((error) => {
+  } catch (error) {
     console.error('[getAccessToken] Unexpected error:', error);
     return null;
-  });
+  }
 };
 
 /**
@@ -143,9 +196,12 @@ export const isAuthenticated = async (): Promise<boolean> => {
 
 /**
  * Sign out the current user and clear all auth data
+ * OPTIMIZED: Also clears session cache
  */
 export const signOut = async (): Promise<void> => {
   await supabase.auth.signOut();
+  // Clear session cache on logout
+  clearSessionCache();
   // Clear storage preference on logout
   if (typeof window !== 'undefined') {
     localStorage.removeItem(STORAGE_PREFERENCE_KEY);

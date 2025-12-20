@@ -78,6 +78,9 @@ export function useChatUnreadCount() {
   // 1. User is authenticated
   // 2. Page is visible (tab is active)
   // 3. NOT on inbox route (inbox has its own polling)
+  // 
+  // CRITICAL FIX: Removed fetchUnreadCount from dependencies to prevent interval stacking
+  // fetchUnreadCount was being recreated on every render, causing multiple intervals to run
   useEffect(() => {
     if (!user || isInboxRoute) return;
 
@@ -93,9 +96,11 @@ export function useChatUnreadCount() {
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [user, fetchUnreadCount, isInboxRoute]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isInboxRoute]); // FIXED: Removed fetchUnreadCount to prevent interval stacking
 
   // OPTIMIZED: Refresh when user returns to tab (visibility change)
+  // CRITICAL FIX: Removed fetchUnreadCount from dependencies
   useEffect(() => {
     if (!user) return;
 
@@ -108,7 +113,8 @@ export function useChatUnreadCount() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [user, fetchUnreadCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // FIXED: Removed fetchUnreadCount to prevent duplicate listeners
 
   return {
     unreadCount,

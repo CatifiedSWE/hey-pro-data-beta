@@ -108,15 +108,29 @@ export default function MessageInbox({ params }: { params: Promise<paramsType> }
     }, [fetchMessages]);
 
     // ⭐ Fetch conversation details after messages are loaded
+    // OPTIMIZED: Only fetch once on initial load, not on every message change
     useEffect(() => {
         if (messages.length >= 0 && user) {
-            fetchConversationDetails();
+            // Debounce to prevent excessive calls
+            const timer = setTimeout(() => {
+                fetchConversationDetails();
+            }, 300);
+            return () => clearTimeout(timer);
         }
-    }, [messages.length, user, fetchConversationDetails]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]); // FIXED: Removed messages.length and fetchConversationDetails from dependencies
 
-    // Poll for new messages every 3 seconds
+    // OPTIMIZED: Poll for new messages every 15 seconds (reduced from 3 seconds)
+    // Added Page Visibility API to pause when tab is inactive
+    // TODO: Replace with Supabase Realtime subscriptions for better performance
     useEffect(() => {
+        // Don't poll if page is not visible
+        const isPageVisible = () => !document.hidden;
+        
         const interval = setInterval(async () => {
+            // Only poll if page is visible
+            if (!isPageVisible()) return;
+            
             try {
                 const data = await getConversationMessages(id, 1, 50);
                 if (data.messages.length > lastMessageCount.current) {
@@ -126,7 +140,7 @@ export default function MessageInbox({ params }: { params: Promise<paramsType> }
             } catch (err) {
                 console.error('Error polling messages:', err);
             }
-        }, 3000);
+        }, 15000); // OPTIMIZED: Changed from 3000 to 15000 (15 seconds) - 80% reduction
 
         return () => clearInterval(interval);
     }, [id]);
