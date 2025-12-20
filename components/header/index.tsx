@@ -67,7 +67,8 @@ export default function Header() {
 
   const isProfilePage = pathname === '/profile'
 
-  // Refresh notifications when dropdown opens (with debouncing)
+  // OPTIMIZED: Refresh notifications when dropdown opens (with debouncing)
+  // This replaces the real-time subscription to reduce unnecessary API calls
   useEffect(() => {
     if (notificationOpen) {
       // Small delay to prevent immediate refetch if already fetched recently
@@ -79,48 +80,10 @@ export default function Header() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notificationOpen]) // Removed fetchNotifications dependency to prevent unnecessary refetches
 
-  // Optional: Real-time notification updates via Supabase Realtime
-  // OPTIMIZED: Only subscribe once per user, not on every fetchNotifications change
-  useEffect(() => {
-    if (!user) return
-    
-    // Subscribe to new notifications
-    const channel = supabase
-      .channel('notifications-channel')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          // Fetch notifications when a new one arrives
-          fetchNotifications()
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          // Refresh when notifications are updated (e.g., marked as read)
-          fetchNotifications()
-        }
-      )
-      .subscribe()
-
-    // Cleanup on unmount
-    return () => {
-      supabase.removeChannel(channel)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]) // Only re-subscribe when user ID changes
+  // REMOVED: Real-time notification subscription
+  // Reason: Causes redundant API calls when combined with dropdown refresh
+  // User will see latest notifications when they open the dropdown
+  // This reduces API calls significantly while maintaining good UX
 
   const handleSignOut = async () => {
     await signOut()

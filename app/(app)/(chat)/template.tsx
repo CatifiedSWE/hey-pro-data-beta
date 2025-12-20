@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
     Tabs,
     TabsContent,
@@ -20,6 +20,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isFetchingRef = useRef(false);
 
     // Logic to determine if a specific chat is open
     const isChatOpen = pathname?.includes('/inbox/c/') || pathname?.includes('/inbox/g/');
@@ -30,6 +31,13 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         if (authLoading || !user) {
             return;
         }
+
+        // Prevent duplicate simultaneous fetches
+        if (isFetchingRef.current) {
+            return;
+        }
+
+        isFetchingRef.current = true;
 
         try {
             setError(null);
@@ -57,6 +65,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
             }
         } finally {
             setLoading(false);
+            isFetchingRef.current = false;
         }
     }, [authLoading, user]);
 
@@ -71,16 +80,41 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
         }
     }, [authLoading, user, fetchData, pathname]);
 
-    // Poll for updates every 5 seconds - only if user is authenticated
+    // OPTIMIZED: Poll for updates every 60 seconds (reduced from 5 seconds)
+    // This reduces API calls by 92% (from 12 calls/min to 1 call/min)
+    // Only poll when:
+    // 1. User is authenticated
+    // 2. Page is visible (tab is active)
     useEffect(() => {
         if (authLoading || !user) return;
 
+        // Check if page is visible
+        const isPageVisible = () => !document.hidden;
+
         const interval = setInterval(() => {
-            fetchData();
-        }, 5000);
+            // Only fetch if page is visible
+            if (isPageVisible()) {
+                fetchData();
+            }
+        }, 60000); // Changed from 5000 to 60000 (60 seconds)
 
         return () => clearInterval(interval);
     }, [authLoading, user, fetchData]);
+
+    // OPTIMIZED: Refresh when user returns to tab (visibility change)
+    useEffect(() => {
+        if (!user) return;
+
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                // User returned to tab, refresh conversations
+                fetchData();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [user, fetchData]);
 
     return (
         <div className="w-full h-screen bg-[#F8F8F8] md:bg-white overflow-hidden flex flex-col md:flex-row justify-center items-stretch gap-4 p-0 md:p-6 max-w-[1600px] mx-auto">

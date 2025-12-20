@@ -1,17 +1,26 @@
 /**
  * Hook to track total unread messages across all conversations and groups
  * Used for displaying unread count badge in the navbar
+ * 
+ * OPTIMIZED VERSION:
+ * - Increased polling from 30s to 60s
+ * - Added Page Visibility API to pause when tab is inactive
+ * - Only polls when user is authenticated
+ * - Reduced API calls by 50%
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getConversations, getGroups } from '@/lib/api/chat';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePathname } from 'next/navigation';
 
 export function useChatUnreadCount() {
   const { user } = useAuth();
+  const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const isFetchingRef = useRef(false); // Prevent duplicate fetches
+  const isInboxRoute = pathname?.startsWith('/inbox');
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user) {
@@ -64,16 +73,41 @@ export function useChatUnreadCount() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]); // Only re-fetch when user changes
 
-  // Poll for updates every 30 seconds (reduced from 5 seconds)
-  // This significantly reduces API calls while still keeping data reasonably fresh
+  // OPTIMIZED: Poll for updates every 60 seconds (reduced from 30 seconds)
+  // Only poll when:
+  // 1. User is authenticated
+  // 2. Page is visible (tab is active)
+  // 3. NOT on inbox route (inbox has its own polling)
+  useEffect(() => {
+    if (!user || isInboxRoute) return;
+
+    // Check if page is visible
+    const isPageVisible = () => !document.hidden;
+
+    const interval = setInterval(() => {
+      // Only fetch if page is visible
+      if (isPageVisible()) {
+        fetchUnreadCount();
+      }
+    }, 60000); // Changed from 30000 to 60000 (60 seconds)
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [user, fetchUnreadCount, isInboxRoute]);
+
+  // OPTIMIZED: Refresh when user returns to tab (visibility change)
   useEffect(() => {
     if (!user) return;
 
-    const interval = setInterval(() => {
-      fetchUnreadCount();
-    }, 30000); // Changed from 5000 to 30000 (30 seconds)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // User returned to tab, refresh unread count
+        fetchUnreadCount();
+      }
+    };
 
-    return () => clearInterval(interval);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [user, fetchUnreadCount]);
 
   return {
