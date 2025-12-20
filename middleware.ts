@@ -54,6 +54,22 @@ const underDevelopmentRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 🚫 BLOCK EMERGENT MONITORING IP - Remove this block when monitoring is disabled
+  // This prevents excessive Supabase API calls from monitoring service (86,400+ requests/day)
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() 
+    || request.headers.get('x-real-ip') 
+    || request.ip;
+  
+  const blockedIPs = [
+    '54.89.111.208',  // AWS Emergent monitoring IP
+  ];
+
+  if (clientIp && blockedIPs.includes(clientIp)) {
+    console.log(`[Middleware] Blocked monitoring IP: ${clientIp} - Path: ${pathname}`);
+    return new NextResponse('Monitoring blocked', { status: 503 });
+  }
+  // 🚫 END IP BLOCKING
+
   // Skip middleware for API routes and static files
   if (pathname.startsWith('/api') || pathname.startsWith('/_next')) {
     return NextResponse.next();
