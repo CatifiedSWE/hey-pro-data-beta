@@ -256,4 +256,65 @@
   .delay-700 {
     animation-delay: 700ms;
   }
+
+  /* Landing Page Animations */
+  .gradient-text {
+    background: linear-gradient(90deg, #FF7A8B, #45B1A8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .moving-gradient {
+    background: linear-gradient(
+      to right,
+      #ff7a8b 0%,
+      #31a7ac 25%,
+      #ffffff 50%,
+      #31a7ac 75%,
+      #ff7a8b 100%
+    );
+    background-size: 200% auto;
+    animation: gradient-move 8s linear infinite;
+  }
+
+  .moving-gradient-text {
+    background: linear-gradient(
+      to right,
+      #ff7a8b 0%,
+      #31a7ac 25%,
+      #ffffff 50%,
+      #31a7ac 75%,
+      #ff7a8b 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-move 8s linear infinite;
+  }
+
+  @keyframes gradient-move {
+    0% { background-position: 0% center; }
+    100% { background-position: -200% center; }
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-ticker {
+    display: flex;
+    width: max-content;
+    animation: ticker 40s linear infinite;
+  }
+
+  .animate-ticker:hover {
+    animation-play-state: paused;
+  }
+
+  .profile-completion-ring {
+    background: conic-gradient(#FF7A8B 85%, #e5e7eb 0);
+  }
 }
