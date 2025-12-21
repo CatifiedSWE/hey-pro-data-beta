@@ -154,7 +154,7 @@ export default function FAQ() {
     },
     { 
       q: "How do I get in touch if I have questions?", 
-      a: "Email the team at [team@heyprodata.com](mailto:team@heyprodata.com)" 
+      a: "Email the team at team@heyprodata.com" 
     }
   ];
 
