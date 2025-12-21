@@ -29,13 +29,13 @@ export default function GalleryHoverCarousel({
       id: "feature-chat",
       title: "Where Conversations Turn Into Content",
       summary: "From first message to final wrap - connect, chat and collaborate seamlessly with your crew.",
-      image: "https://optimizpro.com/wp-content/uploads/2025/12/2.png",
+      image: "/Messages.png",
     },
     {
       id: "feature-directory",
       title: "The Backbone of Every Production",
       summary: "Access a powerful network of professionals to help your productions move faster, smarter and stronger.",
-      image: "https://optimizpro.com/wp-content/uploads/2025/12/Gemini_Generated_Image_b6w945b6w945b6w9.png",
+      image: "/profile-group.png",
     }
   ],
 }: GalleryHoverCarouselProps) {
