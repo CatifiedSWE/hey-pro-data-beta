@@ -146,65 +146,73 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
+  // 🚧 TEMPORARY GATEKEEPING: Redirect all non-landing pages to landing page
+  // Comment: Website under development - only landing page accessible
+  if (pathname !== '/') {
+    console.log(`[Middleware] Gatekeeping active: Redirecting ${pathname} to landing page`);
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // ⏸️ COMMENTED OUT: Session check functionality (temporarily disabled during gatekeeping)
   // Special handling for landing page (/)
-  if (pathname === '/' && isAuthenticated && userId) {
-    // Check onboarding status
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('has_completed_onboarding')
-      .eq('user_id', userId)
-      .maybeSingle();
-    
-    if (profile?.has_completed_onboarding) {
-      // Completed onboarding → redirect to profile
-      return NextResponse.redirect(new URL('/profile', request.url));
-    } else {
-      // Not completed onboarding → redirect to onboarding
-      return NextResponse.redirect(new URL('/onboarding', request.url));
-    }
-  }
+  // if (pathname === '/' && isAuthenticated && userId) {
+  //   // Check onboarding status
+  //   const { data: profile } = await supabase
+  //     .from('user_profiles')
+  //     .select('has_completed_onboarding')
+  //     .eq('user_id', userId)
+  //     .maybeSingle();
+  //   
+  //   if (profile?.has_completed_onboarding) {
+  //     // Completed onboarding → redirect to profile
+  //     return NextResponse.redirect(new URL('/profile', request.url));
+  //   } else {
+  //     // Not completed onboarding → redirect to onboarding
+  //     return NextResponse.redirect(new URL('/onboarding', request.url));
+  //   }
+  // }
 
-  // Special handling for onboarding page
-  if (pathname.startsWith('/onboarding') && isAuthenticated && userId) {
-    // Check if user already completed onboarding
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('has_completed_onboarding')
-      .eq('user_id', userId)
-      .maybeSingle();
-    
-    if (profile?.has_completed_onboarding) {
-      // Already completed → redirect to profile
-      return NextResponse.redirect(new URL('/profile', request.url));
-    }
-    // Otherwise, allow access to complete onboarding
-  }
+  // ⏸️ COMMENTED OUT: Special handling for onboarding page
+  // if (pathname.startsWith('/onboarding') && isAuthenticated && userId) {
+  //   // Check if user already completed onboarding
+  //   const { data: profile } = await supabase
+  //     .from('user_profiles')
+  //     .select('has_completed_onboarding')
+  //     .eq('user_id', userId)
+  //     .maybeSingle();
+  //   
+  //   if (profile?.has_completed_onboarding) {
+  //     // Already completed → redirect to profile
+  //     return NextResponse.redirect(new URL('/profile', request.url));
+  //   }
+  //   // Otherwise, allow access to complete onboarding
+  // }
 
-  // Redirect authenticated users away from auth pages (login/signup)
-  if (isAuthenticated && isAuthRoute) {
-    // Check onboarding status before redirecting
-    if (userId) {
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('has_completed_onboarding')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      if (profile?.has_completed_onboarding) {
-        return NextResponse.redirect(new URL('/profile', request.url));
-      } else {
-        return NextResponse.redirect(new URL('/onboarding', request.url));
-      }
-    }
-    return NextResponse.redirect(new URL('/slate', request.url));
-  }
+  // ⏸️ COMMENTED OUT: Redirect authenticated users away from auth pages (login/signup)
+  // if (isAuthenticated && isAuthRoute) {
+  //   // Check onboarding status before redirecting
+  //   if (userId) {
+  //     const { data: profile } = await supabase
+  //       .from('user_profiles')
+  //       .select('has_completed_onboarding')
+  //       .eq('user_id', userId)
+  //       .maybeSingle();
+  //     
+  //     if (profile?.has_completed_onboarding) {
+  //       return NextResponse.redirect(new URL('/profile', request.url));
+  //     } else {
+  //       return NextResponse.redirect(new URL('/onboarding', request.url));
+  //     }
+  //   }
+  //   return NextResponse.redirect(new URL('/slate', request.url));
+  // }
 
-  // Redirect unauthenticated users to login for protected routes
-  if (!isAuthenticated && isProtectedRoute) {
-    const redirectUrl = new URL('/login', request.url);
-    redirectUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(redirectUrl);
-  }
+  // ⏸️ COMMENTED OUT: Redirect unauthenticated users to login for protected routes
+  // if (!isAuthenticated && isProtectedRoute) {
+  //   const redirectUrl = new URL('/login', request.url);
+  //   redirectUrl.searchParams.set('redirect', pathname);
+  //   return NextResponse.redirect(redirectUrl);
+  // }
 
   return response;
 }
