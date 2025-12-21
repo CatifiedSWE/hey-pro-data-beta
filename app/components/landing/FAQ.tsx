@@ -159,7 +159,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section id="faq-section" className="relative min-h-screen w-full overflow-hidden bg-black pt-24 md:pt-32 pb-0 flex flex-col justify-between">
+    <section id="faq-section" className="relative min-h-screen w-full overflow-hidden bg-black pt-10 md:pt-32 pb-0 flex flex-col justify-between">
       {/* Background Spiral */}
       <div
         className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-40 [mask-image:radial-gradient(circle_at_center,rgba(255,255,255,1),rgba(255,255,255,0.1)_60%,transparent_75%)]"
@@ -172,10 +172,7 @@ export default function FAQ() {
         {/* Header */}
         <header className="mb-16 flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-8 gap-6">
           <div>
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter uppercase text-white leading-none mb-4">FAQs</h2>
-            <p className="text-sm md:text-base text-[#45B1A8] font-bold uppercase tracking-widest">
-              Answers for the MENA production network.
-            </p>
+            <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-white leading-none mb-4">FAQs</h2>
           </div>
         </header>
 
