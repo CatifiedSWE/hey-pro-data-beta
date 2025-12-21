@@ -23,7 +23,7 @@ export default function GalleryHoverCarousel({
       id: "feature-profile",
       title: "Profiles That Speak Before You Do",
       summary: "Let your work, work for you and introduce you to decision makers and collaborators who matter.",
-      image: "https://optimizpro.com/wp-content/uploads/2025/12/1.png",
+      image: "/profile.png",
     },
     {
       id: "feature-chat",
