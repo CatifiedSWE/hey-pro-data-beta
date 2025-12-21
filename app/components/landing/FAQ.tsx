@@ -126,35 +126,35 @@ export default function FAQ() {
   const faqs = [
     { 
       q: "What does HeyProData do?", 
-      a: "HeyProData is the crew-side infrastructure for film, media and events across the MENA region. It shows who's here, what they do, and how to connect, making visibility and discovery easier for everyone working in the industry." 
+      a: "HeyProData is the crew-side ecosystem for film, media and events across the MENA region. Visibility, structure and a clear way to connect the right people at the right time." 
     },
     { 
       q: "Who is HeyProData for?", 
-      a: "HeyProData is for anyone working in film, media or events across the MENA region. Crew, freelancers, producers, agencies and vendors. Anyone involved in making productions happen. Clients, brands and agencies can also submit briefs, which are circulated within the network so the right professionals can reach out." 
+      a: "HeyProData is for creatives and crew working in film, media or events across the MENA region. Crew, freelancers, producers, agencies and vendors who make productions happen. Clients, brands and agencies can also submit briefs, which are shared within the network so the right professionals can connect directly." 
     },
     { 
       q: "Is it free to use HeyProData?", 
-      a: "Yes. The basic tier is free to use. Additional paid tiers and features may be introduced later, but core access remains free." 
+      a: "HeyProData operates on a freemium model. Core access stays open, with advanced features introduced over time." 
     },
     { 
       q: "How do I get a profile on HeyProData?", 
-      a: "Founding members who helped shape the platform currently have early VIP access. New users can reserve their spot and will be notified when access opens so they can create a profile and join the network." 
+      a: "Founding members currently have early VIP access. New users can reserve a spot and will be notified when access opens, allowing them to create a profile and join the network." 
     },
     { 
       q: "What can I do on HeyProData?", 
-      a: "You can create a professional profile, showcase your work, and connect with a growing network of over a hundred profiles representing different roles across the industry." 
+      a: "Create a professional profile, showcase your work and connect with a growing network of industry professionals across a wide range of roles." 
     },
     { 
       q: "What makes HeyProData different from other platforms?", 
-      a: "HeyProData is built by people who understand how production actually works in the MENA region. It is designed specifically for the local industry, offering a trusted space where professionals can connect and showcase their work." 
+      a: "HeyProData is built by people who understand how production actually works in the MENA region. It is designed for the local industry, creating a trusted space where professionals connect and showcase their work." 
     },
     { 
       q: "Who is behind HeyProData?", 
-      a: "You are. HeyProData exists because people working in the industry wanted something better. More visibility. More structure. Fewer closed circles. The ideas, frustrations and aspirations shared by crew, creatives and producers shaped this platform. Your thoughts and dreams for a better industry resonated, and this is the result." 
+      a: "HeyProData exists because people working in the industry wanted something better. More visibility. More structure. More connectivity. The ideas, frustrations and ambitions shared by crew, creatives and producers shaped this platform. This is the result." 
     },
     { 
       q: "How do I get in touch if I have questions?", 
-      a: "You can reach the team at team@heyprodata.com" 
+      a: "Email the team at [team@heyprodata.com](mailto:team@heyprodata.com)" 
     }
   ];
 
