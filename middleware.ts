@@ -75,25 +75,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // PHASE 1: Block old auth pages - redirect to onboarding (gated system)
-  // const blockedAuthPages = ['/forget-password', '/reset-password'];
-  // if (blockedAuthPages.some(page => pathname.startsWith(page))) {
-  //   console.log(`[Middleware] Blocking old auth page: ${pathname}, redirecting to /onboarding`);
-  //   return NextResponse.redirect(new URL('/onboarding', request.url));
+  // 🚧 TEMPORARY GATEKEEPING: Redirect all non-landing pages to landing page
+  // Comment: Website under development - only landing page accessible
+  if (pathname !== '/') {
+    console.log(`[Middleware] Gatekeeping active: Redirecting ${pathname} to landing page`);
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // ⏸️ COMMENTED OUT: Block access to under-development routes
+  // const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
+  // if (isUnderDevelopmentRoute) {
+  //   console.log(`[Middleware] Blocking under-development page: ${pathname}, redirecting to /profile`);
+  //   return NextResponse.redirect(new URL('/profile', request.url));
   // }
 
-  // Block access to under-development routes - redirect to profile for ALL users
-  const isUnderDevelopmentRoute = underDevelopmentRoutes.some(route => pathname.startsWith(route));
-  if (isUnderDevelopmentRoute) {
-    console.log(`[Middleware] Blocking under-development page: ${pathname}, redirecting to /profile`);
-    return NextResponse.redirect(new URL('/profile', request.url));
-  }
-
-  // Allow public routes without authentication check
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
-  if (isPublicRoute) {
-    return NextResponse.next();
-  }
+  // ⏸️ COMMENTED OUT: Allow public routes without authentication check
+  // const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  // if (isPublicRoute) {
+  //   return NextResponse.next();
+  // }
 
   let response = NextResponse.next({
     request: {
@@ -145,13 +145,6 @@ export async function middleware(request: NextRequest) {
   const userId = session?.user?.id;
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
-  // 🚧 TEMPORARY GATEKEEPING: Redirect all non-landing pages to landing page
-  // Comment: Website under development - only landing page accessible
-  if (pathname !== '/') {
-    console.log(`[Middleware] Gatekeeping active: Redirecting ${pathname} to landing page`);
-    return NextResponse.redirect(new URL('/', request.url));
-  }
 
   // ⏸️ COMMENTED OUT: Session check functionality (temporarily disabled during gatekeeping)
   // Special handling for landing page (/)
