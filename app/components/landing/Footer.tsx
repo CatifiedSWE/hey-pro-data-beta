@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto flex items-end justify-between">
         <div className="space-y-1">
           <p className="text-gray-500 text-sm font-medium">© HeyProData</p>
-          <p className="moving-gradient-text text-sm font-bold">Powering Productions</p>
+          <p className="text-gray-400 text-sm font-bold">Powering Productions</p>
         </div>
 
         <div className="flex items-center gap-6">
