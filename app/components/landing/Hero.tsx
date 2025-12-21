@@ -3,24 +3,27 @@
 import React, { useState, useEffect } from 'react';
 import SphereImageGrid, { ImageData } from './SphereImageGrid';
 
-// Generate a larger set of unique images using different seeds to prevent side-by-side repetition
+const SOURCE_IMAGES = [
+  "https://optimizpro.com/wp-content/uploads/2025/12/ACg8ocKSjKZ6taK4GGvpnI9xeDEAsXqN4rsTj8X5Lsa0992ak2TdVios96-c-1.png",
+  "https://optimizpro.com/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-08-at-20.23.37.jpeg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-21-at-12.35.58.jpeg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/ben-den-engelsen-7TU5JJAwPyU-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/luis-villasmil-hh3ViD0r0Rc-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/wellington-ferreira-72TE8cWKXRY-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/joseph-gonzalez-iFgRcqHznqg-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/ben-den-engelsen-zNWlX5Sw9a4-unsplash-scaled-e1766315207670.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/christopher-campbell-rDEOVtE7vOs-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/jurica-koletic-7YVZYZeITc8-unsplash-scaled-e1766315261204.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/podmatch-GEnCnYhA1J4-unsplash-scaled-e1766315322998.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/vince-veras-AJIqZDAUD7A-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/diego-hernandez-MSepzbKFz10-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/ben-den-engelsen-YUu9UAcOKZ4-unsplash-scaled.jpg",
+  "https://optimizpro.com/wp-content/uploads/2025/12/hasibullah-sahil-W-inhanjr9E-unsplash-scaled-e1766315401264.jpg"
+];
+
+// Generate images by cycling through the source images to maintain density
 const IMAGES: ImageData[] = Array.from({ length: 45 }).map((_, i) => {
-  // Changed offset from 10 to 60 to generate a fresh set of faces and remove the previous set (including the cucumber lady)
-  let src = `https://i.pravatar.cc/300?u=${i + 60}`;
-  
-  // Replace specific images with user provided URLs
-  // Placing them at distributed indices for better visibility on the sphere
-  if (i === 12) {
-    src = "https://optimizpro.com/wp-content/uploads/2025/12/ACg8ocKSjKZ6taK4GGvpnI9xeDEAsXqN4rsTj8X5Lsa0992ak2TdVios96-c-1.png";
-  } else if (i === 25) {
-    src = "https://optimizpro.com/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-08-at-20.23.37.jpeg";
-  } else if (i === 19) {
-    // New profile added
-    src = "https://optimizpro.com/wp-content/uploads/2025/12/premium_photo-1689568126014-06fea9d5d341.jpg";
-  } else if (i === 17) {
-    // Replaced cucumber lady profile
-    src = "https://optimizpro.com/wp-content/uploads/2025/12/eugene-chystiakov-YUvt38btMHw-unsplash-scaled.jpg";
-  }
+  const src = SOURCE_IMAGES[i % SOURCE_IMAGES.length];
 
   return {
     id: `hero-img-${i}`,
