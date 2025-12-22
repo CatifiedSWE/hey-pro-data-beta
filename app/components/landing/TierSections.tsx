@@ -356,9 +356,9 @@ const TierSections: React.FC = () => {
                  </div>
                  
                  <div className="space-y-3">
-                   <h4 className="text-3xl font-bold text-gray-900">Reserve your spot</h4>
+                   <h4 className="text-3xl font-bold text-gray-900">Hey!</h4>
                    <p className="text-gray-600 font-medium leading-relaxed max-w-[400px]">
-                     I can't find that email. Want to try another one, or jump in and reserve your spot?
+                     There's no profile linked to this email yet.<br />Reserve your spot to join the network.
                    </p>
                  </div>
 
