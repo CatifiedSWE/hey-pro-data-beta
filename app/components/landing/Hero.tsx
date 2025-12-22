@@ -108,7 +108,7 @@ const Hero: React.FC = () => {
           </div>
           
           <div className="space-y-4 lg:space-y-8 pt-6 lg:pt-12 border-t border-white/10 w-full max-w-2xl">
-            <span className="block text-gray-500 font-bold uppercase tracking-[0.3em] text-sm sm:text-base">
+            <span className="block text-white font-bold uppercase tracking-[0.3em] text-sm sm:text-base">
               <span className="tabular-nums inline-block min-w-[2ch]">{count}</span>+ profiles already inside
             </span>
             <div className="space-y-2 lg:space-y-4">
