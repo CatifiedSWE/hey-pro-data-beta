@@ -4,10 +4,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 export default function FAQ() {
   const spiralRef = useRef<HTMLDivElement | null>(null);
-  const [panelOpen, setPanelOpen] = useState(false);
 
   // Spiral configuration - Default set to a subtle brand look
-  const [cfg, setCfg] = useState({
+  const [cfg] = useState({
     points: 850,
     dotRadius: 1.5,
     duration: 4.0,
@@ -30,16 +29,6 @@ export default function FAQ() {
     }),
     []
   );
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase();
-      if (k === "h") setPanelOpen((v) => !v);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
 
   // Generate spiral SVG
   useEffect(() => {
@@ -194,25 +183,6 @@ export default function FAQ() {
           HEYPRODATA
         </h1>
       </div>
-
-      {/* Control Panel (Hidden by default, 'H' to toggle) */}
-      {panelOpen && (
-        <aside className="fixed right-6 bottom-6 z-50 w-[320px] rounded-3xl border border-white/10 bg-black/80 p-6 backdrop-blur-xl shadow-2xl">
-          <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-[#45B1A8]">Background Visuals</h3>
-          <div className="space-y-4 text-[10px] text-gray-400 font-bold">
-            <Slider label="Density" min={100} max={2000} step={50} value={cfg.points} onChange={(v)=> setCfg({...cfg, points: v})} />
-            <Slider label="Pulse Speed" min={1} max={10} step={0.1} value={cfg.duration} onChange={(v)=> setCfg({...cfg, duration: v})} />
-            <div className="pt-4 border-t border-white/5 flex gap-2">
-              <button
-                onClick={() => setPanelOpen(false)}
-                className="w-full rounded-xl border border-white/10 px-4 py-2 hover:bg-white/5 transition-colors uppercase tracking-widest"
-              >
-                Close (H)
-              </button>
-            </div>
-          </div>
-        </aside>
-      )}
     </section>
   );
 }
@@ -251,23 +221,3 @@ const FAQItem: React.FC<{ q: string; a: string }> = ({ q, a }) => {
     </div>
   );
 };
-
-const Slider: React.FC<{ label: string; min: number; max: number; step: number; value: number; onChange: (v: number) => void }> = ({ label, min, max, step, value, onChange }) => {
-  return (
-    <label className="block">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="uppercase tracking-widest opacity-60">{label}</span>
-        <span className="tabular-nums text-[#45B1A8]">{value.toFixed(0)}</span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-[#45B1A8] bg-white/10 rounded-lg h-1"
-      />
-    </label>
-  );
-}
