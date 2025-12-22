@@ -29,7 +29,7 @@ export default function GalleryHoverCarousel({
       id: "feature-chat",
       title: "Where Conversations Turn Into Content",
       summary: "From first message to final wrap - connect, chat and collaborate seamlessly with your crew.",
-      image: "/Messages.png",
+      image: "https://customer-assets.emergentagent.com/job_0535d13d-9b2e-402e-99e5-3714fe6d9e61/artifacts/856lbvb5_image.png",
     },
     {
       id: "feature-directory",
